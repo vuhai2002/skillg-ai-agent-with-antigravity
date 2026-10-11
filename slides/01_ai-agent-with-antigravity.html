@@ -1,0 +1,2232 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Làm chủ AI Agent với Antigravity</title>
+<style>
+/* ===========================================================
+   MORPH-SLIDES BASE
+   Stage 1920x1080 scaled by JS (idea from frontend-slides
+   viewport-base.css, MIT). Actors = persistent shapes that
+   morph between poses; slides = per-slide content layer.
+   =========================================================== */
+
+:root {
+  --morph-dur: 1.2s;
+  --morph-ease: cubic-bezier(0.16, 1, 0.3, 1);   /* ease-out-expo */
+  --fade-dur: 0.35s;
+  --reveal-base: 0.45s;   /* content waits for actors to start moving */
+  --reveal-step: 0.09s;
+  --stage-bg: #000;
+}
+
+html, body {
+  width: 100%; height: 100%; margin: 0;
+  overflow: hidden;
+  background: var(--stage-bg);
+}
+*, *::before, *::after { box-sizing: border-box; }
+
+.deck-viewport { position: fixed; inset: 0; overflow: hidden; background: var(--stage-bg); }
+
+.deck-stage {
+  position: absolute; left: 0; top: 0;
+  width: 1920px; height: 1080px;
+  overflow: hidden;
+  transform-origin: 0 0;
+  background-color: var(--bg, #fff);
+  color: var(--fg, #111);
+  font-family: var(--font-body, system-ui, sans-serif);
+  transition: background-color var(--morph-dur) var(--morph-ease),
+              color var(--morph-dur) var(--morph-ease);
+}
+
+/* ---------- ACTORS ----------
+   Pose = CSS variables set by style files per layout/pose:
+   --x --y --w --h (px, --h defaults to --w), --r (deg), --s (scale),
+   --o (opacity), --bw (outline width, centered on the edge like
+   PowerPoint lines). Width/height animate so borders keep thickness. */
+.actors { position: absolute; inset: 0; pointer-events: none; }
+.actors.back  { z-index: 0; }
+.actors.front { z-index: 20; }
+
+.actor {
+  position: absolute; left: 0; top: 0;
+  width: calc(var(--w, 200px) + var(--bw, 0px));
+  height: calc(var(--h, var(--w, 200px)) + var(--bw, 0px));
+  transform: translate(calc(var(--x, -400px) - var(--bw, 0px) / 2), calc(var(--y, -400px) - var(--bw, 0px) / 2))
+             rotate(var(--r, 0deg)) scale(var(--s, 1));
+  opacity: var(--o, 1);
+  transition-property: transform, width, height, opacity, background-color,
+                       border-color, border-width, border-radius, box-shadow, filter, color;
+  transition-duration: var(--morph-dur);
+  transition-timing-function: var(--morph-ease);
+  /* no will-change: it caused 1px seams on large panels when the stage is scaled down */
+}
+.actor > svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* ---------- SLIDES (content layer) ---------- */
+.slide {
+  position: absolute; inset: 0; z-index: 10;
+  width: 1920px; height: 1080px;
+  overflow: hidden;
+  visibility: hidden; opacity: 0; pointer-events: none;
+  transition: opacity var(--fade-dur) ease, visibility 0s linear var(--fade-dur);
+}
+.slide.active {
+  visibility: visible; opacity: 1; pointer-events: auto;
+  transition: opacity var(--fade-dur) ease, visibility 0s;
+}
+
+/* Reveal: hidden until slide is active, staggered by --i (set by engine) */
+.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur {
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease, filter 0.3s ease;
+}
+.reveal       { transform: translateY(40px); }
+.reveal-left  { transform: translateX(-60px); }
+.reveal-right { transform: translateX(60px); }
+.reveal-scale { transform: scale(0.85); }
+.reveal-blur  { filter: blur(12px); }
+/* repeated layouts enter differently: variant 2 slides in from the left, variant 3 zooms in */
+.slide[data-variant="2"] .reveal { transform: translateX(-56px); }
+.slide[data-variant="3"] .reveal { transform: scale(0.92); }
+
+.slide.active :is(.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur) {
+  opacity: 1; transform: none; filter: none;
+  transition-duration: 0.8s;
+  transition-timing-function: var(--morph-ease);
+  transition-delay: calc(var(--reveal-base) + var(--i, 0) * var(--reveal-step));
+}
+
+/* FLIP: element shared between two slides (data-morph-id) */
+.slide .flip-run {
+  opacity: 1 !important; filter: none !important;
+  transform-origin: 0 0;
+  transition: transform var(--morph-dur) var(--morph-ease) !important;
+}
+.slide .flip-src { opacity: 0 !important; transition: none !important; }
+
+/* ---------- UI chrome (outside design) ---------- */
+.deck-progress {
+  position: fixed; left: 0; bottom: 0; height: 4px; width: 0;
+  background: var(--accent, #3b82f6); z-index: 1000;
+  /* dark + light hairline so the bar stays visible on any background colour */
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.35), 0 -2px 0 rgba(255, 255, 255, 0.35);
+  transition: width 0.6s var(--morph-ease);
+}
+/* edge buttons: a thin strip on each side, almost invisible until the mouse comes near */
+.deck-edge {
+  position: fixed; top: 0; bottom: 0; z-index: 1001; width: 64px; padding: 0; border: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; color: #fff; cursor: pointer; opacity: .18;
+  transition: opacity .25s ease, background .25s ease;
+}
+.deck-edge.prev { left: 0; }
+.deck-edge.next { right: 0; }
+.deck-edge span {
+  display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+  font: 400 34px/1 system-ui, sans-serif; background: rgba(0, 0, 0, .45); padding-bottom: 4px;
+}
+.deck-edge:hover, .deck-edge:focus-visible { opacity: 1; }
+.deck-edge.prev:hover { background: linear-gradient(90deg, rgba(0, 0, 0, .28), transparent); }
+.deck-edge.next:hover { background: linear-gradient(270deg, rgba(0, 0, 0, .28), transparent); }
+.deck-counter {
+  position: fixed; right: 18px; bottom: 12px; z-index: 1000;
+  font: 600 13px/1 system-ui, sans-serif; letter-spacing: 0.08em;
+  color: #fff; mix-blend-mode: difference; opacity: 0.55;
+}
+
+/* Reduced motion (often from Windows "Animation effects" = off):
+   keep a short, gentle morph because motion IS the deck's content. */
+@media (prefers-reduced-motion: reduce) {
+  :root { --morph-dur: 0.7s; --reveal-base: 0.2s; --reveal-step: 0.04s; }
+  .reveal-blur { filter: none; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; }
+}
+
+</style>
+<style>
+/* ===========================================================
+   MORPH-SLIDES LAYOUTS: 9 slide types that FILL their zone.
+   - Inner slides: title row + body zone (--body-top..--body-bottom)
+   - Engine sets data-density="lg|md|sm" from item count,
+     so few items => bigger type, many items => smaller type.
+   Tokens: --fg --muted --accent --card-bg --card-fg --font-display
+           --font-body --title-weight --title-case --title-tracking
+   =========================================================== */
+
+.slide {
+  --body-top: 270px; --body-bottom: 90px; --pad-x: 120px;
+  color: var(--fg); font-family: var(--font-body); font-size: 32px; line-height: 1.45;
+}
+.slide h1, .slide h2, .slide h3, .slide p, .slide ul, .slide ol, .slide blockquote { margin: 0; }
+.slide ul, .slide ol { padding: 0; list-style: none; }
+
+.title, .num, .stat-num, .quote, .hl-big, .when {
+  font-family: var(--font-display); font-weight: var(--title-weight, 800);
+  letter-spacing: var(--title-tracking, -0.01em); font-style: var(--title-style, normal);
+}
+.title { text-transform: var(--title-case, none); line-height: 1.1; }
+.kicker { font-size: 22px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); }
+.subtitle { font-size: 34px; color: var(--muted); }
+.meta { font-size: 24px; color: var(--muted); }
+.accent { color: var(--accent); }
+b, strong { font-weight: 700; }
+
+/* body zone shared by inner layouts */
+.slide > .title:first-child { position: absolute; left: var(--pad-x); top: 90px; width: var(--title-w, 1500px); font-size: 64px; }
+.slide:is([data-layout="cover"], [data-layout="closing"], [data-layout="section"], [data-layout="quote"]) > .title:first-child { position: static; width: auto; }
+.body-zone, .bullets, .cols, .stats, .timeline, .agenda-list, .highlight {
+  position: absolute; top: var(--body-top); bottom: var(--body-bottom);
+}
+
+/* ---------- 1. cover / 9. closing ---------- */
+.slide:is([data-layout="cover"], [data-layout="closing"]) {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 28px; padding: 0 300px; text-align: center;
+}
+.slide:is([data-layout="cover"], [data-layout="closing"]) .title { font-size: 92px; }
+.slide[data-layout="closing"] .title { font-size: 120px; }
+
+/* ---------- 2. agenda: 2 columns of tiles filling the zone ---------- */
+.agenda-list {
+  left: var(--pad-x); right: var(--pad-x);
+  display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--agenda-gap, 640px);
+  grid-template-rows: repeat(var(--rows, 4), 1fr); grid-auto-flow: column;
+}
+.agenda-list li { display: flex; align-items: center; gap: 28px; border-top: var(--tile-line, none); }
+.agenda-list li.is-right { flex-direction: row-reverse; text-align: right; }
+.agenda-list .num { line-height: 1; color: var(--accent); min-width: 1.3em; }
+.agenda-list li.is-right .num { text-align: right; }
+.agenda-list h3 { font-family: var(--font-display); line-height: 1.15; }
+.agenda-list p { color: var(--muted); margin-top: 6px; }
+[data-density="lg"] .agenda-list { --n-num: 120px; --n-h: 52px; --n-p: 30px; }
+[data-density="md"] .agenda-list { --n-num: 88px;  --n-h: 40px; --n-p: 26px; }
+[data-density="sm"] .agenda-list { --n-num: 64px;  --n-h: 32px; --n-p: 22px; }
+.agenda-list .num { font-size: var(--n-num); }
+.agenda-list h3 { font-size: var(--n-h); }
+.agenda-list p { font-size: var(--n-p); }
+
+/* ---------- 3. section ---------- */
+.slide[data-layout="section"] { display: flex; flex-direction: column; justify-content: center; gap: 24px; padding: 0 900px 0 160px; }
+.slide[data-layout="section"] .num { font-size: 220px; line-height: 0.9; color: var(--accent); }
+.slide[data-layout="section"] .title { font-size: 84px; }
+
+/* ---------- 4. content: bullets left + highlight right ---------- */
+.bullets { left: var(--pad-x); width: var(--bullets-w, 1040px); display: flex; flex-direction: column; justify-content: center; gap: var(--b-gap); }
+.bullets li { position: relative; padding-left: 1.4em; font-size: var(--b-fs); line-height: 1.35; }
+.bullets li::before {
+  content: ""; position: absolute; left: 0; top: 0.45em;
+  width: 0.45em; height: 0.45em; border-radius: var(--bullet-radius, 50%); background: var(--accent);
+}
+[data-density="lg"] .bullets { --b-fs: 44px; --b-gap: 52px; }
+[data-density="md"] .bullets { --b-fs: 36px; --b-gap: 40px; }
+[data-density="sm"] .bullets { --b-fs: 30px; --b-gap: 20px; }
+
+/* highlight = the real point of the slide shown big (number, icon, short claim) */
+.highlight {
+  left: var(--hl-left, 1260px); right: var(--hl-right, 120px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center;
+}
+.hl-big { font-size: 160px; line-height: 1; color: var(--accent); }
+.hl-icon { width: 200px; height: 200px; color: var(--accent); }
+.hl-icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.hl-text { font-family: var(--font-display); font-size: 34px; font-weight: 700; line-height: 1.25; }
+
+/* ---------- 5. two-col: cards stretch full height ---------- */
+.cols { left: var(--pad-x); right: var(--pad-x); display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+.slide:has(.takeaway) .cols { bottom: 240px; }
+.col { display: flex; flex-direction: column; padding: 48px 56px; border-radius: var(--card-radius, 24px); background: var(--card-bg, transparent); color: var(--card-fg, var(--fg)); }
+.col h3 { font-family: var(--font-display); font-size: var(--c-h); line-height: 1.15; color: var(--accent); }
+.col ul { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; }
+.col p, .col li { font-size: var(--c-fs); line-height: 1.35; }
+.col li { position: relative; padding-left: 1.2em; }
+.col li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 0.4em; height: 0.4em; border-radius: var(--bullet-radius, 50%); background: var(--accent); }
+[data-density="lg"] .cols { --c-h: 52px; --c-fs: 36px; }
+[data-density="md"] .cols { --c-h: 46px; --c-fs: 32px; }
+[data-density="sm"] .cols { --c-h: 40px; --c-fs: 28px; }
+.takeaway {
+  position: absolute; left: var(--pad-x); right: var(--pad-x); bottom: var(--body-bottom); min-height: 110px;
+  display: flex; align-items: center; padding: 20px 36px; border-left: 10px solid var(--accent);
+  font-family: var(--font-display); font-size: 36px; font-weight: 700; line-height: 1.25;
+}
+
+/* ---------- 6. stats: numbers centred in the zone ---------- */
+.stats { left: var(--pad-x); right: var(--pad-x); display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 48px; align-content: center; }
+.stat { text-align: center; }
+.stat-num { display: block; line-height: 1; color: var(--accent); font-size: var(--s-num); }
+.stat-label { display: block; margin-top: 22px; color: var(--muted); font-size: var(--s-fs); line-height: 1.35; }
+[data-density="lg"] .stats { --s-num: 220px; --s-fs: 36px; }
+[data-density="md"] .stats { --s-num: 150px; --s-fs: 30px; }
+[data-density="sm"] .stats { --s-num: 110px; --s-fs: 26px; }
+/* four figures share the width: big type would break "4-5" over two lines */
+[data-density="lg"] .stats:has(> .stat:nth-child(4)) { --s-num: 160px; }
+
+/* ---------- 7. timeline: zig-zag around a centred axis ---------- */
+.timeline {
+  left: var(--pad-x); right: var(--pad-x);
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; grid-template-rows: 1fr 1fr; column-gap: 32px;
+}
+.timeline::before { content: ""; position: absolute; left: 0; right: 0; top: calc(50% - 2px); height: 4px; background: var(--accent); opacity: 0.35; }
+.step { position: relative; }
+/* each step owns a column, odd above / even below the axis */
+.step:nth-child(1) { grid-column: 1; } .step:nth-child(2) { grid-column: 2; } .step:nth-child(3) { grid-column: 3; } .step:nth-child(4) { grid-column: 4; } .step:nth-child(5) { grid-column: 5; } .step:nth-child(6) { grid-column: 6; } .step:nth-child(7) { grid-column: 7; } .step:nth-child(8) { grid-column: 8; }
+.step:nth-child(odd)  { grid-row: 1; align-self: end; padding-bottom: 52px; }
+.step:nth-child(even) { grid-row: 2; align-self: start; padding-top: 52px; }
+.step::before { content: ""; position: absolute; left: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); }
+.step:nth-child(odd)::before  { bottom: -16px; }
+.step:nth-child(even)::before { top: -16px; }
+.step .when { font-size: var(--t-when); line-height: 1; color: var(--accent); }
+.step h3 { font-family: var(--font-display); font-size: var(--t-h); line-height: 1.2; margin: 10px 0 6px; }
+.step p { font-size: var(--t-fs); color: var(--muted); line-height: 1.35; }
+[data-density="lg"] .timeline { --t-when: 76px; --t-h: 50px; --t-fs: 32px; }
+[data-density="md"] .timeline { --t-when: 64px; --t-h: 42px; --t-fs: 29px; }
+[data-density="sm"] .timeline { --t-when: 50px; --t-h: 34px; --t-fs: 25px; }
+
+/* ---------- 8. quote ---------- */
+.slide[data-layout="quote"] { display: flex; flex-direction: column; justify-content: center; padding: 0 280px; gap: 36px; }
+.quote { font-size: 64px; line-height: 1.25; }
+.cite { font-size: 28px; color: var(--muted); }
+
+/* title variants for inner slides (break the "title top-left on every slide" habit)
+   data-title="center": the title centred above the body */
+.slide[data-title="center"] > .title:first-child { left: var(--pad-x); right: var(--pad-x); width: auto; text-align: center; }
+/* data-title="side": the title runs up the left edge, the body moves right and up. Only on content,
+   two-col and timeline (checked on 57 styles); stats and agenda keep the top title. The engine gives these slides the odd pose so the left edge is free. */
+.slide[data-title="side"]:is([data-layout="content"], [data-layout="two-col"], [data-layout="timeline"]) { --pad-l: 230px; }
+.slide[data-title="side"]:is([data-layout="content"], [data-layout="two-col"], [data-layout="timeline"]) { --body-top: 110px; }
+.slide[data-title="side"][data-layout="timeline"] { --body-top: 170px; }   /* keep the steps off mid-slide bands */
+.slide[data-title="side"]:is([data-layout="content"], [data-layout="two-col"], [data-layout="timeline"])[data-density="lg"] .bullets { --b-fs: 54px; --b-gap: 76px; }
+.slide[data-title="side"]:is([data-layout="content"], [data-layout="two-col"], [data-layout="timeline"])[data-density="md"] .bullets { --b-fs: 42px; --b-gap: 56px; }
+.slide[data-title="side"]:is([data-layout="content"], [data-layout="two-col"], [data-layout="timeline"])[data-density="sm"] .bullets { --b-fs: 34px; --b-gap: 30px; }
+.slide[data-title="side"]:is([data-layout="content"], [data-layout="two-col"], [data-layout="timeline"]) > .title:first-child {
+  left: 76px; top: auto; bottom: 90px; width: 880px; font-size: 54px; line-height: 1.05;
+  rotate: -90deg; transform-origin: 0 0; translate: 0 100%;
+  padding: 0 18px; background: var(--viz-paper, var(--bg)); color: var(--fg);
+}
+.slide[data-title="side"]:is([data-layout="content"], [data-layout="two-col"], [data-layout="timeline"]) .bullets { width: calc(var(--bullets-w, 1040px) - 110px); }
+.slide[data-title="side"]:is([data-layout="content"], [data-layout="two-col"], [data-layout="timeline"]) :is(.bullets, .cols, .timeline, .agenda-list, .body-zone, .takeaway) { left: var(--pad-l); }
+
+/* audit mode: measure final positions (no reveal offsets, actors jump straight to each pose) */
+.deck-stage.auditing, .deck-stage.auditing * { transition: none !important; }
+.deck-stage.auditing :is(.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur) {
+  transform: none !important; filter: none !important; transition: none !important;
+}
+
+</style>
+<style>
+/* ===========================================================
+   MORPH-SLIDES LAYOUTS PLUS: 12 more slide shapes, so a deck is
+   not 20 slides of "title + bullets + highlight". Load after
+   morph-layouts.css. Each one borrows the actor pose of a classic
+   layout (CLASSIC_OF in morph-engine.js: the slide gets data-kind=
+   its own name, data-layout= the classic one), so every style poses
+   and colours it. Display variants (qa, portrait-quote, statement,
+   chapter, cta) leave the block's position to the style's classic
+   rules and only style their own parts. Markup: references/layouts.md.
+   =========================================================== */
+.slide { --card-line: color-mix(in srgb, var(--fg) 16%, transparent); --card-tint: color-mix(in srgb, var(--fg) 6%, transparent); }
+.slide :is(.bento, .process, .ba, .countdown, .ctable) :is(h3, p) { margin: 0; }
+
+/* ---------- 1. big-number: one figure owns half the slide ---------- */
+.bignum { position: absolute; top: var(--body-top); bottom: var(--body-bottom); left: var(--pad-x); right: var(--pad-x);
+  display: grid; grid-template-columns: 1.15fr 1fr; gap: 72px; align-items: center; }
+.deck-stage .slide[data-kind="big-number"]:not(:has(> .title)) .bignum { top: 120px; }
+.bignum .fig { margin: 0; font: var(--title-weight, 800) 300px/.85 var(--font-display); letter-spacing: -.045em; color: var(--accent); white-space: nowrap; }
+.bignum .fig small { font-size: .4em; letter-spacing: 0; }
+.bignum .lead { margin: 0; font: 600 46px/1.25 var(--font-display); }
+.bignum .src { margin: 22px 0 0; font-size: 22px; color: var(--muted); }
+
+/* ---------- 2. bento: cells of different sizes ---------- */
+.bento { position: absolute; top: var(--body-top); bottom: var(--body-bottom); left: var(--pad-x); right: var(--pad-x);
+  display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 1fr; gap: 24px; }
+.bento .cell { display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding: 30px 34px; overflow: hidden;
+  border: 1.5px solid var(--card-line); border-radius: var(--card-radius, 22px); background: var(--card-tint); }
+.bento .wide { grid-column: span 2; }
+.bento .tall { grid-row: span 2; }
+.bento .hot { background: var(--accent); border-color: var(--accent); color: var(--on-accent, var(--bg)); }
+.bento .hot p { color: inherit; opacity: .85; }
+.bento h3 { font: var(--title-weight, 800) 40px/1.15 var(--font-display); }
+.bento p { font-size: 27px; line-height: 1.35; color: var(--muted); }
+.bento .big { font: var(--title-weight, 800) 92px/1 var(--font-display); color: var(--accent); }
+.bento .hot .big { color: inherit; }
+.bento .ico { font-size: 56px; color: var(--accent); margin-bottom: auto; }
+.bento .hot .ico { color: inherit; }
+
+/* ---------- 3. split-photo: picture on one half, text on the other ---------- */
+.deck-stage .slide[data-kind="split-photo"] { --split: 50%; }
+.split-img { position: absolute; top: 0; bottom: 0; left: 0; width: var(--split); height: 100%; object-fit: cover; object-position: var(--focus, 50% 50%); }
+.deck-stage .slide.flip .split-img { left: auto; right: 0; }
+.split-text { position: absolute; top: 0; bottom: 0; left: calc(var(--split) + 100px); right: 120px; display: flex; flex-direction: column; justify-content: center; gap: 26px; }
+.deck-stage .slide.flip .split-text { left: 120px; right: calc(var(--split) + 100px); }
+.split-text .title { font-size: 72px; }
+.split-text .bullets { position: static; width: auto; --b-fs: 32px; --b-gap: 22px; }
+.deck-stage .slide[data-kind="split-photo"] .photo-credit { position: absolute; left: 48px; bottom: 44px; margin: 0; max-width: calc(var(--split) - 56px);
+  font-size: 16px; color: #fff; text-shadow: 0 1px 6px rgba(0, 0, 0, .7); }
+.deck-stage .slide.flip[data-kind="split-photo"] .photo-credit { left: auto; right: 48px; }
+
+/* ---------- 4. qa: a question, the answer on the next click ---------- */
+.qa-label { margin: 0; font: 700 22px/1 var(--font-body); letter-spacing: .2em; text-transform: uppercase; color: var(--fg); opacity: .8; }
+.qa-q { margin: 0; font: var(--title-weight, 800) 68px/1.14 var(--font-display); }
+.qa-a { margin-top: 18px; padding: 8px 0 8px 36px; border-left: 8px solid var(--accent); font-size: 38px; line-height: 1.4; }
+
+/* ---------- 5. before-after: two states, the second on click ---------- */
+.ba { position: absolute; top: var(--body-top); bottom: var(--body-bottom); left: var(--pad-x); right: var(--pad-x);
+  display: grid; grid-template-columns: 1fr 110px 1fr; align-items: stretch; }
+.ba-side { display: flex; flex-direction: column; justify-content: center; gap: 22px; padding: 44px 52px; border-radius: var(--card-radius, 22px); }
+.ba-side.before { border: 2px dashed var(--card-line); color: var(--muted); }
+.ba-side.after { border: 3px solid var(--accent); background: var(--card-tint); }
+.ba-tag { align-self: flex-start; padding: 8px 18px; border-radius: 999px; font: 700 20px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase;
+  border: 2px solid currentColor; }
+.ba-side.after .ba-tag { background: var(--accent); border-color: var(--accent); color: var(--on-accent, var(--bg)); }
+.ba-side h3 { font: var(--title-weight, 800) 54px/1.15 var(--font-display); color: var(--fg); }
+.ba-side li { position: relative; padding-left: 1.3em; font-size: 34px; line-height: 1.35; margin-top: 20px; }
+.ba-side.before li::before { content: "\2715"; position: absolute; left: 0; opacity: .6; }
+.ba-side.after li::before { content: "\2713"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+.ba-arrow { align-self: center; justify-self: center; font: 400 76px/1 var(--font-display); color: var(--accent); }
+
+/* ---------- 6. process: arrow band on top, words below ---------- */
+.process { position: absolute; top: var(--body-top); bottom: var(--body-bottom); left: var(--pad-x); right: var(--pad-x);
+  display: flex; gap: 8px; align-items: center; }
+.process > li { flex: 1; display: flex; flex-direction: column; gap: 18px; }
+.process .n { display: flex; align-items: center; height: 130px; padding-left: 64px; background: var(--accent); color: var(--on-accent, var(--bg));
+  font: var(--title-weight, 800) 64px/1 var(--font-display); clip-path: polygon(0 0, calc(100% - 44px) 0, 100% 50%, calc(100% - 44px) 100%, 0 100%, 44px 50%); }
+.process > li:first-child .n { padding-left: 34px; clip-path: polygon(0 0, calc(100% - 44px) 0, 100% 50%, calc(100% - 44px) 100%, 0 100%); }
+.process > li:nth-child(even) .n { background: color-mix(in srgb, var(--accent) 72%, var(--bg)); }
+.process h3 { padding: 6px 20px 0; font: var(--title-weight, 800) 46px/1.15 var(--font-display); }
+.process p { padding: 0 20px; font-size: 31px; line-height: 1.4; color: var(--muted); }
+
+/* ---------- 7. compare-table: criteria x options, the chosen column lit ---------- */
+.ctable { position: absolute; top: var(--body-top); left: var(--pad-x); width: calc(1920px - 2 * var(--pad-x));
+  height: calc(1080px - var(--body-top) - var(--body-bottom)); border-collapse: collapse; }
+.ctable :is(th, td) { padding: 0 28px; text-align: left; font-size: 32px; line-height: 1.3; border-top: 1.5px solid var(--card-line); }
+.ctable thead th { border-top: 0; padding-bottom: 18px; font: var(--title-weight, 800) 36px/1.1 var(--font-display); vertical-align: bottom; }
+.ctable tbody th { font: 600 32px/1.3 var(--font-body); color: var(--muted); width: 26%; }
+.ctable .pick { background: var(--card-tint); }
+.ctable thead .pick { background: var(--accent); color: var(--on-accent, var(--bg)); border-radius: var(--card-radius, 16px) var(--card-radius, 16px) 0 0; padding-top: 18px; }
+.ctable .yes { color: var(--accent); font-weight: 800; }
+.ctable .no { opacity: .5; }
+
+/* ---------- 8. portrait-quote: a face next to the words ---------- */
+.pq { display: grid; grid-template-columns: 340px 1fr; gap: 70px; align-items: center; }
+.pq-face { width: 340px; height: 340px; border-radius: 50%; overflow: hidden; display: grid; place-items: center;
+  background: var(--card-tint); border: 3px solid var(--accent); color: var(--accent); }
+.pq-face img { width: 100%; height: 100%; object-fit: cover; }
+.pq-face .ico { font-size: 180px; --ico-stroke: 1.1; }
+.pq .quote { font-size: 52px; line-height: 1.25; }
+.pq-who { margin-top: 30px; font-size: 28px; color: var(--muted); }
+.pq-who b { display: block; font-size: 34px; color: var(--fg); }
+
+/* ---------- 9. chapter: a huge outlined number behind the title ---------- */
+.ch-num { position: absolute; right: 90px; bottom: -110px; margin: 0; font: var(--title-weight, 800) 680px/1 var(--font-display); letter-spacing: -.05em;
+  color: transparent; -webkit-text-stroke: 4px var(--accent); opacity: .55; pointer-events: none; }
+
+
+/* ---------- 10. countdown: a ranked list, number one last and biggest ---------- */
+.countdown { position: absolute; top: var(--body-top); bottom: var(--body-bottom); left: var(--pad-x); right: var(--pad-x); display: flex; flex-direction: column; }
+.countdown > li { flex: 1; display: grid; grid-template-columns: 150px 560px 1fr; align-items: center; gap: 30px; border-top: 1.5px solid var(--card-line); }
+.countdown .rk { font: var(--title-weight, 800) 76px/1 var(--font-display); color: var(--muted); }
+.countdown h3 { font: var(--title-weight, 800) 38px/1.15 var(--font-display); }
+.countdown p { font-size: 27px; line-height: 1.35; color: var(--muted); }
+.countdown > li:last-child { flex: 1.5; }
+.countdown > li:last-child .rk { font-size: 128px; color: var(--accent); }
+.countdown > li:last-child h3 { font-size: 50px; color: var(--accent); }
+
+/* ---------- 11. statement: one sentence, one highlighted phrase ---------- */
+.statement { margin: 0; font: var(--title-weight, 800) 78px/1.15 var(--font-display); letter-spacing: -.02em; }
+.deck-stage .slide[data-kind="statement"] .kicker { opacity: .85; }
+.statement mark { color: inherit; background: linear-gradient(transparent 58%, color-mix(in srgb, var(--accent) 55%, transparent) 58%); padding: 0 .06em; }
+
+/* ---------- 12. cta: an ending that says what to do next (a cover-shaped slide) ---------- */
+.cta-actions { display: flex; gap: 20px; flex-wrap: wrap; }   /* sits in the cover's .meta slot */
+.cta-btn { padding: 20px 36px; border-radius: 999px; border: 3px solid currentColor; background: transparent; color: var(--fg);
+  font: 700 28px/1 var(--font-body); letter-spacing: 0; text-transform: none; white-space: nowrap; }
+.cta-btn.primary { background: var(--accent); color: var(--on-accent, var(--bg)); }
+
+</style>
+<style>
+/* ===========================================================
+   MORPH-SLIDES FRAMES: compositions that break the "title top-left,
+   body block below" grid. One attribute on an inner slide:
+     <section class="slide" data-layout="content" data-frame="split-left">
+   Frames: split-left split-right poster band rail bottom stack corner
+           diagonal zigzag numbered frame, media-left media-right magazine
+           spotlight stairs
+   - the body (bullets, cols, stats, timeline, agenda, bento, process,
+     before-after, compare-table, countdown, icon grid, diagrams) moves
+     into the frame's box (--fl/--fr/--ft/--fb);
+   - colour panels are a real element (.frame-panel, added by
+     morph-frames.js) so the audit sees them; text on them uses
+     --on-accent, which the engine picks per slide for contrast;
+   - frame slides take a clear stage: the panel is the decoration.
+   =========================================================== */
+
+/* body box: every content container follows it. Selectors are weighted (.deck-stage + doubled
+   [data-frame]) so a style's own .bullets/.highlight placement never wins over the frame. */
+.deck-stage .slide[data-frame][data-frame] { --fl: 120px; --fr: 120px; --ft: 270px; --fb: 90px; --hl-w: 680px; --body-top: var(--ft); --body-bottom: var(--fb); }
+.deck-stage .slide[data-frame]:is([data-frame^="split"], [data-frame="rail"], [data-frame="diagonal"], [data-frame="stack"]) { --hl-w: 0px; }   /* highlight lives elsewhere */
+.deck-stage .slide[data-frame][data-frame] :is(.bullets, .cols, .stats, .timeline, .agenda-list, .body-zone, .bignum, .bento, .ba, .process, .countdown, .ico-grid) {
+  left: var(--fl); right: var(--fr); width: auto;
+}
+.deck-stage .slide[data-frame][data-frame] .ctable { left: var(--fl); width: calc(1920px - var(--fl) - var(--fr)); }
+.deck-stage .slide[data-frame][data-frame]:has(.highlight) .bullets { right: calc(var(--fr) + var(--hl-w, 0px)); }
+.deck-stage .slide[data-frame][data-frame] > .title:first-child { z-index: 2; }
+.deck-stage .slide[data-frame][data-frame] .frame-panel { position: absolute; z-index: 0; background: var(--frame-fill, var(--accent)); }
+.deck-stage .slide[data-frame][data-frame] > :not(.frame-panel, .title) { z-index: 1; }
+
+/* text that sits on an accent panel */
+.deck-stage .slide[data-frame][data-frame] .on-panel, .deck-stage .slide[data-frame][data-frame] .on-panel .hl-text { color: var(--on-accent, var(--bg)); }
+.deck-stage .slide[data-frame][data-frame] .highlight.on-panel { --accent: var(--on-accent, var(--bg)); }
+
+/* ---------- split-left / split-right: a colour block holds title + highlight ---------- */
+.deck-stage .slide[data-frame][data-frame^="split"] { --fl: 860px; --ft: 140px; --fb: 110px; }
+.deck-stage .slide[data-frame][data-frame="split-right"] { --fl: 120px; --fr: 860px; }
+.deck-stage .slide[data-frame][data-frame="split-left"] .frame-panel { left: 0; top: 0; width: 760px; height: 1080px; }
+.deck-stage .slide[data-frame][data-frame="split-right"] .frame-panel { right: 0; top: 0; width: 760px; height: 1080px; }
+.deck-stage .slide[data-frame][data-frame^="split"] > .title:first-child { top: 130px; width: 580px; font-size: 70px; color: var(--on-accent, var(--bg)); }
+.deck-stage .slide[data-frame][data-frame="split-left"] > .title:first-child { left: 90px; }
+.deck-stage .slide[data-frame][data-frame="split-right"] > .title:first-child { left: 1250px; }
+.deck-stage .slide[data-frame][data-frame^="split"] .highlight { top: 520px; bottom: 110px; width: 580px; align-items: flex-start; text-align: left; }
+.deck-stage .slide[data-frame][data-frame="split-left"] .highlight { left: 90px; right: auto; }
+.deck-stage .slide[data-frame][data-frame="split-right"] .highlight { left: 1250px; right: auto; }
+
+/* ---------- poster: a huge title, the body as a low band ---------- */
+.deck-stage .slide[data-frame][data-frame="poster"] { --ft: 460px; --hl-w: 520px; }
+.deck-stage .slide[data-frame][data-frame="poster"] > .title:first-child { top: 100px; width: 1680px; font-size: 150px; line-height: .95; letter-spacing: -.03em; }
+.deck-stage .slide[data-frame][data-frame="poster"] .highlight { top: 460px; bottom: 90px; left: auto; right: 120px; width: 480px; }
+
+/* ---------- band: the body runs on a tinted band, the title sits under it ---------- */
+.deck-stage .slide[data-frame][data-frame="band"] { --ft: 300px; --fb: 300px; --frame-fill: color-mix(in srgb, var(--accent) 14%, var(--bg)); --hl-w: 520px; }
+.deck-stage .slide[data-frame][data-frame="band"] .frame-panel { left: 0; right: 0; top: 260px; height: 560px; }
+.deck-stage .slide[data-frame][data-frame="band"] > .title:first-child { top: auto; bottom: 80px; width: 1680px; font-size: 72px; }
+.deck-stage .slide[data-frame][data-frame="band"] .highlight { top: 300px; bottom: 300px; left: auto; right: 120px; width: 480px; }
+
+/* ---------- rail: the title stands in a left column behind a rule ---------- */
+.deck-stage .slide[data-frame][data-frame="rail"] { --fl: 820px; --ft: 140px; --fb: 110px; }
+.deck-stage .slide[data-frame][data-frame="rail"] .frame-panel { left: 740px; top: 140px; width: 6px; height: 830px; border-radius: 3px; }
+.deck-stage .slide[data-frame][data-frame="rail"] > .title:first-child { top: 130px; width: 560px; font-size: 76px; }
+.deck-stage .slide[data-frame][data-frame="rail"] .highlight { top: 560px; bottom: 110px; left: 120px; right: auto; width: 560px; align-items: flex-start; text-align: left; }
+
+/* ---------- bottom: the title closes the slide under a rule ---------- */
+.deck-stage .slide[data-frame][data-frame="bottom"] { --ft: 110px; --fb: 280px; }
+.deck-stage .slide[data-frame][data-frame="bottom"] .frame-panel { left: 120px; right: 120px; bottom: 236px; height: 4px; }
+.deck-stage .slide[data-frame][data-frame="bottom"] > .title:first-child { top: auto; bottom: 90px; width: 1680px; font-size: 80px; }
+.deck-stage .slide[data-frame][data-frame="bottom"] .highlight { top: 110px; bottom: 280px; }
+
+/* ---------- stack: centred title, a narrow reading column ---------- */
+.deck-stage .slide[data-frame][data-frame="stack"] { --fl: 240px; --fr: 240px; --ft: 260px; }
+.deck-stage .slide[data-frame][data-frame="stack"] > .title:first-child { left: 300px; width: 1320px; text-align: center; }
+.deck-stage .slide[data-frame][data-frame="stack"] .frame-panel { left: 900px; top: 222px; width: 120px; height: 5px; border-radius: 3px; }
+.deck-stage .slide[data-frame][data-frame="stack"]:has(.highlight) { --fr: 760px; }
+.deck-stage .slide[data-frame][data-frame="stack"] .highlight { left: auto; right: 300px; width: 400px; }
+
+/* ---------- corner: an accent square holds the title ---------- */
+.deck-stage .slide[data-frame][data-frame="corner"] { --ft: 470px; --hl-w: 520px; }
+.deck-stage .slide[data-frame][data-frame="corner"] .frame-panel { left: 0; top: 0; width: 900px; height: 410px; }
+.deck-stage .slide[data-frame][data-frame="corner"] > .title:first-child { top: 110px; left: 120px; width: 700px; font-size: 64px; color: var(--on-accent, var(--bg)); }
+.deck-stage .slide[data-frame][data-frame="corner"] .highlight { top: 90px; bottom: auto; height: 340px; left: auto; right: 120px; width: 800px; }
+
+/* ---------- diagonal: a slanted colour field carries the highlight ---------- */
+.deck-stage .slide[data-frame][data-frame="diagonal"] { --fr: 820px; }
+.deck-stage .slide[data-frame][data-frame="diagonal"] .frame-panel { left: 1000px; right: 0; top: 0; bottom: 0; clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%); }
+.deck-stage .slide[data-frame][data-frame="diagonal"] .highlight { left: 1300px; right: 90px; }
+
+/* ---------- frame: a heavy outline, the title on its top edge ---------- */
+.deck-stage .slide[data-frame][data-frame="frame"] { --fl: 170px; --fr: 170px; --ft: 250px; --fb: 120px; --hl-w: 520px; --frame-fill: transparent; }
+.deck-stage .slide[data-frame][data-frame="frame"] .frame-panel { left: 90px; right: 90px; top: 150px; bottom: 70px; border: 6px solid var(--accent); }
+.deck-stage .slide[data-frame][data-frame="frame"] > .title:first-child { top: 110px; left: 140px; width: auto; max-width: 1500px; padding: 0 26px; background: var(--viz-paper, var(--bg)); font-size: 60px; }
+.deck-stage .slide[data-frame][data-frame="frame"] .highlight { top: 250px; bottom: 120px; left: auto; right: 170px; width: 480px; }
+
+/* ---------- zigzag: points become staggered cards ---------- */
+.deck-stage .slide[data-frame][data-frame="zigzag"] .bullets { gap: 26px; }
+.deck-stage .slide[data-frame][data-frame="zigzag"] .bullets li { padding: 22px 30px 22px 30px; width: 74%; border-radius: var(--card-radius, 16px);
+  background: color-mix(in srgb, var(--accent) 12%, var(--viz-paper, var(--bg))); color: var(--fg); }
+.deck-stage .slide[data-frame][data-frame="zigzag"] .bullets li:nth-child(even) { margin-left: 26%; }
+.deck-stage .slide[data-frame][data-frame="zigzag"] .bullets li::before { display: none; }
+
+/* ---------- numbered: big numbers instead of bullet dots ---------- */
+.deck-stage .slide[data-frame][data-frame="numbered"] .bullets { counter-reset: fn; }
+.deck-stage .slide[data-frame][data-frame="numbered"] .bullets li { counter-increment: fn; padding-left: 2.6em; }
+.deck-stage .slide[data-frame][data-frame="numbered"] .bullets li::before { content: counter(fn, decimal-leading-zero); top: -0.1em; width: auto; height: auto;
+  background: none; border-radius: 0; color: var(--accent); font: var(--title-weight, 800) 1.6em/1 var(--font-display); }
+.deck-stage .slide[data-frame][data-frame="poster"] .frame-panel { left: 120px; top: 420px; width: 140px; height: 8px; }   /* a short rule under the giant title */
+/* two-col with a takeaway: the conclusion follows the frame box, the columns stop above it */
+.deck-stage .slide[data-frame][data-frame] .takeaway { left: var(--fl); right: var(--fr); bottom: var(--fb); }
+.deck-stage .slide[data-frame][data-frame]:has(.takeaway) .cols { bottom: calc(var(--fb) + 150px); }
+/* cards and numbers spread over the body height instead of bunching in the middle */
+.deck-stage .slide[data-frame]:is([data-frame="zigzag"], [data-frame="numbered"]) .bullets { justify-content: space-evenly; }
+/* narrow or short frames: figures and steps take a smaller type scale */
+.deck-stage .slide[data-frame]:is([data-frame^="split"], [data-frame="rail"], [data-frame="diagonal"], [data-frame="corner"]) .stats { --s-num: 120px; --s-fs: 25px; }
+.deck-stage .slide[data-frame]:is([data-frame^="split"], [data-frame="rail"], [data-frame="diagonal"], [data-frame="corner"]) .timeline { --t-when: 46px; --t-h: 30px; --t-fs: 23px; }
+/* off its card the highlight drops the colours a style gave it for that card (dark ink on an orange slab...) */
+.deck-stage .slide[data-frame][data-frame]:has(> .frame-panel) .highlight:not(.on-panel) { color: var(--fg); --accent: inherit; }   /* zigzag, numbered keep the card */
+
+/* ===========================================================
+   4 bolder compositions: they change the type scale and the reading path,
+   not only where a colour block sits.
+   media-left / media-right  a full-height visual well (mock, svg, diagram, big figure) + a text column
+   magazine                  big headline, a rule, points in two columns, a pull quote in the margin
+   spotlight                 one key sentence set huge in the middle, 2 to 4 points as a row of cards
+   stairs                    points step down from top-left to bottom-right like a staircase
+   =========================================================== */
+
+/* ---------- media-left / media-right: the visual gets half the slide, edge to edge ---------- */
+.deck-stage .slide[data-frame][data-frame^="media"] { --ft: 330px; --fb: 110px; --hl-w: 0px; --frame-fill: color-mix(in srgb, var(--accent) 14%, var(--bg)); }
+.deck-stage .slide[data-frame][data-frame="media-left"] { --fl: 1000px; --fr: 120px; }
+.deck-stage .slide[data-frame][data-frame="media-right"] { --fl: 120px; --fr: 1000px; }
+.deck-stage .slide[data-frame][data-frame="media-left"] .frame-panel { left: 0; top: 0; width: 900px; height: 1080px; }
+.deck-stage .slide[data-frame][data-frame="media-right"] .frame-panel { left: 1020px; top: 0; width: 900px; height: 1080px; }
+.deck-stage .slide[data-frame][data-frame^="media"] > .title:first-child { top: 130px; width: 800px; font-size: 72px; }
+.deck-stage .slide[data-frame][data-frame="media-left"] > .title:first-child { left: 1000px; }
+/* the visual: also write its box inline (left/top/width/height px) so the PowerPoint export finds it */
+.deck-stage .slide[data-frame][data-frame="media-left"] > :is(.media, .mock, .viz) { position: absolute; left: 60px; top: 140px; width: 780px; height: 800px; }
+.deck-stage .slide[data-frame][data-frame="media-right"] > :is(.media, .mock, .viz) { position: absolute; left: 1080px; top: 140px; width: 780px; height: 800px; }
+/* a window in the well is read from the back of the room: larger words, content centred so a short prompt leaves no empty floor */
+.deck-stage .slide[data-frame][data-frame^="media"] > .mock { font-size: 32px; justify-content: center; }
+/* no visual at hand: the highlight (a big figure, an icon, a short claim) fills the well */
+.deck-stage .slide[data-frame][data-frame="media-left"] .highlight { left: 60px; right: auto; width: 780px; top: 140px; bottom: 140px; }
+.deck-stage .slide[data-frame][data-frame="media-right"] .highlight { left: auto; right: 60px; width: 780px; top: 140px; bottom: 140px; }
+.deck-stage .slide[data-frame][data-frame^="media"] .highlight .hl-big { font-size: 280px; line-height: .9; }
+.deck-stage .slide[data-frame][data-frame^="media"] .highlight .hl-text { font-size: 40px; }
+
+/* ---------- magazine: headline, rule, two text columns, pull quote ---------- */
+.deck-stage .slide[data-frame][data-frame="magazine"] { --ft: 380px; --fb: 100px; --fr: 620px; --hl-w: 0px; --frame-fill: var(--accent); }
+.deck-stage .slide[data-frame][data-frame="magazine"] > .title:first-child { top: 100px; width: 1400px; font-size: 96px; line-height: 1.02; letter-spacing: -.02em; }
+.deck-stage .slide[data-frame][data-frame="magazine"] .frame-panel { left: 120px; right: 120px; top: 336px; height: 4px; }
+.deck-stage .slide[data-frame][data-frame="magazine"] .bullets { display: grid; grid-template-columns: 1fr 1fr; column-gap: 72px; row-gap: var(--b-gap); align-content: center; }
+.deck-stage .slide[data-frame][data-frame="magazine"] .highlight { left: auto; right: 120px; width: 420px; top: 380px; bottom: 100px;
+  justify-content: center; align-items: flex-start; text-align: left; }
+.deck-stage .slide[data-frame][data-frame="magazine"] .highlight::before { content: ""; width: 120px; height: 8px; margin-bottom: 28px; background: var(--accent); }
+.deck-stage .slide[data-frame][data-frame="magazine"] .highlight .hl-text { font: italic var(--title-weight, 700) 40px/1.25 var(--font-display); color: var(--fg); }
+
+/* ---------- spotlight: one sentence carries the slide, points as a row of cards ---------- */
+.deck-stage .slide[data-frame][data-frame="spotlight"] { --ft: 650px; --fb: 110px; --hl-w: 0px; --frame-fill: var(--accent); }
+.deck-stage .slide[data-frame][data-frame="spotlight"] > .title:first-child { top: 150px; left: 160px; width: 1600px; font-size: 104px; line-height: 1.05; text-align: center; letter-spacing: -.02em; }
+.deck-stage .slide[data-frame][data-frame="spotlight"] .frame-panel { left: 900px; top: 586px; width: 120px; height: 8px; border-radius: 4px; }
+.deck-stage .slide[data-frame][data-frame="spotlight"] .bullets { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 40px; align-content: stretch; --b-fs: 36px; }
+.deck-stage .slide[data-frame][data-frame="spotlight"] .bullets li { display: flex; align-items: center; justify-content: center; text-align: center; padding: 28px 36px;
+  border-radius: var(--card-radius, 18px); background: color-mix(in srgb, var(--accent) 12%, var(--viz-paper, var(--bg))); }
+.deck-stage .slide[data-frame][data-frame="spotlight"] .bullets li::before { display: none; }
+
+/* ---------- stairs: points step down and right, each one a card with its number ---------- */
+.deck-stage .slide[data-frame][data-frame="stairs"] .bullets { counter-reset: st; justify-content: space-evenly; gap: 18px; }
+.deck-stage .slide[data-frame][data-frame="stairs"] .bullets li { counter-increment: st; width: 60%; padding: 26px 32px 26px 3.4em; font-size: var(--b-fs);
+  border-left: 8px solid var(--accent); border-radius: 0 var(--card-radius, 14px) var(--card-radius, 14px) 0; background: color-mix(in srgb, var(--accent) 10%, var(--viz-paper, var(--bg))); }
+.deck-stage .slide[data-frame][data-frame="stairs"] .bullets li::before { content: counter(st); left: .7em; top: 50%; transform: translateY(-50%); width: auto; height: auto;
+  background: none; border-radius: 0; color: var(--accent); font: var(--title-weight, 800) 1.5em/1 var(--font-display); }
+.deck-stage .slide[data-frame][data-frame="stairs"] .bullets li:nth-child(2) { margin-left: 10.5%; }
+.deck-stage .slide[data-frame][data-frame="stairs"] .bullets li:nth-child(3) { margin-left: 21%; }
+.deck-stage .slide[data-frame][data-frame="stairs"] .bullets li:nth-child(4) { margin-left: 31.5%; }
+.deck-stage .slide[data-frame][data-frame="stairs"] .bullets li:nth-child(n+5) { margin-left: 42%; }
+
+</style>
+<style>
+/* ===========================================================
+   MORPH-SLIDES MOCKS: app frames drawn in CSS, so a deck can show
+   a chat, a terminal, a web page or a phone without screenshots.
+     .mock.mock-chat     window + chat bubbles (.msg.user / .msg.ai)
+     .mock.mock-term     dark terminal (.cmd typed after a prompt, .out lines)
+     .mock.mock-browser  window with an address bar (data-url)
+     .mock.mock-phone    phone body; may hold a .mock-chat (its bar is dropped)
+   Window title = data-title. Motion (morph-mock.js sets the timing):
+     .type   the text is typed letter by letter
+     .lines  the children appear one line after another
+     .think  "..." dots first, then the lines (use with .lines)
+   Units run one after another inside the same click (data-step).
+   Final look = everything shown, so screenshots and the audit see it.
+   =========================================================== */
+:where(.deck-stage) {
+  /* a raised surface: a bit lighter than the stage on dark and light styles alike */
+  --mock-bg: color-mix(in srgb, var(--bg) 82%, #fff);
+  --mock-bar: color-mix(in srgb, var(--fg) 8%, var(--mock-bg));
+  --mock-line: color-mix(in srgb, var(--fg) 16%, transparent);
+  --mock-radius: 22px;
+  --mock-mono: var(--font-mono, ui-monospace, Consolas, monospace);
+}
+
+/* ---------- window frame ---------- */
+.mock {
+  position: absolute; display: flex; flex-direction: column; gap: 22px;
+  padding: 92px 40px 40px; overflow: hidden; text-align: left;
+  background: var(--mock-bg); color: var(--fg);
+  border: 2px solid var(--mock-line); border-radius: var(--mock-radius);
+  box-shadow: 0 40px 90px -40px rgba(0, 0, 0, .5);
+  font: 400 28px/1.45 var(--font-body);
+}
+.mock-chat, .mock-term, .mock-browser { min-height: 300px; }
+.mock:is(.mock-chat, .mock-term, .mock-browser)::before {
+  content: attr(data-title);
+  position: absolute; left: 0; right: 0; top: 0; height: 60px;
+  display: flex; align-items: center; justify-content: center;
+  border-bottom: 2px solid var(--mock-line);
+  background:
+    radial-gradient(circle at 32px 30px, #FF5F57 0 7px, transparent 8px),
+    radial-gradient(circle at 58px 30px, #FEBC2E 0 7px, transparent 8px),
+    radial-gradient(circle at 84px 30px, #28C840 0 7px, transparent 8px),
+    var(--mock-bar);
+  font: 600 20px/1 var(--font-body); color: var(--muted, currentColor); letter-spacing: .02em;
+}
+.mock > :is(p, h3, ul, ol) { margin: 0; }
+
+/* ---------- chat ---------- */
+.mock .msg { position: relative; max-width: 84%; padding: 18px 26px; border-radius: 24px; }
+.mock .msg > * + * { margin-top: .45em; }
+.mock .msg :is(p, ul, ol) { margin-bottom: 0; }
+.mock .msg.user { align-self: flex-end; background: color-mix(in srgb, var(--accent) 22%, var(--bg)); border-bottom-right-radius: 6px; }
+.mock .msg.ai { align-self: flex-start; border: 2px solid var(--mock-line); border-bottom-left-radius: 6px; }
+.mock .msg[data-who]::before { content: attr(data-who); display: block; margin-bottom: 6px; font-size: .72em; font-weight: 700; letter-spacing: .04em; color: var(--accent); }
+.mock .composer {
+  margin-top: auto; display: flex; align-items: center; gap: 16px;
+  padding: 16px 22px; border: 2px solid var(--mock-line); border-radius: 18px;
+  background: var(--bg); color: var(--fg);
+}
+.mock .composer > :first-child { flex: 1; }
+.mock .composer .ico { font-size: 34px; color: var(--accent); }
+.mock code, .mock .mono { font-family: var(--mock-mono); font-size: .9em; }
+
+/* ---------- terminal: dark on every style ---------- */
+.mock-term {
+  --mock-line: rgba(255, 255, 255, .12); --mock-bar: #1A1F27; --muted: #9BA7B4;
+  gap: 4px; background: #0E1116; color: #E6EDF3;
+  font: 400 26px/1.5 var(--mock-mono);
+}
+.mock-term .cmd::before { content: var(--prompt, "$ "); color: #7EE787; }
+.mock-term .cmd:not(:first-child) { margin-top: 14px; }
+.mock-term .out { color: #9BA7B4; }
+.mock-term .ok { color: #7EE787; }
+.mock-term .err { color: #FF7B72; }
+.mock-term .hi { color: #FFD866; }
+
+/* ---------- browser ---------- */
+.mock-browser::after {
+  content: attr(data-url);
+  position: absolute; left: 120px; right: 36px; top: 12px; height: 36px;
+  display: flex; align-items: center; padding: 0 20px; border-radius: 18px;
+  background: var(--mock-bg); color: var(--muted, currentColor);
+  font: 400 19px/1 var(--mock-mono); white-space: nowrap; overflow: hidden;
+}
+.mock-browser img { display: block; width: 100%; border-radius: 10px; }
+
+/* ---------- phone ---------- */
+.mock-phone {
+  padding: 74px 22px 34px; border: 14px solid var(--phone-ink, #15171C); border-radius: 64px;
+  aspect-ratio: 9 / 19; width: 420px;
+}
+.mock-phone::before {
+  content: ""; position: absolute; left: 50%; top: 16px; width: 120px; height: 32px;
+  border-radius: 16px; background: var(--phone-ink, #15171C); transform: translateX(-50%);
+}
+.mock-phone .mock { position: relative; inset: auto; flex: 1; min-height: 0; padding: 0; border: 0; box-shadow: none; background: none; font-size: inherit; }
+.mock-phone .mock::before { content: none; }
+.mock-phone { font-size: 24px; }
+
+/* ---------- motion: units, typed letters, lines, thinking dots ---------- */
+.mock :is(.type, .lines, .msg) { opacity: 0; }
+.slide.active .mock :is(.type, .lines, .msg):not(.pending, .pending *) {
+  opacity: 1;
+  transition: opacity .35s ease calc(var(--t0, var(--reveal-base)) + var(--d, 0) * 1s + var(--d0, 0s));
+}
+.mock .ch { opacity: 0; }
+.slide.active .mock .ch:not(.pending .ch) {
+  opacity: 1;
+  transition: opacity 0s linear calc(var(--t0, var(--reveal-base)) + var(--d, 0) * 1s + var(--d0, 0s) + var(--k) * var(--per, .03s));
+}
+.mock .lines > :not(.dots) { opacity: 0; transform: translateY(14px); }
+.slide.active .mock .lines:not(.pending, .pending *) > :not(.dots) {
+  opacity: 1; transform: none;
+  transition: opacity .4s ease, transform .6s var(--morph-ease);
+  transition-delay: calc(var(--t0, var(--reveal-base)) + var(--d, 0) * 1s + var(--d0, 0s) + var(--think-t, 0s) + var(--j, 0) * var(--line-gap, .35s));
+}
+.mock .think { --think-t: .9s; position: relative; }
+.mock .dots { position: absolute; left: 26px; top: 22px; display: flex; gap: 8px; opacity: 0; }
+.mock .msg[data-who] > .dots { top: 58px; }
+.mock .dots i { width: 12px; height: 12px; border-radius: 50%; background: currentColor; animation: sf-dot 1s ease-in-out infinite; }
+.mock .dots i:nth-child(2) { animation-delay: .15s; }
+.mock .dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes sf-dot { 0%, 100% { opacity: .25; transform: none; } 40% { opacity: .9; transform: translateY(-6px); } }
+@keyframes sf-life { from { opacity: 1; } to { opacity: 0; } }
+.slide.active .mock .think:not(.pending, .pending *) > .dots {
+  animation: sf-life var(--think-t) steps(1, end) both;
+  animation-delay: calc(var(--t0, var(--reveal-base)) + var(--d, 0) * 1s + var(--d0, 0s));
+}
+
+/* deck.audit() measures the finished slide */
+.deck-stage.auditing .mock :is(.type, .lines, .msg, .ch, .lines > *) { opacity: 1 !important; transform: none !important; transition: none !important; }
+
+</style>
+<style>
+/* ===========================================================
+   MORPH-SLIDES MOTION: effects named by the VERB the content
+   says (grow, draw, sort, gather, warn, stamp...). Load after
+   morph-layouts.css. Guide: references/hieu-ung-va-so-do.md
+   Rules:
+   - final look = the element's normal style, so frozen
+     screenshots and deck.audit() see the finished slide;
+   - an effect plays when its slide is active and it is not
+     waiting for a click (.pending, set by morph-steps.js);
+   - --d = extra delay in seconds. Inside a [data-step] block
+     delays count from the click, not from the slide change.
+   =========================================================== */
+/* shared tokens for motion + diagrams; a style may override any of them */
+:where(.deck-stage) {
+  --viz-ink: var(--fg); --viz-paper: var(--bg); --viz-muted: var(--muted);
+  --viz-hot: #E5484D;   /* wrong, missing, about to break */
+  --viz-fill: color-mix(in srgb, var(--fg) 8%, transparent);
+  --viz-faint: color-mix(in srgb, var(--fg) 20%, transparent);
+  --viz-mono: var(--font-mono, ui-monospace, Consolas, monospace);
+}
+[data-step] { --t0: 0s; }
+
+/* ---------- entrances ---------- */
+.fx { opacity: 0; transition: opacity .5s ease, transform .9s var(--morph-ease), clip-path .9s ease, filter .7s ease; }
+.slide.active .fx:not(.pending, .pending .fx) {
+  opacity: 1; transform: rotate(var(--rot, 0deg)); clip-path: inset(-400px); filter: none;
+  transition-delay: calc(var(--t0, var(--reveal-base)) + var(--d, 0) * 1s);
+}
+.fx-up    { transform: translateY(50px); }
+.fx-left  { transform: translateX(-120px); }
+.fx-right { transform: translateX(120px); }
+.fx-pop   { transform: scale(.5); }
+.fx-blur  { filter: blur(16px); transform: scale(1.06); }
+.fx-from  { transform: var(--from); }                       /* fly in from a named spot (sorting) */
+.fx-drop  { transform: translateY(-260px) rotate(-8deg); }    /* falls with a bounce */
+.slide.active :is(.fx-pop, .fx-drop):not(.pending, .pending .fx) { transition-timing-function: ease, cubic-bezier(.34, 1.56, .64, 1), ease, ease; }
+.fx-growx { opacity: 1; clip-path: inset(0 100% 0 0); transition: clip-path .9s var(--morph-ease); }   /* grow / stretch */
+.fx-growy { opacity: 1; clip-path: inset(100% 0 0 0); transition: clip-path 1s var(--morph-ease); }
+.fx-type  { opacity: 1; clip-path: inset(0 100% 0 0); transition: clip-path 1s steps(30, end); }
+
+/* containers that wait for a click (no .fx of their own) */
+[data-step]:not(.fx) { transition: opacity .4s ease; }
+[data-step].pending:not(.fx, .keep) { opacity: 0; }
+
+/* ---------- draw: SVG strokes (give the shape pathLength="1") ---------- */
+.draw { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.3s cubic-bezier(.6, 0, .2, 1); }
+.slide.active .draw:not(.pending, .pending .draw) { stroke-dashoffset: 0; transition-delay: calc(var(--t0, var(--reveal-base)) + var(--d, 0) * 1s); }
+
+/* ---------- count: numbers run up to --to ---------- */
+@property --n { syntax: '<integer>'; inherits: false; initial-value: 0; }
+.count { --n: 0; counter-reset: n var(--n); transition: --n 1.6s cubic-bezier(.2, .7, .2, 1); }
+.count::before { content: counter(n); }
+.slide.active .count:not(.pending, .pending .count) { --n: var(--to); transition-delay: calc(var(--t0, var(--reveal-base)) + var(--d, 0) * 1s); }
+
+/* ---------- stamp: slams down and settles ---------- */
+@keyframes sf-slam {
+  0%   { opacity: 0; transform: rotate(var(--rot, -8deg)) scale(2.6); }
+  65%  { opacity: 1; transform: rotate(var(--rot, -8deg)) scale(.9); }
+  100% { opacity: 1; transform: rotate(var(--rot, -8deg)) scale(1); }
+}
+.slam { transform: rotate(var(--rot, -8deg)); }
+.slide:not(.active) .slam, .slam.pending { opacity: 0; }
+.slide.active .slam:not(.pending, .pending .slam) { animation: sf-slam .7s ease-out both; animation-delay: calc(var(--t0, var(--reveal-base)) + var(--d, 0) * 1s); }
+
+/* ---------- warn: shake twice after appearing ---------- */
+@keyframes sf-shake { 0%, 100% { translate: 0; } 20%, 60% { translate: -9px 0; } 40%, 80% { translate: 9px 0; } }
+.slide.active .shake:not(.pending, .pending .shake) { animation: sf-shake .45s ease 2; animation-delay: calc(var(--t0, var(--reveal-base)) + var(--d, 0) * 1s + .5s); }
+
+/* ---------- strike: a line crosses the element out ---------- */
+.strike { position: relative; }
+.strike::after { content: ""; position: absolute; left: -4%; right: -4%; top: 52%; height: 4px; background: var(--viz-hot); transform: scaleX(0); transform-origin: left; transition: transform .45s ease; }
+.slide.active .strike:not(.pending, .pending .strike)::after { transform: scaleX(1); transition-delay: calc(var(--t0, var(--reveal-base)) + var(--d, 0) * 1s); }
+
+/* ---------- ping: a ring keeps calling attention ---------- */
+@keyframes sf-ping { from { transform: scale(.6); opacity: .9; } to { transform: scale(1.9); opacity: 0; } }
+.ping { position: relative; }
+.ping::after { content: ""; position: absolute; inset: 0; border: 2px solid currentColor; border-radius: inherit; opacity: 0; }
+.slide.active .ping:not(.pending, .pending .ping)::after { animation: sf-ping 1.6s ease-out infinite; animation-delay: calc(var(--t0, var(--reveal-base)) + var(--d, 0) * 1s); }
+
+/* ---------- travel: a dot runs along an offset-path forever ---------- */
+@keyframes sf-travel { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+.travel { offset-rotate: 0deg; opacity: 0; }
+.slide.active .travel:not(.pending, .pending .travel) { opacity: 1; animation: sf-travel var(--dur, 4s) linear infinite; animation-delay: calc(var(--reveal-base) + var(--d, 0) * 1s); transition: opacity .3s ease calc(var(--reveal-base) + var(--d, 0) * 1s); }
+
+/* ---------- gather: pieces fly to one point when their step comes ---------- */
+.gather { transition: transform .9s cubic-bezier(.7, 0, .2, 1), opacity .4s ease; transition-delay: calc(var(--i, 0) * .03s); }
+.slide.active [data-step]:not(.pending) .gather { transform: var(--to); opacity: 0; transition-delay: calc(var(--i, 0) * .03s), calc(.6s + var(--i, 0) * .03s); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fx, .fx-growx, .fx-growy, .fx-type, .draw, .gather { transition-duration: .3s !important; }
+  .travel { animation: none !important; }
+}
+
+/* deck.audit() measures every slide finished, all steps shown */
+.deck-stage.auditing :is(.fx, .pending) { opacity: 1 !important; transform: rotate(var(--rot, 0deg)); clip-path: none; filter: none; transition: none; }
+
+</style>
+<style>
+/* ===========================================================
+   MORPH-SLIDES ICONS: Tabler Icons sized and coloured by the style.
+   An icon is a square box of 1em; size it with font-size or a size
+   class. Colour = currentColor (the text colour), .accent = style accent.
+   Restraint (checked by deck.audit): at most 6 icons on a slide, one
+   hero icon, never an icon on every bullet.
+   =========================================================== */
+.ico { display: inline-block; width: 1em; height: 1em; flex: none; vertical-align: -0.14em; line-height: 0; }
+.ico svg { display: block; width: 100%; height: 100%; stroke-width: var(--ico-stroke, 1.75); }
+.ico.accent { color: var(--accent); }
+.ico.muted { color: var(--muted); }
+/* sizes: thin strokes on big icons so they keep the type's weight */
+.ico-sm  { font-size: 32px; }
+.ico-md  { font-size: 56px; }
+.ico-lg  { font-size: 96px;  --ico-stroke: 1.5; }
+.ico-xl  { font-size: 200px; --ico-stroke: 1.15; }
+/* framed badge: icon inside a circle or square drawn with the style's ink */
+.ico-badge { display: inline-grid; place-items: center; width: 1.9em; height: 1.9em; border: 2px solid currentColor; border-radius: 50%; }
+.ico-badge.square { border-radius: var(--card-radius, 0); }
+.ico-badge > .ico { font-size: 1em; }
+/* a row of labelled icons (tools, steps): same size, evenly spaced */
+.ico-row { display: flex; gap: 40px; align-items: flex-start; }
+.ico-row > * { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; font-size: 24px; line-height: 1.25; }
+.ico-row .ico { font-size: 64px; }
+/* inside the highlight column of a content slide */
+.hl-icon .ico { font-size: 200px; --ico-stroke: 1.15; color: var(--accent); }
+.deck-stage.auditing .ico[data-missing] { outline: 3px dashed #E5484D; }
+
+/* ---------- icon grid: 3 to 6 short points, one icon each, one colour ----------
+   <ul class="ico-grid"><li><i class="ico" data-icon="..."></i><h3>Ý ngắn</h3><p>Một dòng giải thích</p></li>...</ul>
+   Fills the body zone; 4 items = 2 columns, 3/5/6 items = 3 columns.
+   Put it on a data-layout="agenda" slide: styles keep that zone clear of shapes. */
+.ico-grid {
+  position: absolute; top: var(--body-top); bottom: var(--body-bottom); left: var(--pad-x); right: var(--pad-x);
+  display: grid; grid-template-columns: repeat(var(--cols, 3), 1fr); grid-auto-rows: 1fr; gap: 36px 56px;
+  margin: 0; padding: 0; list-style: none;
+}
+.ico-grid:has(> li:nth-child(4):last-child) { --cols: 2; }
+.ico-grid > li { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; text-align: center; }
+/* the icon sits in a soft disc of the accent colour */
+.ico-grid .ico {
+  box-sizing: content-box; padding: calc(var(--g-ico, 80px) * .32); border-radius: 50%;
+  font-size: var(--g-ico, 80px); color: var(--ico-grid-color, var(--accent)); --ico-stroke: 1.5;
+  background: color-mix(in srgb, var(--ico-grid-color, var(--accent)) 14%, transparent);
+}
+.ico-grid h3 { margin: 0; font: var(--title-weight, 800) var(--g-h, 46px)/1.15 var(--font-display); }
+.ico-grid p { margin: 0; max-width: 16em; font-size: var(--g-p, 30px); line-height: 1.35; color: var(--muted); }
+.ico-grid:has(> li:nth-child(5)) { --g-ico: 68px; --g-h: 40px; --g-p: 27px; row-gap: 24px; }
+.ico-grid:has(> li:nth-child(5)) > li { gap: 12px; }
+
+</style>
+<style>
+/* ===========================================================
+   STYLE: WHITEBOARD (glossy dry-erase board, marker, light).
+   Idea source: MotionFly / lemo-opuscar (MIT), styles/whiteboard.
+   One physical board: warm white with micro scratches, ghosts of old
+   lessons, a window sheen drifting across, three marker colours with
+   one meaning each (black = things, blue = signals, orange = the
+   answer). Props float with a cast shadow, no hands.
+   Actors: sheen (window glint), ghost (faint old drawing), rule (blue
+           marker underline, becomes the timeline axis), circle (the
+           answer circled, orange), arrow (black hand arrow), magnet
+           (orange hero magnet), eraser (felt eraser), pen-b + pen-o
+           (floating markers). DOM order = z-order (sheen first).
+   =========================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@500;700;800&family=Patrick+Hand&display=swap');
+
+.deck-stage {
+  --actors: "sheen ghost rule circle arrow magnet eraser pen-b pen-o";
+  --font-display: 'Playpen Sans', 'Patrick Hand', sans-serif;
+  --font-body: 'Playpen Sans', sans-serif;
+  --font-hand: 'Patrick Hand', 'Playpen Sans', sans-serif;
+  --bg: #F4F4EF; --fg: #23262c; --muted: #4A505A; --accent: #2a5cb3;
+  --card-bg: transparent; --card-fg: #23262c; --card-radius: 16px;
+  --title-weight: 800; --title-tracking: 0; --bullet-radius: 50%;
+  --ink: #23262c; --blue: #2a5cb3; --orange: #d97757; --orange-d: #b5502b;
+  /* the board: micro scratches (tile), soft light falloff, warm white */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='360'%3E%3Cg stroke='%236a7388' stroke-linecap='round' fill='none'%3E%3Cpath d='M40 60L96 52' stroke-opacity='.08' stroke-width='1.2'/%3E%3Cpath d='M310 200L420 188' stroke-opacity='.07' stroke-width='1'/%3E%3Cpath d='M520 40L560 62' stroke-opacity='.07' stroke-width='1.2'/%3E%3Cpath d='M120 300L230 312' stroke-opacity='.08' stroke-width='1'/%3E%3Cpath d='M440 290L470 262' stroke-opacity='.07' stroke-width='1.4'/%3E%3Cpath d='M200 130L238 150' stroke-opacity='.06' stroke-width='1'/%3E%3Ccircle cx='350' cy='90' r='1.6' fill='%236a7388' fill-opacity='.1'/%3E%3Ccircle cx='70' cy='200' r='1.3' fill='%236a7388' fill-opacity='.1'/%3E%3Ccircle cx='580' cy='240' r='1.5' fill='%236a7388' fill-opacity='.09'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(ellipse 80% 70% at 32% 24%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, #F6F6F1 0%, #EFEFE9 100%);
+  background-size: 640px 360px, 100% 100%, 100% 100%;
+}
+
+/* ---------- actor looks + off-stage defaults ---------- */
+[data-actor="sheen"] { background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.6) 42%, rgba(255, 255, 255, 0.6) 54%, rgba(255, 255, 255, 0) 100%); --x: 2250px; --y: -210px; --w: 700px; --h: 1500px; }
+[data-actor="ghost"] { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 560'%3E%3Cg fill='none' stroke='%235b7096' stroke-opacity='.14' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M144.6 108.4C148.3 107.4 159.1 103.7 166.6 102.3C174.2 100.9 182 100.2 189.7 100.1C197.4 100 205.2 100.6 212.8 101.8C220.4 103.1 228.1 105 235.2 107.7C242.3 110.4 249.3 113.8 255.4 117.9C261.4 122 267 127 271.4 132.3C275.8 137.6 279.4 143.7 281.6 149.8C283.9 155.9 285 162.6 285 168.9C285 175.3 283.8 181.9 281.6 188C279.5 194.1 276.1 200.1 272.1 205.6C268 211 262.9 216.2 257.3 220.6C251.7 225.1 245.1 229.1 238.3 232.3C231.4 235.5 223.8 238.1 216.1 239.8C208.5 241.5 200.3 242.5 192.3 242.6C184.4 242.7 176.2 242 168.4 240.5C160.7 239.1 153 236.8 145.9 233.9C138.9 231 132.1 227.4 126 223.2C120 219.1 114.4 214.2 109.8 209C105.1 203.8 101.1 197.9 98.3 191.9C95.5 185.8 93.5 179.2 92.9 172.7C92.3 166.3 92.9 159.4 94.7 153C96.5 146.6 99.7 140.2 103.8 134.5C107.9 128.9 113.3 123.5 119.2 119C125.1 114.5 132.1 110.7 139.2 107.6C146.3 104.5 154.1 102.2 161.9 100.5C169.6 98.8 177.7 97.9 185.7 97.6C193.6 97.3 201.8 97.6 209.7 98.7C217.6 99.8 225.7 101.5 233.1 104C240.6 106.6 251 112.2 254.6 113.9'/%3E%3Cpath d='M380 120C392.9 120 431.7 119.8 457.6 119.9C483.4 120 509.3 119.9 535.1 120.8C560.9 121.7 586.7 124.4 612.5 125.2C638.4 125.9 664.2 125 690.1 125.2C715.9 125.5 741.8 125.5 767.6 126.5C793.4 127.6 832.1 130.8 845 131.7'/%3E%3Cpath d='M400 100V150'/%3E%3Cpath d='M456 100V136'/%3E%3Cpath d='M512 100V150'/%3E%3Cpath d='M568 100V136'/%3E%3Cpath d='M624 100V150'/%3E%3Cpath d='M680 100V136'/%3E%3Cpath d='M736 100V150'/%3E%3Cpath d='M792 100V136'/%3E%3Cpath d='M848 100V150'/%3E%3Cpath d='M300 340Q459 299 570 420M545.8 410.5L570 420M562.6 395.1L570 420'/%3E%3Cpath d='M650 300C648 236 752 236 752 306C752 352 702 354 702 404'/%3E%3Ccircle cx='702' cy='452' r='6' fill='%235b7096' fill-opacity='.14'/%3E%3Cpath d='M110 440C120.8 440.1 153.3 440.6 175 440.7C196.7 440.8 239.9 457.4 240 440.6C240.1 423.7 197.4 339.8 175.6 339.6C153.8 339.4 120.2 422.8 109.1 439.4'/%3E%3Cpath d='M420 500H820' stroke-dasharray='2 18'/%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat; --x: 0px; --y: -780px; --w: 900px; --h: 560px; }
+[data-actor="rule"] { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 24' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%232a5cb3' stroke-width='6.5' stroke-linecap='round' vector-effect='non-scaling-stroke'%3E%3Cpath vector-effect='non-scaling-stroke' d='M8 13C30 12.6 96.3 10.7 140 10.7C183.7 10.8 228 13.6 270 13.5C312 13.4 371.7 10.8 392 10.2'/%3E%3Cpath vector-effect='non-scaling-stroke' d='M46 19.5C71.7 19.2 152.7 17.9 200 18C247.3 18 308.3 19.6 330 19.9' stroke-width='4.5' stroke-opacity='.85'/%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat; --x: 760px; --y: 1188px; --w: 400px; --h: 24px; }
+[data-actor="circle"] { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' preserveAspectRatio='none'%3E%3Cpath d='M48.3 61.2C53 58.6 65.8 50.2 76.5 45.7C87.1 41.1 99.4 37.1 112.2 33.8C124.9 30.5 138.9 27.9 153.1 26C167.3 24.1 182.3 22.9 197.2 22.6C212.1 22.2 227.6 22.6 242.4 23.8C257.1 25.1 272.2 27.2 285.9 30.2C299.6 33.2 313 37.1 324.4 41.7C335.8 46.2 346.2 51.7 354.2 57.5C362.3 63.3 368.6 69.9 372.7 76.5C376.7 83 378.6 90.1 378.6 96.8C378.6 103.5 376.4 110.4 372.6 116.9C368.9 123.4 363.1 129.7 356.1 135.6C349 141.4 340.2 147 330.3 152C320.4 157 308.9 161.6 296.6 165.3C284.3 169.1 270.5 172.4 256.3 174.7C242.1 177 226.7 178.7 211.5 179.3C196.4 179.9 180.4 179.6 165.3 178.5C150.3 177.3 135 175.1 121.1 172.2C107.1 169.3 93.6 165.5 81.9 161C70.1 156.6 59.3 151.4 50.5 145.7C41.6 140.1 34.2 133.8 28.9 127.4C23.6 120.9 20.1 114 18.8 107.1C17.5 100.3 18.3 93.2 21.1 86.5C23.9 79.7 29 73 35.6 66.9C42.3 60.7 51.1 54.9 61.1 49.7C71 44.6 82.8 39.9 95.2 36.1C107.6 32.2 121.4 28.9 135.5 26.4C149.6 24 164.8 22.1 179.9 21.2C195 20.2 210.8 20 226.2 20.6C241.5 21.3 257.3 22.8 271.9 25.2C286.6 27.6 301.2 30.9 313.9 35C326.6 39.1 338.6 44.2 348.3 49.8C358 55.3 366.1 61.8 371.9 68.3C377.6 74.8 381.3 81.9 382.8 88.8C384.3 95.7 383.6 102.9 381.1 109.7C378.6 116.5 374 123.3 368 129.6C361.9 135.9 354 142 344.9 147.4C335.8 152.9 325 158.1 313.2 162.4C301.3 166.8 280.6 171.8 274.1 173.7' fill='none' stroke='%23d97757' stroke-width='7' stroke-linecap='round' stroke-linejoin='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") center / 100% 100% no-repeat; --x: 760px; --y: 1200px; --w: 400px; --h: 200px; }
+[data-actor="arrow"] { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 120'%3E%3Cpath d='M14 100Q76.2 16.5 178 38M151.1 45.8L178 38M156.5 20L178 38' fill='none' stroke='%2323262c' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat; --x: 2200px; --y: 540px; --w: 200px; --h: 120px; }
+[data-actor="magnet"] { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='m' cx='.38' cy='.32' r='.75'%3E%3Cstop offset='0' stop-color='%23f6b393'/%3E%3Cstop offset='.55' stop-color='%23d97757'/%3E%3Cstop offset='1' stop-color='%23a84a29'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cellipse cx='56' cy='92' rx='34' ry='7' fill='%2323262c' fill-opacity='.16'/%3E%3Ccircle cx='50' cy='46' r='38' fill='url(%23m)'/%3E%3Ccircle cx='50' cy='46' r='38' fill='none' stroke='%238f3c20' stroke-opacity='.45' stroke-width='2'/%3E%3Cellipse cx='36' cy='30' rx='14' ry='8' fill='%23fff' fill-opacity='.6' transform='rotate(-32 36 30)'/%3E%3C/svg%3E") center / 100% 100% no-repeat; --x: 2050px; --y: 250px; --w: 100px; --h: 100px; }
+[data-actor="eraser"] { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 70'%3E%3Cellipse cx='86' cy='64' rx='70' ry='6' fill='%2323262c' fill-opacity='.15'/%3E%3Crect x='6' y='6' width='148' height='52' rx='9' fill='%233a3f4a'/%3E%3Crect x='6' y='40' width='148' height='18' rx='7' fill='%23dcdcd6'/%3E%3Crect x='16' y='12' width='128' height='5' rx='2.5' fill='%23fff' fill-opacity='.22'/%3E%3C/svg%3E") center / 100% 100% no-repeat; --x: 820px; --y: 1265px; --w: 160px; --h: 70px; }
+[data-actor="pen-b"] { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 280'%3E%3Cellipse cx='36' cy='270' rx='16' ry='5' fill='%2323262c' fill-opacity='.14'/%3E%3Cpath d='M12 14H54V268L48 276H18L12 268Z' fill='%2323262c' fill-opacity='.12' transform='translate(7 4)'/%3E%3Crect x='5' y='2' width='46' height='78' rx='10' fill='%232a5cb3'/%3E%3Crect x='9' y='78' width='38' height='168' rx='6' fill='%23fbfbf8' stroke='%2323262c' stroke-opacity='.55' stroke-width='2'/%3E%3Crect x='9' y='116' width='38' height='46' fill='%232a5cb3'/%3E%3Cpath d='M14 246H42L36 276H20Z' fill='%236e737c'/%3E%3Cpath d='M23 266H33L30 278H26Z' fill='%232a5cb3'/%3E%3C/svg%3E") center / 100% 100% no-repeat; --x: 2072px; --y: 560px; --w: 56px; --h: 280px; }
+[data-actor="pen-o"] { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 280'%3E%3Cellipse cx='36' cy='270' rx='16' ry='5' fill='%2323262c' fill-opacity='.14'/%3E%3Cpath d='M12 14H54V268L48 276H18L12 268Z' fill='%2323262c' fill-opacity='.12' transform='translate(7 4)'/%3E%3Crect x='5' y='2' width='46' height='78' rx='10' fill='%23d97757'/%3E%3Crect x='9' y='78' width='38' height='168' rx='6' fill='%23fbfbf8' stroke='%2323262c' stroke-opacity='.55' stroke-width='2'/%3E%3Crect x='9' y='116' width='38' height='46' fill='%23d97757'/%3E%3Cpath d='M14 246H42L36 276H20Z' fill='%236e737c'/%3E%3Cpath d='M23 266H33L30 278H26Z' fill='%23d97757'/%3E%3C/svg%3E") center / 100% 100% no-repeat; --x: 2072px; --y: 760px; --w: 56px; --h: 280px; }
+
+/* ---------- cover: ring around the picture, markers parked bottom right, eraser under the text ---------- */
+[data-layout="cover"] [data-actor="sheen"]   { --x: 950px; --y: -210px; --w: 700px; --h: 1500px; --r: 20deg; }
+[data-layout="cover"] [data-actor="ghost"]   { --x: 190px; --y: 360px; --w: 900px; --h: 560px; --r: -4deg; --s: 1.1; }
+[data-layout="cover"] [data-actor="rule"]    { --x: 130px; --y: 913px; --w: 860px; --h: 24px; }
+[data-layout="cover"] [data-actor="circle"]  { --x: 1070px; --y: 270px; --w: 800px; --h: 400px; --r: -3deg; }
+[data-layout="cover"] [data-actor="arrow"]   { --x: 1010px; --y: 761px; --w: 130px; --h: 78px; --r: -14deg; }
+[data-layout="cover"] [data-actor="magnet"]  { --x: 1675px; --y: 850px; --w: 110px; --h: 110px; }
+[data-layout="cover"] [data-actor="eraser"]  { --x: 925px; --y: 973px; --w: 170px; --h: 74px; --r: 4deg; }
+[data-layout="cover"] [data-actor="pen-b"]   { --x: 1612px; --y: 870px; --w: 56px; --h: 280px; --r: 80deg; }
+[data-layout="cover"] [data-actor="pen-o"]   { --x: 1812px; --y: 820px; --w: 56px; --h: 280px; --r: 100deg; }
+
+/* ---------- agenda: short underline, ring on the first number, arrow in the gutter, pens on the right edge ---------- */
+[data-layout="agenda"] [data-actor="sheen"]   { --x: 150px; --y: -210px; --w: 700px; --h: 1500px; --r: 20deg; }
+[data-layout="agenda"] [data-actor="ghost"]   { --x: 950px; --y: 420px; --w: 900px; --h: 560px; --r: 6deg; --s: 0.9; }
+[data-layout="agenda"] [data-actor="rule"]    { --x: 145px; --y: 172px; --w: 330px; --h: 24px; }
+[data-layout="agenda"] [data-actor="circle"]  { --x: 85.5px; --y: 387px; --w: 205px; --h: 130px; --r: -3deg; }
+[data-layout="agenda"] [data-actor="arrow"]   { --x: 900px; --y: 584px; --w: 120px; --h: 72px; --r: 90deg; }
+[data-layout="agenda"] [data-actor="magnet"]  { --x: 1720px; --y: 30px; --w: 100px; --h: 100px; }
+[data-layout="agenda"] [data-actor="eraser"]  { --x: 1615px; --y: 998px; --w: 170px; --h: 74px; }
+[data-layout="agenda"] [data-actor="pen-b"]   { --x: 1822px; --y: 420px; --w: 56px; --h: 280px; --r: 100deg; }
+[data-layout="agenda"] [data-actor="pen-o"]   { --x: 1842px; --y: 690px; --w: 56px; --h: 280px; --r: 78deg; }
+
+/* ---------- section: the number circled, a big arrow sweeps the right half to the hero magnet ---------- */
+[data-layout="section"] [data-actor="sheen"]   { --x: 1100px; --y: -210px; --w: 700px; --h: 1500px; --r: 20deg; }
+[data-layout="section"] [data-actor="ghost"]   { --x: 950px; --y: 260px; --w: 900px; --h: 560px; --s: 1.3; }
+[data-layout="section"] [data-actor="rule"]    { --x: 160px; --y: 788px; --w: 800px; --h: 24px; }
+[data-layout="section"] [data-actor="circle"]  { --x: 100px; --y: 320px; --w: 410px; --h: 250px; --r: -3deg; }
+[data-layout="section"] [data-actor="arrow"]   { --x: 1030px; --y: 574px; --w: 520px; --h: 312px; --r: -8deg; }
+[data-layout="section"] [data-actor="magnet"]  { --x: 1565px; --y: 345px; --w: 150px; --h: 150px; }
+[data-layout="section"] [data-actor="eraser"]  { --x: 1380px; --y: 876px; --w: 200px; --h: 88px; --r: -10deg; }
+[data-layout="section"] [data-actor="pen-b"]   { --x: 1532px; --y: 30px; --w: 56px; --h: 280px; --r: 130deg; --s: 1.1; }
+[data-layout="section"] [data-actor="pen-o"]   { --x: 1672px; --y: 760px; --w: 56px; --h: 280px; --r: 55deg; --s: 1.1; }
+
+/* ---------- content: underline, ring on the highlight line, small arrow from the bullets to it ---------- */
+[data-layout="content"] [data-actor="sheen"]   { --x: 1200px; --y: -210px; --w: 700px; --h: 1500px; --r: 20deg; }
+[data-layout="content"] [data-actor="ghost"]   { --x: 1050px; --y: 280px; --w: 900px; --h: 560px; --r: 5deg; }
+[data-layout="content"] [data-actor="rule"]    { --x: 120px; --y: 172px; --w: 560px; --h: 24px; }
+[data-layout="content"] [data-actor="circle"]  { --x: 1220px; --y: 513px; --w: 620px; --h: 190px; --r: -2deg; }
+[data-layout="content"] [data-actor="arrow"]   { --x: 1162px; --y: 540px; --w: 100px; --h: 60px; --r: 8deg; }
+[data-layout="content"] [data-actor="magnet"]  { --x: 1680px; --y: 40px; --w: 100px; --h: 100px; }
+[data-layout="content"] [data-actor="eraser"]  { --x: 115px; --y: 1003px; --w: 170px; --h: 74px; }
+[data-layout="content"] [data-actor="pen-b"]   { --x: 1802px; --y: 870px; --w: 56px; --h: 280px; --r: 80deg; }
+[data-layout="content"] [data-actor="pen-o"]   { --x: 1612px; --y: 910px; --w: 56px; --h: 280px; --r: 92deg; }
+
+/* ---------- content even: underline runs long, the ring grows, the arrow turns back, pens swap sides ---------- */
+[data-layout="content"][data-parity="even"] [data-actor="sheen"]   { --x: 50px; --y: -210px; --w: 700px; --h: 1500px; --r: 20deg; }
+[data-layout="content"][data-parity="even"] [data-actor="ghost"]   { --x: 250px; --y: 280px; --w: 900px; --h: 560px; --r: -3deg; --s: 1.2; }
+[data-layout="content"][data-parity="even"] [data-actor="rule"]    { --x: 120px; --y: 172px; --w: 900px; --h: 24px; }
+[data-layout="content"][data-parity="even"] [data-actor="circle"]  { --x: 1250px; --y: 541px; --w: 560px; --h: 190px; --r: 2deg; }
+[data-layout="content"][data-parity="even"] [data-actor="arrow"]   { --x: 1125px; --y: 866px; --w: 130px; --h: 78px; --r: 160deg; }
+[data-layout="content"][data-parity="even"] [data-actor="magnet"]  { --x: 1124px; --y: 929px; --w: 92px; --h: 92px; }
+[data-layout="content"][data-parity="even"] [data-actor="eraser"]  { --x: 1615px; --y: 1003px; --w: 170px; --h: 74px; --r: -3deg; }
+[data-layout="content"][data-parity="even"] [data-actor="pen-b"]   { --x: 62px; --y: 870px; --w: 56px; --h: 280px; --r: 88deg; }
+[data-layout="content"][data-parity="even"] [data-actor="pen-o"]   { --x: 1832px; --y: 110px; --w: 56px; --h: 280px; --r: 100deg; }
+
+/* ---------- two-col: ring on the second heading, arrow from the title row, markers rest on the tray line ---------- */
+[data-layout="two-col"] [data-actor="sheen"]   { --x: 550px; --y: -210px; --w: 700px; --h: 1500px; --r: 20deg; }
+[data-layout="two-col"] [data-actor="ghost"]   { --x: 510px; --y: 320px; --w: 900px; --h: 560px; --s: 1.7; }
+[data-layout="two-col"] [data-actor="rule"]    { --x: 120px; --y: 172px; --w: 700px; --h: 24px; }
+[data-layout="two-col"] [data-actor="circle"]  { --x: 1010px; --y: 285.5px; --w: 340px; --h: 125px; --r: -2deg; }
+[data-layout="two-col"] [data-actor="arrow"]   { --x: 1645px; --y: 137px; --w: 110px; --h: 66px; --r: 30deg; }
+[data-layout="two-col"] [data-actor="magnet"]  { --x: 1805px; --y: 25px; --w: 90px; --h: 90px; }
+[data-layout="two-col"] [data-actor="eraser"]  { --x: 1665px; --y: 1003px; --w: 170px; --h: 74px; }
+[data-layout="two-col"] [data-actor="pen-b"]   { --x: 982px; --y: 910px; --w: 56px; --h: 280px; --r: 90deg; }
+[data-layout="two-col"] [data-actor="pen-o"]   { --x: 1152px; --y: 910px; --w: 56px; --h: 280px; --r: 92deg; }
+
+/* ---------- stats: the last figure circled, arrow between figures two and three ---------- */
+[data-layout="stats"] [data-actor="sheen"]   { --x: 1150px; --y: -210px; --w: 700px; --h: 1500px; --r: 20deg; }
+[data-layout="stats"] [data-actor="ghost"]   { --x: -50px; --y: 480px; --w: 900px; --h: 560px; --r: 3deg; }
+[data-layout="stats"] [data-actor="rule"]    { --x: 110px; --y: 172px; --w: 640px; --h: 24px; }
+[data-layout="stats"] [data-actor="circle"]  { --x: 1296px; --y: 435px; --w: 480px; --h: 280px; --r: -3deg; }
+[data-layout="stats"] [data-actor="arrow"]   { --x: 1190px; --y: 544px; --w: 120px; --h: 72px; --r: -6deg; }
+[data-layout="stats"] [data-actor="magnet"]  { --x: 1750px; --y: 30px; --w: 100px; --h: 100px; }
+[data-layout="stats"] [data-actor="eraser"]  { --x: 1415px; --y: 1008px; --w: 170px; --h: 74px; }
+[data-layout="stats"] [data-actor="pen-b"]   { --x: 82px; --y: 890px; --w: 56px; --h: 280px; --r: 86deg; }
+[data-layout="stats"] [data-actor="pen-o"]   { --x: 472px; --y: 902px; --w: 56px; --h: 280px; --r: 92deg; }
+
+/* ---------- timeline: the underline is stretched into the axis (y 630), the magnet starts the ride ---------- */
+[data-layout="timeline"] [data-actor="sheen"]   { --x: -50px; --y: -210px; --w: 700px; --h: 1500px; --r: 20deg; }
+[data-layout="timeline"] [data-actor="ghost"]   { --x: 1050px; --y: 20px; --w: 900px; --h: 560px; --r: -6deg; }
+[data-layout="timeline"] [data-actor="rule"]    { --x: 120px; --y: 618px; --w: 1680px; --h: 24px; }
+[data-layout="timeline"] [data-actor="circle"]  { --x: 1420px; --y: 575px; --w: 170px; --h: 110px; }
+[data-layout="timeline"] [data-actor="arrow"]   { --x: 1723px; --y: 613px; --w: 90px; --h: 54px; }
+[data-layout="timeline"] [data-actor="magnet"]  { --x: 30px; --y: 598px; --w: 64px; --h: 64px; }
+[data-layout="timeline"] [data-actor="eraser"]  { --x: 1565px; --y: 1008px; --w: 170px; --h: 74px; }
+[data-layout="timeline"] [data-actor="pen-b"]   { --x: 1822px; --y: 10px; --w: 56px; --h: 280px; --r: 120deg; }
+[data-layout="timeline"] [data-actor="pen-o"]   { --x: 92px; --y: 905px; --w: 56px; --h: 280px; --r: 90deg; }
+
+/* ---------- quote: one big loop around the whole quote, glint behind it ---------- */
+[data-layout="quote"] [data-actor="sheen"]   { --x: 650px; --y: -210px; --w: 700px; --h: 1500px; --r: 20deg; }
+[data-layout="quote"] [data-actor="ghost"]   { --x: 510px; --y: 260px; --w: 900px; --h: 560px; --s: 1.9; }
+[data-layout="quote"] [data-actor="rule"]    { --x: 560px; --y: 788px; --w: 800px; --h: 24px; }
+[data-layout="quote"] [data-actor="circle"]  { --x: 50px; --y: 260px; --w: 1820px; --h: 560px; }
+[data-layout="quote"] [data-actor="arrow"]   { --x: 125px; --y: 799px; --w: 170px; --h: 102px; --r: -15deg; }
+[data-layout="quote"] [data-actor="magnet"]  { --x: 180px; --y: 210px; --w: 120px; --h: 120px; }
+[data-layout="quote"] [data-actor="eraser"]  { --x: 1605px; --y: 918.5px; --w: 190px; --h: 83px; --r: 10deg; }
+[data-layout="quote"] [data-actor="pen-b"]   { --x: 1762px; --y: 240px; --w: 56px; --h: 280px; --r: 70deg; }
+[data-layout="quote"] [data-actor="pen-o"]   { --x: 1812px; --y: 420px; --w: 56px; --h: 280px; --r: 105deg; }
+
+/* ---------- closing: the answer circled, underline, markers capped and parked ---------- */
+[data-layout="closing"] [data-actor="sheen"]   { --x: 1050px; --y: -210px; --w: 700px; --h: 1500px; --r: 20deg; }
+[data-layout="closing"] [data-actor="ghost"]   { --x: -50px; --y: 420px; --w: 900px; --h: 560px; --r: 8deg; --s: 1.1; }
+[data-layout="closing"] [data-actor="rule"]    { --x: 610px; --y: 736px; --w: 700px; --h: 24px; }
+[data-layout="closing"] [data-actor="circle"]  { --x: 520px; --y: 433px; --w: 880px; --h: 230px; --r: -2deg; }
+[data-layout="closing"] [data-actor="arrow"]   { --x: 1440px; --y: 718px; --w: 240px; --h: 144px; --r: -8deg; }
+[data-layout="closing"] [data-actor="magnet"]  { --x: 1485px; --y: 255px; --w: 150px; --h: 150px; }
+[data-layout="closing"] [data-actor="eraser"]  { --x: 300px; --y: 856px; --w: 200px; --h: 88px; --r: -14deg; }
+[data-layout="closing"] [data-actor="pen-b"]   { --x: 1672px; --y: 820px; --w: 56px; --h: 280px; --r: 75deg; }
+[data-layout="closing"] [data-actor="pen-o"]   { --x: 1812px; --y: 460px; --w: 56px; --h: 280px; --r: 100deg; }
+
+/* ---------- content tweaks: marker lettering on a board ---------- */
+.slide .title { line-height: 1.22; }
+.slide .kicker, .slide .meta, .slide .cite { font-family: var(--font-hand); letter-spacing: 0.06em; text-transform: none; }
+.slide .kicker { font-size: 34px; font-weight: 400; color: var(--orange-d); }
+.slide .meta, .slide .cite { font-size: 32px; }
+.slide[data-layout="cover"] { align-items: flex-start; text-align: left; padding: 0 880px 0 120px; }
+.slide[data-layout="cover"] .title { font-size: 80px; }
+.slide[data-layout="closing"] .title { font-size: 150px; }
+.slide[data-layout="section"] .num { font-size: 230px; color: var(--blue); }
+.agenda-list { --agenda-gap: 200px; }
+.agenda-list li.is-right { flex-direction: row; text-align: left; }
+.agenda-list li.is-right .num { text-align: left; }
+.agenda-list .num { color: var(--blue); }
+.bullets li::before, .col li::before { background: var(--blue); border-radius: 55% 45% 50% 50%; }
+.slide[data-layout="content"] .hl-text { color: var(--fg); }
+.hl-big { color: var(--orange-d); }
+.col { border: 4px solid var(--ink); border-radius: 18px 7px 16px 9px; padding: 44px 52px; }
+.col + .col { border-color: var(--blue); }
+.col h3 { color: var(--blue); }
+.takeaway { border-left: 0; padding-left: 64px; }
+.takeaway::before { content: ""; position: absolute; left: 10px; top: 24px; bottom: 24px; width: 12px; border-radius: 6px; background: var(--orange); }
+.slide[data-layout="stats"] .stat-num { color: var(--blue); }
+.stat-label { color: var(--muted); }
+.timeline::before { display: none; }
+.step::before { background: var(--blue); }
+.step .when { font-family: var(--font-hand); font-weight: 400; color: var(--blue); }
+.slide[data-layout="quote"] .quote { font-weight: 700; }
+
+</style>
+<style>
+/* Nét bút lông cho minh họa SVG (đen: vật, xanh: nối kết, cam: điểm nhấn duy nhất của slide) */
+.wb-k, .wb-b, .wb-o, .wb-t { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.wb-k { stroke: #23262c; stroke-width: 7; }
+.wb-b { stroke: #2a5cb3; stroke-width: 7; }
+.wb-t { stroke: #2a5cb3; stroke-width: 5; }
+.wb-o { stroke: #d97757; stroke-width: 7; }
+.wb-dot { fill: none; stroke: #2a5cb3; stroke-width: 9; stroke-linecap: round; stroke-dasharray: 1 20; }
+.wb-ghost { fill: none; stroke: #23262c; stroke-opacity: .38; stroke-width: 5; stroke-dasharray: 9 12; stroke-linecap: round; }
+.wb-hand { font-family: var(--font-hand); font-size: 40px; fill: #23262c; }
+.wb-hand-b { font-family: var(--font-hand); font-size: 40px; fill: #2a5cb3; }
+.wb-hand-o { font-family: var(--font-hand); font-size: 44px; fill: #b5502b; }
+
+/* Slide tự thiết kế: Project là một ngăn kéo hồ sơ có 3 ngăn */
+.s-drawer .d-title { position: absolute; left: 120px; top: 90px; width: 1680px; margin: 0; font: 700 64px/1.15 var(--font-display); color: var(--fg); }
+.s-drawer .d-sub { position: absolute; left: 120px; top: 190px; width: 1680px; margin: 0; font-size: 34px; color: var(--muted); }
+.s-drawer .d-cell { position: absolute; top: 380px; width: 460px; height: 380px; margin: 0; }
+.s-drawer .d-name { display: block; font: 400 72px/1.05 var(--font-hand); color: var(--fg); }
+.s-drawer .d-role { display: block; margin-top: 10px; font: 400 46px/1.2 var(--font-hand); color: var(--blue); }
+.s-drawer .d-desc { display: block; margin-top: 22px; font-size: 36px; line-height: 1.4; color: var(--fg); }
+.s-drawer .d-key .d-role { color: var(--orange-d); }
+/* Slide lời dạy: trích đủ nguyên văn, chữ thân dễ đọc khi chiếu */
+.s-teach .t-kicker { position: absolute; left: 160px; top: 110px; margin: 0; font: 400 40px/1.2 var(--font-hand); color: var(--orange-d); }
+.s-teach .t-quote { position: absolute; left: 160px; top: 200px; width: 1600px; margin: 0; padding-left: 44px; border-left: 7px solid var(--blue); }
+.s-teach .t-quote p { margin: 0 0 26px; font: 500 40px/1.45 var(--font-body); color: var(--fg); }
+.s-teach .t-who { position: absolute; left: 204px; bottom: 120px; margin: 0; font: 400 46px/1 var(--font-hand); color: var(--orange-d); }
+.s-teach .t-who::before { content: "- "; }
+/* Slide 7 (3 nhóm AI tạo sinh): style mặc định khoanh ô cuối; ở đây khoanh ô đầu "AI chữ" vì đó là trọng tâm khóa học.
+   Gắn theo số slide: thêm hoặc bớt slide phía trước thì sửa lại số 7. */
+.deck-stage[data-slide="7"] [data-actor="circle"] { --x: 150px; }
+.deck-stage[data-slide="7"] [data-actor="arrow"]  { --x: 640px; --y: 470px; --r: 186deg; }
+/* Slide công cụ AI: 3 cột theo nhóm, mỗi công cụ một logo */
+.s-tools .t-title { position: absolute; left: 120px; top: 90px; width: 1680px; margin: 0; font: 700 64px/1.15 var(--font-display); color: var(--fg); }
+.s-tools .ai-cols { position: absolute; left: 120px; top: 250px; width: 1680px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+.s-tools .ai-col { border: 4px solid var(--ink); border-radius: 18px 7px 16px 9px; padding: 36px 40px 44px; display: flex; flex-direction: column; gap: 34px; }
+.s-tools .ai-col.ai-focus { border-color: var(--blue); }
+.s-tools .ai-col h3 { margin: 0 0 6px; font: 400 52px/1.1 var(--font-hand); color: var(--blue); display: flex; flex-direction: column; gap: 6px; }
+.s-tools .ai-tag { font: 400 34px/1 var(--font-hand); color: var(--orange-d); }
+.s-tools .ai-tile { display: flex; align-items: center; gap: 30px; font: 600 46px/1.1 var(--font-body); color: var(--fg); }
+.s-tools .ai-tile > span { white-space: nowrap; }
+.s-tools .ai-tile small { display: block; margin-top: 4px; font: 400 28px/1.2 var(--font-body); color: var(--muted); }
+.s-tools .ai-logo { width: 112px; height: 112px; flex: none; color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="deck-viewport">
+<div class="deck-stage">
+
+  <!-- 1. Bìa -->
+  <section class="slide" data-layout="cover">
+    <p class="kicker reveal">Khóa học thực hành cho người đi làm</p>
+    <h1 class="title reveal">Làm chủ AI Agent với Antigravity</h1>
+    <p class="subtitle reveal">Từ chatbot hỏi đáp đến trợ lý tự làm việc trên máy tính của bạn</p>
+    <p class="meta reveal">SkillG - Ban Kỹ Năng</p>
+    <svg aria-hidden="true" style="position:absolute;left:1110px;top:290px" width="720" height="380" viewBox="1110 290 720 380">
+      <path class="wb-ghost" d="M1218 392L1398 394M1396 392L1394 492M1398 490L1262 491L1232 520L1236 489L1216 490M1218 494L1219 391"/>
+      <path class="wb-t" d="M1252 428L1360 430M1252 456L1330 457"/>
+      <text class="wb-hand" x="1236" y="560">hỏi - đáp</text>
+      <path class="wb-t draw" pathLength="1" style="--d:.3" d="M1420 446Q1478 400 1538 438M1514 446L1538 438M1526 418L1538 438"/>
+      <path class="wb-dot" d="M1300 600C1400 640 1520 630 1600 580"/>
+      <g class="reveal">
+        <path class="wb-k draw" pathLength="1" style="--d:.5" d="M1560 372L1752 374M1749 369L1747 528M1752 524L1557 526M1562 530L1561 369"/>
+        <path class="wb-b draw" pathLength="1" style="--d:.8" d="M1654 418C1684 418 1700 438 1700 452C1700 474 1680 490 1654 490C1628 490 1610 472 1610 452C1610 432 1630 416 1660 420"/>
+        <path class="wb-b" d="M1654 400L1654 412M1654 496L1654 508M1600 454L1588 454M1712 454L1724 454"/>
+      </g>
+      <g class="reveal">
+        <path class="wb-o" d="M1612 362L1640 346M1672 360L1694 342M1716 366L1742 354"/>
+        <text class="wb-hand-o" x="1586" y="590">tự làm!</text>
+      </g>
+    </svg>
+  </section>
+
+  <!-- 2. Hành trình -->
+  <section class="slide" data-layout="agenda">
+    <h2 class="title reveal">Hành trình khóa học</h2>
+    <ol class="agenda-list">
+      <li><span class="num reveal">01</span><div><h3 class="reveal" data-morph-id="ch1">Hiểu đúng về AI</h3><p class="reveal">AI tạo sinh, đa phương thức, Chatbot và AI Agent</p></div></li>
+      <li><span class="num reveal">02</span><div><h3 class="reveal" data-morph-id="ch2">Tài khoản an toàn</h3><p class="reveal">Bảo mật, Profile, 5 nguyên tắc, Memory</p></div></li>
+      <li><span class="num reveal">03</span><div><h3 class="reveal" data-morph-id="ch3">Trợ lý chuyên việc</h3><p class="reveal">Claude Projects, 2 case thực hành, hẹn giờ</p></div></li>
+      <li><span class="num reveal">04</span><div><h3 class="reveal" data-morph-id="ch4">Lên máy tính</h3><p class="reveal">Cài Antigravity, lộ trình tiếp theo</p></div></li>
+    </ol>
+  </section>
+
+  <!-- 3. Vấn đề -->
+  <section class="slide" data-layout="content" data-frame="zigzag">
+    <h2 class="title reveal">4 vấn đề quen thuộc khi dùng AI</h2>
+    <ul class="bullets">
+      <li class="reveal"><b>Hỏi bâng quơ</b>: câu trả lời văn vở, dài dòng.</li>
+      <li class="reveal"><b>Sửa lại mất công</b>: số liệu mơ hồ, có khi bịa.</li>
+      <li class="reveal"><b>Quay về làm tay</b>: tắt AI, ngồi gõ Word, Excel.</li>
+      <li class="reveal"><b>Mất ngữ cảnh</b>: chat mới lại giải thích từ đầu.</li>
+    </ul>
+  </section>
+
+  <!-- 4. Nguyên tắc -->
+  <section class="slide" data-layout="content" data-frame="spotlight">
+    <h2 class="title reveal">Làm việc thật, mang sản phẩm về, không cần lập trình</h2>
+    <ul class="bullets">
+      <li class="reveal">Dùng file báo giá, hợp đồng thật của bạn</li>
+      <li class="reveal">Hết buổi có trợ lý dùng ngay sáng mai</li>
+      <li class="reveal">Bạn lo chuyên môn, AI lo kỹ thuật</li>
+    </ul>
+  </section>
+
+  <!-- 5. Chương 1 -->
+  <section class="slide" data-layout="chapter">
+    <p class="ch-num reveal-scale" aria-hidden="true">01</p>
+    <h2 class="title reveal" data-morph-id="ch1">Hiểu đúng về AI</h2>
+    <p class="subtitle reveal">Mình đang học loại AI nào, và nó làm được gì?</p>
+  </section>
+
+  <!-- 6. Công cụ AI phổ biến (logo lấy từ LobeHub Icons, giấy phép MIT) -->
+  <section class="slide s-tools" data-layout="free">
+    <h2 class="t-title reveal">Những công cụ AI phổ biến hiện nay</h2>
+    <div class="ai-cols">
+      <div class="ai-col ai-focus reveal">
+        <h3>AI chữ<span class="ai-tag">Trọng tâm khóa học</span></h3>
+        <div class="ai-tile reveal"><svg class="ai-logo" aria-hidden="true" fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z"></path></svg><span>ChatGPT<small>OpenAI</small></span></div>
+        <div class="ai-tile reveal"><svg class="ai-logo" aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z" fill="#D97757" fill-rule="nonzero"></path></svg><span>Claude<small>Anthropic</small></span></div>
+        <div class="ai-tile reveal"><svg class="ai-logo" aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="#3186FF"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-0-_R_0_)"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-1-_R_0_)"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-2-_R_0_)"></path><defs><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-0-_R_0_" x1="7" x2="11" y1="15.5" y2="12"><stop stop-color="#08B962"></stop><stop offset="1" stop-color="#08B962" stop-opacity="0"></stop></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-1-_R_0_" x1="8" x2="11.5" y1="5.5" y2="11"><stop stop-color="#F94543"></stop><stop offset="1" stop-color="#F94543" stop-opacity="0"></stop></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-2-_R_0_" x1="3.5" x2="17.5" y1="13.5" y2="12"><stop stop-color="#FABC12"></stop><stop offset=".46" stop-color="#FABC12" stop-opacity="0"></stop></linearGradient></defs></svg><span>Gemini<small>Google</small></span></div>
+      </div>
+      <div class="ai-col reveal">
+        <h3>AI hình ảnh, video</h3>
+        <div class="ai-tile reveal"><svg class="ai-logo" aria-hidden="true" fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.369 17.676c-1.387 1.259-3.17 2.378-5.332 3.417.044.03.086.057.13.083l.018.01.019.012c.216.123.42.184.641.184.222 0 .426-.061.642-.184l.018-.011.019-.011c.14-.084.266-.178.492-.366l.178-.148c.279-.232.426-.342.625-.456.304-.174.612-.266.949-.266.337 0 .645.092.949.266l.023.014c.188.109.334.219.602.442l.178.148c.221.184.346.278.483.36l.028.017.018.01c.21.12.407.181.62.185h.022a.31.31 0 110 .618c-.337 0-.645-.092-.95-.266a3.137 3.137 0 01-.09-.054l-.022-.014-.022-.013-.02-.014a5.356 5.356 0 01-.49-.377l-.159-.132a3.836 3.836 0 00-.483-.36l-.027-.017-.019-.01a1.256 1.256 0 00-.641-.185c-.222 0-.426.061-.641.184l-.02.011-.018.011c-.14.084-.266.178-.492.366l-.158.132a5.125 5.125 0 01-.51.39l-.022.014-.022.014-.09.054a1.868 1.868 0 01-.95.266c-.337 0-.644-.092-.949-.266a3.137 3.137 0 01-.09-.054l-.022-.014-.022-.013-.026-.017a4.881 4.881 0 01-.425-.325.308.308 0 01-.12-.1l-.098-.081a3.836 3.836 0 00-.483-.36l-.027-.017-.019-.01a1.256 1.256 0 00-.641-.185c-.222 0-.426.061-.642.184l-.018.011-.019.011c-.14.084-.266.178-.492.366l-.158.132a5.125 5.125 0 01-.51.39l-.023.014-.022.014-.09.054A1.868 1.868 0 0112 22c-.337 0-.645-.092-.949-.266a3.137 3.137 0 01-.09-.054l-.022-.014-.022-.013-.021-.014a5.356 5.356 0 01-.49-.377l-.158-.132a3.836 3.836 0 00-.483-.36l-.028-.017-.018-.01a1.256 1.256 0 00-.642-.185c-.221 0-.425.061-.641.184l-.019.011-.018.011c-.141.084-.266.178-.492.366l-.158.132a5.125 5.125 0 01-.511.39l-.022.014-.022.014-.09.054a1.868 1.868 0 01-.986.264c-.746-.09-1.319-.38-1.89-.866l-.035-.03c-.047-.041-.118-.106-.192-.174l-.196-.181-.107-.1-.011-.01a1.531 1.531 0 00-.336-.253.313.313 0 00-.095-.03h-.005c-.119.022-.238.059-.361.11a.308.308 0 01-.077.061l-.008.005a.309.309 0 01-.126.034 5.66 5.66 0 00-.774.518l-.416.324-.055.043a6.542 6.542 0 01-.324.236c-.305.207-.552.315-.8.315a.31.31 0 01-.01-.618h.01c.09 0 .235-.062.438-.198l.04-.027c.077-.054.163-.117.27-.199l.385-.301.06-.047c.268-.206.506-.373.73-.505l-.633-1.21a.309.309 0 01.254-.451l20.287-1.305a.309.309 0 01.228.537zm-1.118.14L2.369 19.03l.423.809c.128-.045.256-.078.388-.1a.31.31 0 01.052-.005c.132 0 .26.032.386.093.153.073.294.179.483.35l.016.015.092.086.144.134.097.089c.065.06.125.114.16.144.485.418.948.658 1.554.736h.011a1.25 1.25 0 00.6-.172l.021-.011.019-.011.018-.011c.141-.084.266-.178.492-.366l.178-.148c.279-.232.426-.342.625-.456.305-.174.612-.266.95-.266.336 0 .644.092.948.266l.023.014c.188.109.335.219.603.442l.177.148c.222.184.346.278.484.36l.027.017.019.01c.215.124.42.185.641.185.222 0 .426-.061.641-.184l.019-.011.018-.011c.141-.084.267-.178.493-.366l.177-.148c.28-.232.427-.342.626-.456.304-.174.612-.266.949-.266.337 0 .644.092.949.266l.025.015c.187.109.334.22.603.443 1.867-.878 3.448-1.811 4.73-2.832l.02-.016zM3.653 2.026C6.073 3.06 8.69 4.941 10.8 7.258c2.46 2.7 4.109 5.828 4.637 9.149a.31.31 0 01-.421.335c-2.348-.945-4.54-1.258-6.59-1.02-1.739.2-3.337.792-4.816 1.703-.294.182-.62-.182-.405-.454 1.856-2.355 2.581-4.99 2.343-7.794-.195-2.292-1.031-4.61-2.284-6.709a.31.31 0 01.388-.442zM10.04 4.45c1.778.543 3.892 2.102 5.782 4.243 1.984 2.248 3.552 4.934 4.347 7.582a.31.31 0 01-.401.38l-.022-.01-.386-.154a10.594 10.594 0 00-.291-.112l-.016-.006c-.68-.247-1.199-.291-1.944-.101a.31.31 0 01-.375-.218C15.378 11.123 13.073 7.276 9.775 5c-.291-.201-.072-.653.266-.55zM4.273 2.996l.008.015c1.028 1.94 1.708 4.031 1.885 6.113.213 2.513-.31 4.906-1.673 7.092l-.02.031.003-.001c1.198-.581 2.47-.969 3.825-1.132l.055-.006c1.981-.23 4.083.029 6.309.837l.066.025-.007-.039c-.593-2.95-2.108-5.737-4.31-8.179l-.07-.078c-1.785-1.96-3.944-3.6-6.014-4.65l-.057-.028zm7.92 3.238l.048.048c2.237 2.295 3.885 5.431 4.974 9.191l.038.132.022-.004c.71-.133 1.284-.063 1.963.18l.027.01.066.024.046.018-.025-.073c-.811-2.307-2.208-4.62-3.936-6.594l-.058-.065c-1.02-1.155-2.103-2.132-3.15-2.856l-.015-.011z"></path></svg><span>Midjourney</span></div>
+        <div class="ai-tile reveal"><svg class="ai-logo" aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M1.5 19.824c0-.548.444-.992.991-.992h.744a.991.991 0 010 1.983H2.49a.991.991 0 01-.991-.991z" fill="#F3AD61"></path><path d="M14.837 13.5h7.076c.522 0 .784-.657.413-1.044l-1.634-1.704a3.183 3.183 0 00-4.636 0l-1.633 1.704c-.37.385-.107 1.044.414 1.044zM3.587 13.5h7.076c.521 0 .784-.659.414-1.044l-1.635-1.704a3.183 3.183 0 00-4.636 0l-1.633 1.704c-.37.385-.107 1.044.414 1.044z" fill="#F9C23C"></path><path d="M12.525 1.521c3.69-.53 5.97 8.923 4.309 12.744-1.662 3.82-5.248 4.657-9.053 6.152a3.49 3.49 0 01-1.279.244c-1.443 0-2.227 1.187-2.774-.282-.707-1.9.22-4.031 2.069-4.757 2.014-.79 3.084-2.308 3.89-4.364.82-2.096.877-2.956.873-5.241-.003-1.827-.123-4.195 1.965-4.496z" fill="#FEEFC2"></path><path d="M16.834 14.264l-7.095-3.257c-.815 1.873-2.29 3.308-4.156 4.043-2.16.848-3.605 3.171-2.422 5.54 2.364 4.727 13.673-.05 13.673-6.325z" fill="#FCD53F"></path><path clip-rule="evenodd" d="M13.68 12.362c.296.094.46.41.365.707-1.486 4.65-5.818 6.798-9.689 6.997a.562.562 0 11-.057-1.124c3.553-.182 7.372-2.138 8.674-6.216a.562.562 0 01.707-.364z" fill="#F9C23C" fill-rule="evenodd"></path><path d="M17.43 19.85l-7.648-8.835h6.753c1.595.08 2.846 1.433 2.846 3.073v5.664c0 .997-.898 1.302-1.95.098z" fill="#FFF478"></path></svg><span>Nano Banana<small>Google</small></span></div>
+        <div class="ai-tile reveal"><svg class="ai-logo" aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.988 1.622A8.539 8.539 0 003.45 8.446c.349 4.408 4.506 7.995 8.276 7.995 3.507 0 4.88-3.061 4.541-5.14a4.318 4.318 0 00-.95-2.073c.632.34 1.244.776 1.809 1.3 1.52 1.415 2.44 3.229 2.587 5.1C20.04 19.763 16.98 24 11.863 24c-1.695 0-3.48-.432-4.98-1.143C2.816 20.937 0 16.797 0 12.002 0 7.571 2.405 3.7 5.988 1.622zM12.136 0c1.696 0 3.481.432 4.98 1.143C21.186 3.063 24 7.203 24 11.998c0 4.431-2.405 8.303-5.988 10.38a8.539 8.539 0 002.538-6.824c-.349-4.408-4.506-7.995-8.276-7.995-3.507 0-4.88 3.061-4.541 5.14a4.3 4.3 0 00.953 2.073 8.723 8.723 0 01-1.81-1.3c-1.52-1.415-2.44-3.227-2.589-5.1C3.96 4.237 7.02 0 12.137 0z" fill="#4285F4" fill-rule="evenodd"></path></svg><span>Veo<small>Google DeepMind</small></span></div>
+      </div>
+      <div class="ai-col reveal">
+        <h3>AI âm thanh</h3>
+        <div class="ai-tile reveal"><svg class="ai-logo" aria-hidden="true" fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 0h5v24H5V0zM14 0h5v24h-5V0z"></path></svg><span>ElevenLabs</span></div>
+        <div class="ai-tile reveal"><svg class="ai-logo" aria-hidden="true" fill="currentColor" fill-rule="evenodd" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.5 0C20.642 0 24 5.373 24 12h-9c0 6.627-3.358 12-7.5 12C3.358 24 0 18.627 0 12h9c0-6.627 3.358-12 7.5-12z"></path></svg><span>Suno</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Ba nhóm AI tạo sinh -->
+  <section class="slide" data-layout="stats">
+    <h2 class="title reveal">AI tạo sinh: chia theo thứ nó tạo ra</h2>
+    <div class="stats">
+      <div class="stat reveal"><span class="stat-num">01</span><span class="stat-label"><b>AI chữ</b> (trọng tâm khóa học): viết, tóm tắt, phân tích. ChatGPT, Claude, Gemini</span></div>
+      <div class="stat reveal"><span class="stat-num">02</span><span class="stat-label"><b>AI hình ảnh, video</b>: vẽ, chỉnh ảnh, dựng video. Midjourney, Nano Banana, Veo</span></div>
+      <div class="stat reveal"><span class="stat-num">03</span><span class="stat-label"><b>AI âm thanh</b>: đọc giọng, lồng tiếng, làm nhạc. ElevenLabs, Suno</span></div>
+    </div>
+  </section>
+
+  <!-- 7. Đa phương thức -->
+  <section class="slide" data-layout="content" data-frame="media-left">
+    <h2 class="title reveal">Multimodal: một AI hiểu nhiều loại dữ liệu</h2>
+    <div class="media" aria-hidden="true">
+      <svg width="780" height="800" viewBox="0 0 780 800">
+        <!-- ảnh -->
+        <path class="wb-k" d="M60 120L250 122M248 118L246 250M250 246L58 248M62 252L61 118"/>
+        <path class="wb-t" d="M80 230L130 170L170 214L196 186L236 232"/>
+        <text class="wb-hand" x="96" y="300">ảnh</text>
+        <!-- PDF -->
+        <path class="wb-k" d="M64 360L210 362M208 358L248 400M250 396L248 520M252 516L60 518M64 522L62 358"/>
+        <path class="wb-t" d="M90 420L200 422M90 452L214 454M90 484L180 485"/>
+        <text class="wb-hand" x="100" y="570">PDF</text>
+        <!-- âm thanh -->
+        <path class="wb-k" d="M70 640L110 640L150 606L150 726L110 692L70 692Z"/>
+        <path class="wb-t" d="M176 640Q196 666 176 692M196 620Q232 666 196 712"/>
+        <text class="wb-hand" x="62" y="780">âm thanh</text>
+        <!-- mũi tên vào AI -->
+        <path class="wb-t draw" pathLength="1" style="--d:.2" d="M270 190Q380 260 450 360M432 340L450 360M456 334L450 360"/>
+        <path class="wb-t draw" pathLength="1" style="--d:.35" d="M280 440L440 432M418 420L440 432M418 446L440 432"/>
+        <path class="wb-t draw" pathLength="1" style="--d:.5" d="M240 660Q370 620 452 520M432 528L452 520M450 544L452 520"/>
+        <!-- AI -->
+        <g class="reveal">
+          <path class="wb-k" d="M470 330L700 333M696 328L694 540M700 536L466 538M471 543L470 328"/>
+          <text class="wb-hand" x="548" y="450" style="font-size:62px">AI</text>
+          <path class="wb-o" d="M500 600C560 650 650 640 700 590"/>
+          <text class="wb-hand-o" x="500" y="700">hiểu hết</text>
+        </g>
+      </svg>
+    </div>
+    <ul class="bullets">
+      <li class="reveal"><b>Chụp hóa đơn</b>: nhờ AI nhập thành bảng.</li>
+      <li class="reveal"><b>Gửi PDF hợp đồng</b>: nhờ tóm tắt, chỉ rủi ro.</li>
+      <li class="reveal"><b>Gửi ảnh báo lỗi</b>: nhờ chỉ cách xử lý.</li>
+      <li class="reveal"><b>Lưu ý</b>: đọc được nhiều loại chưa chắc tạo ra được nhiều loại.</li>
+    </ul>
+  </section>
+
+  <!-- 8. Chatbot và AI Agent -->
+  <section class="slide" data-layout="compare-table" data-stage="clear">
+    <h2 class="title reveal">Từ Chatbot AI đến AI Agent</h2>
+    <table class="ctable reveal">
+      <thead><tr><th></th><th>Chatbot AI</th><th class="pick">AI Agent</th></tr></thead>
+      <tbody>
+        <tr><th>Cách giao việc</th><td>Hỏi câu nào đáp câu đó</td><td class="pick"><span class="yes">Giao mục tiêu, tự chia bước</span></td></tr>
+        <tr><th>Rảnh tay</th><td class="no">Ngồi trực từng bước</td><td class="pick"><span class="yes">Giao xong là rời đi</span></td></tr>
+        <tr><th>Tạo file</th><td class="no">Trả chữ, tự chép ra Word</td><td class="pick"><span class="yes">Tự tạo Word, Excel thật</span></td></tr>
+        <tr><th>Tự động</th><td class="no">Tắt trình duyệt là dừng</td><td class="pick"><span class="yes">Hẹn giờ tự chạy định kỳ</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 9. Claude gộp Chat và Cowork -->
+  <section class="slide" data-layout="statement" data-stage="clear">
+    <p class="kicker reveal">Từ tháng 9/2026, Claude gộp Chat và Cowork</p>
+    <h2 class="statement reveal">Không cần chọn chế độ. Bạn chỉ giao việc, <mark>Claude tự quyết</mark> cách làm.</h2>
+  </section>
+
+  <!-- 10. Chương 2 -->
+  <section class="slide" data-layout="chapter">
+    <p class="ch-num reveal-scale" aria-hidden="true">02</p>
+    <h2 class="title reveal" data-morph-id="ch2">Tài khoản an toàn</h2>
+    <p class="subtitle reveal">Khóa bảo mật trước, rồi dạy Claude hiểu bạn</p>
+  </section>
+
+  <!-- 11. Khóa bảo mật -->
+  <section class="slide" data-layout="process">
+    <h2 class="title reveal">Khóa bảo mật dữ liệu: 4 bước</h2>
+    <ol class="process">
+      <li class="reveal"><span class="n">1</span><h3>Settings</h3><p>Bấm ảnh đại diện góc dưới trái</p></li>
+      <li class="reveal"><span class="n">2</span><h3>Privacy</h3><p>Chọn mục Privacy bên trái</p></li>
+      <li class="reveal"><span class="n">3</span><h3>Tìm dòng</h3><p>"Help improve our AI models"</p></li>
+      <li class="reveal"><span class="n">4</span><h3>Gạt OFF</h3><p>Chat không dùng để huấn luyện AI</p></li>
+    </ol>
+  </section>
+
+  <!-- 12. Profile và Memory -->
+  <section class="slide" data-layout="two-col">
+    <h2 class="title reveal">Để Claude hiểu bạn ngay từ đầu</h2>
+    <div class="cols">
+      <div class="col reveal-left">
+        <h3>Profile</h3>
+        <ul>
+          <li>Vào Settings, General</li>
+          <li>Họ tên của bạn</li>
+          <li>Cách xưng hô, công việc của bạn</li>
+        </ul>
+      </div>
+      <div class="col reveal-right">
+        <h3>Memory</h3>
+        <ul>
+          <li>Vào Settings, Memory, gạt bật</li>
+          <li>Claude tự nhớ bối cảnh qua các cuộc trò chuyện</li>
+        </ul>
+      </div>
+    </div>
+    <p class="takeaway reveal">Khai báo một lần, không phải giới thiệu lại mỗi lần chat.</p>
+  </section>
+
+  <!-- 13. 5 nguyên tắc -->
+  <section class="slide" data-layout="content" data-frame="numbered">
+    <h2 class="title reveal">Instructions for Claude: 5 nguyên tắc gốc</h2>
+    <ul class="bullets">
+      <li class="reveal">Trả lời tiếng Việt, đầy đủ ý, chuyên nghiệp.</li>
+      <li class="reveal">Đi thẳng vào việc, không chào hỏi rườm rà.</li>
+      <li class="reveal">Ưu tiên gạch đầu dòng và bảng biểu.</li>
+      <li class="reveal">Thiếu dữ liệu thì hỏi lại, không đoán.</li>
+      <li class="reveal">Không bịa thông tin, số liệu, điều khoản.</li>
+    </ul>
+    <aside class="highlight reveal-scale">
+      <p class="hl-text">Dán vào Settings, General</p>
+    </aside>
+  </section>
+
+  <!-- 14. Chương 3 -->
+  <section class="slide" data-layout="chapter">
+    <p class="ch-num reveal-scale" aria-hidden="true">03</p>
+    <h2 class="title reveal" data-morph-id="ch3">Trợ lý chuyên việc</h2>
+    <p class="subtitle reveal">Dặn một lần trong Claude Projects, dùng mãi</p>
+  </section>
+
+  <!-- 15. Project là ngăn kéo hồ sơ (tự thiết kế) -->
+  <section class="slide s-drawer" data-layout="free">
+    <h2 class="d-title reveal">Project là một ngăn kéo hồ sơ cho từng đầu việc</h2>
+    <p class="d-sub reveal">Chat thường mở mới là quên sạch. Project giữ sẵn mọi thứ cho mỗi lần làm việc.</p>
+    <svg aria-hidden="true" style="position:absolute;left:100px;top:300px" width="1720" height="660" viewBox="100 300 1720 660">
+      <!-- thân ngăn kéo -->
+      <path class="wb-k draw" pathLength="1" style="--d:.1" d="M140 330L1782 334M1778 328L1776 800M1782 796L136 800M141 804L140 326"/>
+      <!-- tay nắm -->
+      <path class="wb-k" d="M880 826C900 850 1020 850 1040 826"/>
+      <!-- ba ngăn -->
+      <path class="wb-t" d="M680 360L682 770M1240 360L1238 770"/>
+    </svg>
+    <p class="d-cell reveal" style="left:200px"><span class="d-name">Tài liệu</span><span class="d-role">AI biết gì</span><span class="d-desc">Bảng giá, quy chế, mẫu biểu. Nạp một lần, chat nào cũng dùng được.</span></p>
+    <p class="d-cell d-key reveal" style="left:760px"><span class="d-name">Instructions</span><span class="d-role">AI làm thế nào</span><span class="d-desc">Sổ tay quy trình: vai trò, các bước, quy tắc không được vi phạm.</span></p>
+    <p class="d-cell reveal" style="left:1300px"><span class="d-name">Trò chuyện</span><span class="d-role">Nơi giao việc</span><span class="d-desc">Mỗi việc một chat riêng, chat nào cũng có sẵn tài liệu và quy trình.</span></p>
+  </section>
+
+  <!-- 16. AI đọc Instructions khi nào -->
+  <section class="slide" data-layout="timeline">
+    <h2 class="title reveal">AI đọc Project Instructions khi nào?</h2>
+    <div class="timeline">
+      <div class="step reveal"><div class="when">01</div><h3>Mở chat mới</h3><p>Trong Project. Sửa Instructions thì mở chat mới</p></div>
+      <div class="step reveal"><div class="when">02</div><h3>Claude tự nạp</h3><p>Instructions và tài liệu, trước cả chữ đầu tiên</p></div>
+      <div class="step reveal"><div class="when">03</div><h3>Giao việc ngắn</h3><p>Không dặn lại vai trò, quy trình</p></div>
+      <div class="step reveal"><div class="when">04</div><h3>Trả lời đúng quy trình</h3><p>Áp dụng cho mọi lượt trong chat</p></div>
+    </div>
+  </section>
+
+  <!-- 17. Ba chỗ dặn dò -->
+  <section class="slide" data-layout="compare-table" data-stage="clear">
+    <h2 class="title reveal">3 chỗ dặn dò AI, mỗi chỗ một việc</h2>
+    <table class="ctable reveal">
+      <thead><tr><th></th><th>Instructions for Claude</th><th>Memory</th><th class="pick">Project Instructions</th></tr></thead>
+      <tbody>
+        <tr><th>Áp dụng cho</th><td>Mọi chat trong tài khoản</td><td>Claude tự nhớ dần</td><td class="pick">Chỉ chat trong Project</td></tr>
+        <tr><th>Nên ghi gì</th><td>Phong cách chung</td><td>Không cần ghi, chỉ bật</td><td class="pick"><span class="yes">Quy trình riêng của một việc</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 18. Bí quyết viết Instructions -->
+  <section class="slide" data-layout="content" data-frame="stairs">
+    <h2 class="title reveal">Viết Instructions khi chưa biết viết</h2>
+    <ul class="bullets">
+      <li class="reveal"><b>Nạp tài liệu gốc</b>: Word, PDF bảng giá, quy chế, mẫu biểu</li>
+      <li class="reveal"><b>Kể quy trình bằng tiếng Việt</b>: bước 1 làm gì, bước 2 duyệt sao</li>
+      <li class="reveal"><b>Nhờ AI viết lại</b>: dặn viết ngắn gọn, rồi dán vào ô Instructions</li>
+    </ul>
+  </section>
+
+  <!-- 19. Lời dạy: giữ nguyên văn, không sửa câu chữ -->
+  <section class="slide s-teach" data-layout="free">
+    <p class="t-kicker reveal">Case study: Phương pháp học tiếng Anh</p>
+    <blockquote class="t-quote reveal">
+      <p>Muốn giỏi tiếng Anh, mỗi ngày ta chịu khó soạn đặt 100 câu, mỗi câu sẽ nhờ chatgpt sửa và giải thích về ngữ pháp và từ vựng, rồi nhờ chatgpt đọc cho nghe giùm để ta bắt chước đọc theo. 3 tháng sau sẽ giỏi hẳn.</p>
+      <p>Tính ra cũng phải spend at least 3 hours per day to learn English with this method.</p>
+      <p>Bây giờ có công cụ AI chatgpt hỗ trợ học nhanh hơn. Học giỏi rồi tìm trường nào đăng ký học thi lấy bằng chính quy.</p>
+      <p>Tại sao phải đặt câu? Vì đặt câu viết giỏi rồi sẽ đặt câu để nói sẽ nhanh và tự nhiên. Còn khi phát âm đọc cho giống AI thì ta sẽ nghe được người bản xứ nói gì. Nếu ta phát âm sai thì sẽ nghe không ra họ nói gì.</p>
+    </blockquote>
+    <p class="t-who reveal">Bác TCN</p>
+  </section>
+
+  <!-- 20. Case 1: dựng gia sư -->
+  <section class="slide" data-layout="process">
+    <h2 class="title reveal">Case 1: Dựng gia sư tiếng Anh trong 3 bước</h2>
+    <ol class="process">
+      <li class="reveal"><span class="n">1</span><h3>Viết Instructions</h3><p>Sửa lỗi ngắn gọn, cách nói bản xứ, phiên âm IPA</p></li>
+      <li class="reveal"><span class="n">2</span><h3>Nạp 2 tài liệu</h3><p>Hồ sơ người học và lời dạy của Bác TCN</p></li>
+      <li class="reveal"><span class="n">3</span><h3>Gửi câu mỗi ngày</h3><p>Không dặn lại, gia sư tự sửa theo hồ sơ</p></li>
+    </ol>
+  </section>
+
+  <!-- 21. Case 1: thực hành -->
+  <section class="slide" data-layout="content" data-frame="media-right">
+    <h2 class="title reveal">Gửi câu là được sửa ngay</h2>
+    <div class="mock mock-chat" data-title="Project: Gia sư tiếng Anh" style="left:1080px;top:140px;width:780px;height:800px">
+      <div class="msg user type">I am very busy today because my boss give me a lot of task.</div>
+      <div class="msg ai lines think" data-who="Gia sư">
+        <p><b>Sửa:</b> my boss <b>gives</b> me a lot of <b>tasks</b>.</p>
+        <p>Chủ ngữ số ít thì động từ thêm "s".</p>
+        <p>"task" đếm được nên dùng số nhiều.</p>
+      </div>
+    </div>
+    <ul class="bullets">
+      <li class="reveal"><b>Hồ sơ người học</b>: gia sư sửa sát công việc, trình độ của bạn.</li>
+      <li class="reveal"><b>Mục tiêu</b>: giao tiếp tiếng Anh trong công việc.</li>
+      <li class="reveal"><b>Viết giỏi rồi</b> nói sẽ nhanh và tự nhiên.</li>
+    </ul>
+  </section>
+
+  <!-- 22. Case 2: phân cấp duyệt -->
+  <section class="slide" data-layout="stats" data-source="Quy chế chiết khấu thương mại - NovaTech (tài liệu mẫu của khóa học)">
+    <h2 class="title reveal">Case 2: Trợ lý báo giá giữ đúng thẩm quyền</h2>
+    <div class="stats">
+      <div class="stat reveal"><span class="stat-num">5%</span><span class="stat-label">Đến 5%: <b>Sales</b> tự quyết chiết khấu</span></div>
+      <div class="stat reveal"><span class="stat-num">8%</span><span class="stat-label">Trên 5% đến 8%: <b>Trưởng phòng</b> duyệt</span></div>
+      <div class="stat reveal"><span class="stat-num">&gt;8%</span><span class="stat-label">Trên 8%: <b>CEO</b> bắt buộc duyệt</span></div>
+    </div>
+  </section>
+
+  <!-- 23. Case 2: Deal Nam Hải -->
+  <section class="slide" data-layout="content" data-frame="magazine">
+    <h2 class="title reveal">Deal Nam Hải: 4 việc trong một phiên chat</h2>
+    <ul class="bullets">
+      <li class="reveal"><b>Bóc tách deal</b>: 45 người dùng, đào tạo tại chỗ, đòi giảm giá.</li>
+      <li class="reveal"><b>Giữ giá</b>: khách so với đối thủ rẻ hơn 20%.</li>
+      <li class="reveal"><b>So sánh 2 phương án</b>: trả một lần hay chia 3 đợt.</li>
+      <li class="reveal"><b>Xuất thư chào giá</b>: đủ VAT, sẵn sàng in ký.</li>
+    </ul>
+    <aside class="highlight reveal">
+      <p class="hl-text">Tài liệu nạp sẵn: bảng giá, quy chế chiết khấu, mẫu thư chào giá.</p>
+    </aside>
+  </section>
+
+  <!-- 24. Hẹn giờ -->
+  <section class="slide" data-layout="content" data-frame="split-left">
+    <h2 class="title reveal">Scheduled Tasks: hẹn giờ cho AI tự làm</h2>
+    <ul class="bullets">
+      <li class="reveal"><b>Việc lặp lại</b>: hẹn một lần, AI tự chạy định kỳ.</li>
+      <li class="reveal"><b>Chạy trên Cloud</b>: không cần ngồi trực máy.</li>
+      <li class="reveal"><b>Ví dụ</b>: tổng hợp deal đã chốt, deal bị kẹt gửi Trưởng phòng.</li>
+    </ul>
+    <aside class="highlight reveal-scale">
+      <p class="hl-big">17:00</p>
+      <p class="hl-text">Thứ Sáu hằng tuần</p>
+    </aside>
+  </section>
+
+  <!-- 25. Chương 4 -->
+  <section class="slide" data-layout="chapter">
+    <p class="ch-num reveal-scale" aria-hidden="true">04</p>
+    <h2 class="title reveal" data-morph-id="ch4">Lên máy tính</h2>
+    <p class="subtitle reveal">Cho AI làm việc thẳng với file trên máy của bạn</p>
+  </section>
+
+  <!-- 26. Vì sao cần Antigravity -->
+  <section class="slide" data-layout="before-after">
+    <h2 class="title reveal">Vì sao cần Antigravity?</h2>
+    <div class="ba">
+      <div class="ba-side before reveal-left"><span class="ba-tag">Trước</span><h3>Claude trên trình duyệt</h3><ul><li>Bị "nhốt" trong trình duyệt</li><li>Tải lên từng file bằng tay</li><li>File nhiều là nhanh hết lượt dùng</li></ul></div>
+      <div class="ba-arrow reveal">&rarr;</div>
+      <div class="ba-side after fx fx-right" data-step="1"><span class="ba-tag">Sau</span><h3>Antigravity trên máy tính</h3><ul><li>AI chạm thẳng vào thư mục</li><li>Đọc, ghi hàng loạt file tự động</li><li>Làm việc ngay trên file thật</li></ul></div>
+    </div>
+  </section>
+
+  <!-- 27. Cài Antigravity -->
+  <section class="slide" data-layout="timeline">
+    <h2 class="title reveal">Cài Antigravity tại lớp: 5 bước</h2>
+    <div class="timeline">
+      <div class="step reveal"><div class="when">01</div><h3>Tải bộ cài</h3><p>Link do Mentor cung cấp</p></div>
+      <div class="step reveal"><div class="when">02</div><h3>Cài đặt</h3><p>Để mặc định, Next, Finish</p></div>
+      <div class="step reveal"><div class="when">03</div><h3>Đăng nhập</h3><p>Tài khoản Google cá nhân</p></div>
+      <div class="step reveal"><div class="when">04</div><h3>Gõ lệnh thử</h3><p>Nhờ kiểm tra, xác nhận sẵn sàng</p></div>
+      <div class="step reveal"><div class="when">05</div><h3>Xong</h3><p>Agent truy cập được thư mục</p></div>
+    </div>
+  </section>
+
+  <!-- 28. Tự kiểm -->
+  <section class="slide" data-layout="content" data-frame="frame">
+    <h2 class="title reveal">Tự kiểm: bạn đã làm được gì?</h2>
+    <ul class="bullets">
+      <li class="reveal">Đã tắt "Help improve our AI models".</li>
+      <li class="reveal">Đã khai Profile, 5 nguyên tắc, bật Memory.</li>
+      <li class="reveal">Phân biệt được Chatbot AI và AI Agent.</li>
+      <li class="reveal">Đã dựng gia sư tiếng Anh và trợ lý báo giá.</li>
+      <li class="reveal">Đã cài Antigravity và chạy lệnh thử.</li>
+    </ul>
+    <aside class="highlight reveal-scale">
+      <p class="hl-text">Chuẩn bị: một thư mục file công việc thật</p>
+    </aside>
+  </section>
+
+  <!-- 29. Lộ trình tiếp theo -->
+  <section class="slide" data-layout="two-col" data-title="center">
+    <h2 class="title reveal">Lộ trình tiếp theo</h2>
+    <div class="cols">
+      <div class="col reveal-left">
+        <h3>Xử lý file và Dashboard</h3>
+        <ul>
+          <li>Đọc, đối chiếu số liệu nhiều file</li>
+          <li>Word, Excel, PDF cùng lúc</li>
+          <li>Dashboard trực quan chạy trên máy</li>
+        </ul>
+      </div>
+      <div class="col reveal-right">
+        <h3>AI Agent tự hành</h3>
+        <ul>
+          <li>Đóng gói bí quyết thành Skill</li>
+          <li>Kết nối Google Drive, Sheets qua MCP</li>
+          <li>Luồng việc tự động khép kín</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 30. Kết -->
+  <section class="slide" data-layout="closing">
+    <p class="kicker reveal">Điều cần nhớ</p>
+    <h2 class="title reveal">Dặn rõ một lần, AI làm đúng mãi</h2>
+    <p class="subtitle reveal">Giao việc cho AI như giao cho một cộng sự mới</p>
+  </section>
+
+</div>
+</div>
+<script>
+/* MORPH-SLIDES FRAMES (pairs with morph-frames.css). Load before morph-engine.js.
+   - adds the .frame-panel element a frame draws its colour block with (appended, so the
+     title stays :first-child), aria-hidden;
+   - marks text lying on an accent panel (.on-panel) so it takes --on-accent;
+   - frames with a panel get a clear stage unless the slide sets data-stage: the panel is the decoration. */
+(() => {
+  const PANEL = ['split-left', 'split-right', 'poster', 'band', 'rail', 'bottom', 'stack', 'corner', 'diagonal', 'frame', 'media-left', 'media-right', 'magazine', 'spotlight'];
+  const ON_PANEL = { 'split-left': '.highlight', 'split-right': '.highlight', diagonal: '.highlight' };
+  document.querySelectorAll('.deck-stage > .slide[data-frame]').forEach((slide) => {
+    const frame = slide.dataset.frame;
+    if (PANEL.includes(frame) && !slide.querySelector(':scope > .frame-panel')) {
+      const panel = Object.assign(document.createElement('div'), { className: 'frame-panel' });
+      panel.setAttribute('aria-hidden', 'true');
+      slide.append(panel);
+      if (!slide.dataset.stage) slide.dataset.stage = 'clear';
+    }
+    if (frame === 'stairs' && !slide.dataset.stage) slide.dataset.stage = 'clear';   // the steps run into the zone actors use
+    if (ON_PANEL[frame]) slide.querySelectorAll(ON_PANEL[frame]).forEach((el) => el.classList.add('on-panel'));
+  });
+})();
+
+</script>
+<script>
+/* MORPH-SLIDES MOCKS: timing for morph-mock.css. Load after the slides.
+   Inside each .mock, units (.msg, .type, .lines) play one after another;
+   the chain restarts in every data-step, because a click resets the clock.
+   .type  -> each letter becomes <span class="ch" style="--k:n">; typing
+             speed adapts so a long prompt still types in about 2.6 s.
+   .lines -> each child gets --j (line order); .think adds the dots first.
+   Every unit gets --d0 = when it starts, in seconds after its trigger. */
+(() => {
+  const SPEED = 0.035;  // s per letter for short texts
+  const MAX = 2.6;      // s: longest typing time
+  const LINE = 0.35;    // s between two lines (matches --line-gap)
+  const THINK = 0.9;    // s of "..." before the lines (matches --think-t)
+  const GAP = 0.25;     // s pause between two units
+
+  /* wrap every letter in a span; keeps inline tags such as <b> and <code> */
+  function split(el) {
+    const nodes = [];
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    // pre / pre-wrap text keeps its line breaks (a prompt someone will copy)
+    const raw = getComputedStyle(el).whiteSpace.startsWith('pre');
+    let k = 0;
+    nodes.forEach((node) => {
+      const text = node.textContent.normalize('NFC');
+      if (!raw && !text.trim()) return;
+      const frag = document.createDocumentFragment();
+      for (const c of raw ? text : text.replace(/\s+/g, ' ')) {
+        const s = document.createElement('span');
+        s.className = 'ch';
+        s.style.setProperty('--k', k++);
+        s.textContent = c;
+        frag.append(s);
+      }
+      node.replaceWith(frag);
+    });
+    return k;
+  }
+
+  document.querySelectorAll('.mock').forEach((mock) => {
+    if (mock.parentElement?.closest('.mock')) return;      // a chat inside a phone is timed with the phone
+    const clock = new Map();                                // step -> seconds used so far
+    mock.querySelectorAll('.msg, .type, .lines').forEach((u) => {
+      const key = u.closest('[data-step]')?.dataset.step || '0';
+      let t = clock.get(key) || 0;
+      u.style.setProperty('--d0', `${t.toFixed(2)}s`);
+      const typed = u.classList.contains('type');
+      const lined = u.classList.contains('lines');
+      if (typed && !u.querySelector('.ch')) {
+        const n = split(u);
+        const per = Math.min(SPEED, MAX / Math.max(n, 1));
+        u.style.setProperty('--per', `${per.toFixed(4)}s`);
+        t += n * per + GAP;
+      }
+      if (lined) {
+        if (u.classList.contains('think') && !u.querySelector(':scope > .dots')) {
+          const dots = Object.assign(document.createElement('span'), { className: 'dots', innerHTML: '<i></i><i></i><i></i>' });
+          dots.setAttribute('aria-hidden', 'true');
+          u.prepend(dots);
+          t += THINK;
+        }
+        const kids = [...u.children].filter((c) => !c.classList.contains('dots'));
+        kids.forEach((c, j) => c.style.setProperty('--j', j));
+        t += kids.length * LINE + GAP;
+      }
+      if (!typed && !lined && !u.querySelector('.type, .lines')) t += 2 * GAP; // a plain bubble
+      clock.set(key, t);
+    });
+  });
+})();
+
+</script>
+<script>
+/* MORPH-SLIDES ENGINE (no dependencies): scales the 1920x1080 stage, builds actors from the style's --actors,
+   sets data-layout/pose/parity on .deck-stage (style CSS moves actors, transitions do the "morph"),
+   FLIPs elements sharing data-morph-id. Input (keys, edge buttons, swipe, #hash) lives in morph-nav.js. */
+(() => {
+  const stage = document.querySelector('.deck-stage');
+  const slides = stage ? [...stage.querySelectorAll(':scope > .slide')] : [];
+  if (!slides.length) return;
+  const REVEAL = '.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur';
+  // layouts of morph-layouts-plus.css are variants of a classic layout: the slide keeps its name in data-kind
+  // and takes the classic one in data-layout (dense ones: 'diagram'), so every style poses and colours it.
+  const CLASSIC_OF = {
+    qa: 'quote', 'portrait-quote': 'quote', statement: 'quote', chapter: 'section', cta: 'cover',
+    'big-number': 'diagram', 'split-photo': 'diagram', bento: 'diagram', process: 'diagram', 'before-after': 'diagram',
+    'compare-table': 'diagram', countdown: 'diagram', free: 'diagram',   // free: the deck's own CSS lays it out
+  };
+  // Diagram slides borrow the agenda pose (body zone free) so dense slides keep the style's look; a style with
+  // its own diagram pose sets --dense-stage: diagram; one slide opts out with data-stage="clear".
+  const DENSE = getComputedStyle(stage).getPropertyValue('--dense-stage').replace(/["']/g, '').trim() || 'agenda';
+  let cur = -1, scale = 1;
+
+  /* ---------- fit stage to window ---------- */
+  function fit() {
+    scale = Math.min(innerWidth / 1920, innerHeight / 1080);
+    const x = (innerWidth - 1920 * scale) / 2;
+    const y = (innerHeight - 1080 * scale) / 2;
+    stage.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+  }
+
+  /* Actors from the style's --actors list (DOM order = z-order): switching style = swapping one CSS link. */
+  if (!stage.querySelector('.actors')) {
+    const names = getComputedStyle(stage).getPropertyValue('--actors').replace(/["']/g, '').trim().split(/\s+/).filter(Boolean);
+    const layer = Object.assign(document.createElement('div'), { className: 'actors back' });
+    layer.setAttribute('aria-hidden', 'true');
+    names.forEach((name) => {
+      const el = Object.assign(document.createElement('div'), { className: 'actor' });
+      el.dataset.actor = name;
+      layer.append(el);
+    });
+    stage.prepend(layer);
+  }
+
+  /* item count -> type size step. Agenda/timeline/stats tiles are bigger, so they allow more items. */
+  function densityOf(slide) {
+    const cols = [...slide.querySelectorAll('.col')];
+    const n = cols.length
+      ? Math.max(...cols.map((c) => c.querySelectorAll('li, p').length))
+      : slide.querySelectorAll('.bullets > li, .agenda-list > li, .stats > .stat, .timeline > .step').length;
+    const [lg, md] = slide.querySelector('.agenda-list, .timeline, .stats') ? [4, 6] : [3, 5];
+    return n <= lg ? 'lg' : n <= md ? 'md' : 'sm';
+  }
+
+  /* ---------- one-time prep per slide ---------- */
+  const seen = {};
+  slides.forEach((slide, k) => {
+    const own = slide.dataset.layout;
+    if (CLASSIC_OF[own]) { slide.dataset.kind = own; slide.dataset.layout = CLASSIC_OF[own]; }
+    const st = slide.dataset.stage;   // pose the actors take on this slide (any layout name, or "clear")
+    slide.dataset.stage = st === 'clear' || (!st && own === 'free') ? 'diagram' : st || (slide.dataset.layout === 'diagram' ? DENSE : slide.dataset.layout || 'content');
+    // stagger order for reveal items (author may override with style="--i:n")
+    slide.querySelectorAll(REVEAL).forEach((el, i) => {
+      if (!el.style.getPropertyValue('--i')) el.style.setProperty('--i', i);
+    });
+    if (!slide.dataset.density) slide.dataset.density = densityOf(slide);
+    // parity of the slide itself: content tweaks must not follow the *current* slide
+    slide.dataset.parity = k % 2 && slide.dataset.title !== 'side' && !slide.dataset.frame ? 'even' : 'odd';   // side titles and frames need the plain pose
+    // variant 1..3: Nth time this layout appears (styles may give repeats a different pose)
+    const lay = slide.dataset.layout || 'content';
+    seen[lay] = (seen[lay] || 0) + 1;
+    if (!slide.dataset.variant) slide.dataset.variant = String(((seen[lay] - 1) % 3) + 1);
+    slide.querySelectorAll('.agenda-list').forEach((list) => {
+      const items = [...list.children];
+      const rows = Math.ceil(items.length / 2);
+      list.style.setProperty('--rows', rows);
+      items.forEach((li, i) => li.classList.toggle('is-right', i >= rows));
+    });
+  });
+
+  /* --on-accent: text colour on accent fills (badges, chosen column, primary button): the style's page or ink
+     colour when it reads (4.5:1), else the best of page, ink, white, black. color-mix() computes to color(srgb 0-1). */
+  const probe = Object.assign(document.createElement('i'), { hidden: true });
+  stage.append(probe);
+  const lumOf = (v) => { probe.style.color = v; const c = getComputedStyle(probe).color, k = c.startsWith('color(') ? 1 : 255;
+    return c.match(/[\d.]+/g).slice(0, 3).map((x) => ((x /= k) <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4)).reduce((s, x, i) => s + x * [0.2126, 0.7152, 0.0722][i], 0); };
+  function ink() {
+    const a = lumOf('var(--accent)'), score = (v) => { const l = lumOf(v); return (Math.max(a, l) + 0.05) / (Math.min(a, l) + 0.05); };
+    const all = ['var(--bg)', 'var(--fg)', '#ffffff', '#111111'];
+    stage.style.setProperty('--on-accent', all.slice(0, 2).find((v) => score(v) >= 4.5) || all.reduce((p, v) => (score(v) > score(p) ? v : p)));
+  }
+
+  /* ---------- UI chrome ---------- */
+  const progress = Object.assign(document.createElement('div'), { className: 'deck-progress' });
+  const counter = Object.assign(document.createElement('div'), { className: 'deck-counter' });
+  counter.setAttribute('aria-live', 'polite');
+  document.body.append(progress, counter);
+
+  function morphMs() {
+    const v = getComputedStyle(stage).getPropertyValue('--morph-dur').trim();
+    const ms = v.endsWith('ms') ? parseFloat(v) : parseFloat(v) * 1000;
+    return Number.isFinite(ms) ? ms : 1200;
+  }
+
+  /* rect in stage coordinates (only differences are used) */
+  function rectOf(el) {
+    const r = el.getBoundingClientRect();
+    return { x: r.left / scale, y: r.top / scale, w: r.width / scale, h: r.height / scale };
+  }
+
+  /* ---------- FLIP: First, Last, Invert, Play ---------- */
+  function flip(a, b, ra, fontA) {
+    a._flipDone?.();             // finish any flight still running on either element
+    b._flipDone?.();
+    b.classList.remove('flip-src');
+    b.style.transition = 'none';
+    b.style.transformOrigin = '0 0';
+    b.style.transform = 'none';
+    const rb = rectOf(b);
+    if (!rb.w || !rb.h) { b.style.transition = ''; b.style.transform = ''; b.style.transformOrigin = ''; return; }
+    const isText = b.textContent.trim() && !b.querySelector('img, svg, video');
+    const fontB = parseFloat(getComputedStyle(b).fontSize);
+    // text: uniform scale by font-size ratio (avoids squashed letters)
+    const sx = isText ? fontA / fontB : ra.w / rb.w;
+    const sy = isText ? fontA / fontB : ra.h / rb.h;
+    b.style.transform = `translate(${ra.x - rb.x}px, ${ra.y - rb.y}px) scale(${sx}, ${sy})`;
+    a.classList.add('flip-src');
+    void b.offsetWidth; // commit the inverted position
+    b.style.transition = '';
+    b.classList.add('flip-run');
+    b.style.transform = 'none';
+
+    let timer = 0;
+    const onEnd = (e) => { if (e.target === b && e.propertyName === 'transform') done(); };
+    const done = () => {
+      clearTimeout(timer);
+      b.removeEventListener('transitionend', onEnd);
+      b.classList.remove('flip-run');
+      b.style.transform = '';
+      b.style.transformOrigin = '';
+      a.classList.remove('flip-src');
+      a._flipDone = b._flipDone = null;
+    };
+    a._flipDone = b._flipDone = done;
+    b.addEventListener('transitionend', onEnd);
+    timer = setTimeout(done, morphMs() + 150);
+  }
+
+  /* ---------- go to slide n ---------- */
+  function go(n) {
+    n = Math.max(0, Math.min(slides.length - 1, Number(n) || 0));
+    if (n === cur) return;
+    const from = slides[cur];
+    const to = slides[n];
+
+    // FIRST: measure shared elements on the outgoing slide
+    const pairs = [];
+    if (from) {
+      from.querySelectorAll('[data-morph-id]').forEach((a) => {
+        const b = to.querySelector(`[data-morph-id="${CSS.escape(a.dataset.morphId)}"]`);
+        if (b) pairs.push([a, b, rectOf(a), parseFloat(getComputedStyle(a).fontSize)]);
+      });
+    }
+
+    // switch: actors re-pose via CSS, content cross-fades.
+    // A slide with its own data-pose gets parity "none" so the pose is never fought by parity rules.
+    stage.dataset.dir = n > cur ? 'fwd' : 'back';
+    stage.dataset.layout = to.dataset.stage;
+    stage.dataset.kind = to.dataset.kind || to.dataset.layout || 'content';
+    stage.dataset.pose = to.dataset.pose || '';
+    stage.dataset.parity = to.dataset.pose ? 'none' : to.dataset.parity;
+    stage.dataset.variant = to.dataset.variant;
+    stage.dataset.brand = to.dataset.brand || ''; // morph-brand.css: hero | corner | hide
+    stage.dataset.slide = String(n + 1);
+    from?.classList.remove('active');
+    to.classList.add('active');
+    cur = n;
+    ink();
+
+    pairs.forEach(([a, b, ra, fa]) => flip(a, b, ra, fa));
+
+    progress.style.width = `${((n + 1) / slides.length) * 100}%`;
+    progress.style.background = getComputedStyle(stage).getPropertyValue('--accent'); // bar lives outside the stage
+    counter.textContent = `${n + 1} / ${slides.length}`;
+    history.replaceState(null, '', `#${n + 1}`);
+  }
+
+  addEventListener('resize', fit);
+
+  /* ---------- start: actors fly in from off-stage defaults ---------- */
+  fit();
+  const start = Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1);
+  requestAnimationFrame(() => requestAnimationFrame(() => go(start)));
+
+  window.deck = {
+    go,
+    ink,
+    next: () => go(cur + 1),
+    prev: () => go(cur - 1),
+    get index() { return cur; },
+    get count() { return slides.length; },
+  };
+})();
+
+</script>
+<script>
+/* ===========================================================
+   MORPH-SLIDES NAVIGATION (load after morph-engine.js)
+   Keys: Right/Down/PageDown/Space/Enter = next,
+         Left/Up/PageUp/Backspace = back, Home/End, F = fullscreen.
+   Two edge buttons (left = back, right = next). Clicking the slide itself
+   does nothing, so text can be selected and copied while presenting;
+   the mouse wheel does not page either. One-finger swipe. Editing the
+   #hash jumps to that slide.
+   =========================================================== */
+(() => {
+  const deck = window.deck;
+  if (!deck) return;
+  const isEditable = (t) => t.closest?.('a, button, input, textarea, select, [contenteditable]');
+
+  addEventListener('keydown', (e) => {
+    // leave browser shortcuts alone (Ctrl+F, Alt+Left, ...)
+    if (e.ctrlKey || e.metaKey || e.altKey || isEditable(e.target)) return;
+    const k = e.key;
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(k)) { e.preventDefault(); deck.next(); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(k)) { e.preventDefault(); deck.prev(); }
+    else if (k === 'Home') deck.go(0);
+    else if (k === 'End') deck.go(deck.count - 1);
+    else if (k === 'f' || k === 'F') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen?.();
+    }
+  });
+
+  // edge buttons live outside the stage; screenshots by automated browsers leave them out
+  if (!navigator.webdriver) {
+    [['prev', '\u2039', 'Slide trước'], ['next', '\u203A', 'Slide sau']].forEach(([dir, mark, label]) => {
+      const b = Object.assign(document.createElement('button'), { className: `deck-edge ${dir}`, type: 'button' });
+      b.setAttribute('aria-label', label);
+      b.innerHTML = `<span aria-hidden="true">${mark}</span>`;
+      b.addEventListener('mousedown', (e) => e.preventDefault()); // keep focus off, so Space/Enter still page
+      b.addEventListener('click', () => deck[dir]());
+      document.body.append(b);
+    });
+  }
+
+  let touch = null;
+  addEventListener('touchstart', (e) => {
+    touch = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+  }, { passive: true });
+  addEventListener('touchend', (e) => {
+    if (!touch || e.touches.length) { touch = null; return; } // pinch / multi-finger: ignore
+    const dx = e.changedTouches[0].clientX - touch.x;
+    const dy = e.changedTouches[0].clientY - touch.y;
+    touch = null;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 50) return;
+    const forward = Math.abs(dx) > Math.abs(dy) ? dx < 0 : dy < 0;
+    (forward ? deck.next : deck.prev)();
+  });
+
+  addEventListener('hashchange', () => {
+    const n = parseInt(location.hash.slice(1), 10);
+    if (n) deck.go(n - 1);
+  });
+})();
+
+</script>
+<script>
+/* ===========================================================
+   MORPH-SLIDES AUDIT: how well each slide fills space. Run in the console or a test tool: deck.audit()
+   - biggest empty band (gapY/gapX) and ink past the safe margins; display slides only for overflow.
+   - charts carry data-source; at most 6 icons, none missing; photo slides credit their picture.
+   - text under 3:1 (WCAG) against the solid actor or its own box below it: "chữ khó đọc trên hình".
+   - 3 inner slides in a row with the same look (layout, pose, diagrams, verbs) = monotone.
+   - whole deck (8+ inner slides): one skeleton (kind, frame, title mode, body blocks) at most
+     max(3, 20%) times; 10+ inner slides use at least 3 frames.
+   Run it outside a live talk: it briefly shows steps not yet clicked.
+   =========================================================== */
+(() => {
+  const stage = document.querySelector('.deck-stage');
+  if (!stage || !window.deck) return;
+  const SAFE = { x0: 80, x1: 1840, y0: 60, y1: 1020 };
+  const LIMIT = { gapY: 0.28, gapX: 0.3 };
+  // big-number slides are meant to breathe around the figures
+  const LIMIT_Y_BY_LAYOUT = { stats: 0.34, bento: 0.34, process: 0.38, 'before-after': 0.38 };   // airy by design
+  const DISPLAY = ['cover', 'section', 'quote', 'closing', 'photo', 'big-number', 'qa', 'portrait-quote', 'chapter', 'statement', 'cta', 'split-photo', 'free'];
+
+  /* text line boxes + images/svg, in stage coordinates */
+  function inkRects(slide) {
+    const s = stage.getBoundingClientRect();
+    const k = s.width / 1920;
+    const out = [];
+    const push = (r) => r.width >= 1 && r.height >= 1 && out.push({ x0: (r.left - s.left) / k, x1: (r.right - s.left) / k, y0: (r.top - s.top) / k, y1: (r.bottom - s.top) / k });
+    const walker = document.createTreeWalker(slide, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      if (!node.textContent.trim() || node.parentElement.closest('[aria-hidden="true"]')) continue;   // decoration (chapter numeral)
+      const range = document.createRange(); range.selectNodeContents(node);
+      [...range.getClientRects()].forEach(push);
+    }
+    slide.querySelectorAll(':is(img, svg, video, canvas):not(.photo-bg, .split-img, svg[aria-hidden="true"])').forEach((el) => push(el.getBoundingClientRect()));
+    // decorative art of two-layer styles (svg aria-hidden) may bleed off the edge on purpose: count it, clipped to the safe area
+    slide.querySelectorAll('svg[aria-hidden="true"]').forEach((el) => { if (el.parentElement.closest('svg')) return; if (push(el.getBoundingClientRect())) { const o = out.at(-1); o.x0 = Math.max(o.x0, SAFE.x0); o.x1 = Math.min(o.x1, SAFE.x1); o.y0 = Math.max(o.y0, SAFE.y0); o.y1 = Math.min(o.y1, SAFE.y1); } });
+    // a frame's colour block fills space on purpose and may bleed off the edge: count it, clipped to the safe area
+    slide.querySelectorAll('.frame-panel').forEach((el) => { if (push(el.getBoundingClientRect())) { const o = out.at(-1); o.x0 = Math.max(o.x0, SAFE.x0); o.x1 = Math.min(o.x1, SAFE.x1); o.y0 = Math.max(o.y0, SAFE.y0); o.y1 = Math.min(o.y1, SAFE.y1); } });
+    return out;
+  }
+
+  /* solid actors in the pose this slide would have (same attributes the engine sets) */
+  function actorRects(slide, k, s) {
+    Object.assign(stage.dataset, {
+      layout: slide.dataset.stage || slide.dataset.layout || 'content', pose: slide.dataset.pose || '',
+      parity: slide.dataset.pose ? 'none' : slide.dataset.parity, variant: slide.dataset.variant,
+    });
+    window.deck.ink?.();   // text colour on accent fills follows this slide's accent
+    return [...stage.querySelectorAll('.actor')].flatMap((a) => {
+      const cs = getComputedStyle(a);
+      // soft glows, faint shapes and masked/clipped drawings (pins: the box is not the shape) are skipped
+      const soft = (/radial-gradient/.test(cs.backgroundImage) && clear(cs.backgroundColor)) || /blur/.test(cs.filter) || +cs.opacity < 0.6
+        || cs.maskImage !== 'none' || cs.webkitMaskImage !== 'none' || cs.clipPath !== 'none';
+      const fill = soft ? null : fillLum(cs);
+      const r = a.getBoundingClientRect();
+      if (fill === null || r.width / k < 24 || r.height / k < 24) return [];
+      return [{ name: a.dataset.actor, lum: fill, x0: (r.left - s.left) / k, x1: (r.right - s.left) / k, y0: (r.top - s.top) / k, y1: (r.bottom - s.top) / k }];
+    });
+  }
+
+  /* brightness of what a shape paints: its plain fill (paper with grain counts as paper), or an
+     opaque gradient (sticky notes). Patterns with see-through stops (grid lines) and pictures cover nothing. */
+  function fillLum(cs) {
+    const rgbs = (str) => [...str.matchAll(/rgba?\(([^)]+)\)/g)].map((m) => m[1].split(/[\s,/]+/).map(Number));
+    if (!clear(cs.backgroundColor)) return lum(rgbs(cs.backgroundColor)[0]);
+    const img = cs.backgroundImage;
+    // one gradient layer stretched over the whole shape; tiles, corners and multi-layer drawings are patterns
+    if (!/^linear-gradient/.test(img) || /url\(|transparent/.test(img) || (img.match(/gradient\(/g) || []).length > 1) return null;
+    if (!/^(auto( auto)?|100% 100%|cover)$/.test(cs.backgroundSize)) return null;
+    const stops = rgbs(img);
+    if (!stops.length || stops.some((c) => c.length > 3 && c[3] < 0.9)) return null;
+    return stops.reduce((sum, c) => sum + lum(c), 0) / stops.length;
+  }
+
+  /* WCAG relative luminance and contrast ratio */
+  const lum = ([r, g, b]) => [r, g, b].map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; })
+    .reduce((s, v, i) => s + v * [0.2126, 0.7152, 0.0722][i], 0);
+  const ratio = (a, b) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  const clear = (c) => c === 'transparent' || /rgba\(.*,\s*0(\.0*[0-2]\d*)?\)$/.test(c);
+  /* text on its own box (card, band, window, or a filled shape of a drawn diagram) is shielded from the actors behind */
+  const boxed = (e) => { const cs = getComputedStyle(e); return e instanceof SVGGeometryElement ? !/none/.test(cs.fill) && !clear(cs.fill) && +cs.fillOpacity > 0.5 : !clear(cs.backgroundColor) || /gradient|url\(/.test(cs.backgroundImage); };
+  const boxOf = (el, slide) => { for (let e = el; e && e !== slide; e = e.parentElement) if (boxed(e)) return e; return null; };
+  // ...but the box itself must contrast with its text: an opaque plain fill is measured (tints, gradients, pictures are not)
+  const boxLum = (e) => { const c = rgbOf(getComputedStyle(e).backgroundColor); return c && (c[3] ?? 1) >= 0.9 ? lum(c) : null; };
+  // computed colours come as rgb(0-255) or, from color-mix(), as color(srgb 0-1 0-1 0-1 / a)
+  function rgbOf(c) { const m = c.match(/color\(srgb ([^)]+)\)/); if (!m) return c.match(/[\d.]+/g)?.map(Number); const v = m[1].split(/[\s/]+/).map(Number); return [v[0] * 255, v[1] * 255, v[2] * 255, v[3] ?? 1]; }
+
+  /* text that ends the slide hidden (pieces gathered away, opacity 0) is not read */
+  const faded = (el, slide) => {
+    let o = 1; for (let e = el; e && e !== slide; e = e.parentElement) o *= +getComputedStyle(e).opacity;
+    return o < 0.2 || getComputedStyle(el).visibility === 'hidden'; };
+
+  /* text lines lying (even partly) on a solid actor of too similar a brightness */
+  function crossings(slide) {
+    const s = stage.getBoundingClientRect();
+    const k = s.width / 1920;
+    // styles may pose actors by what the active slide holds (:has(.slide.active .takeaway))
+    const was = stage.querySelector(':scope > .slide.active');
+    was?.classList.remove('active');
+    slide.classList.add('active');
+    const shapes = slide.querySelector('.photo-bg') ? [] : actorRects(slide, k, s);   // a full-bleed photo hides the actors
+    const hits = new Map();   // actor -> first text found on it
+    const walker = document.createTreeWalker(slide, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      if (!node.textContent.trim() || node.parentElement.closest('.mock, svg') || faded(node.parentElement, slide)) continue;
+      const tcs = getComputedStyle(node.parentElement);
+      if (parseFloat(tcs.webkitTextStrokeWidth) > 0 || tcs.textShadow !== 'none') continue; // outlined text carries its own contrast
+      const ink = lum(rgbOf(tcs.color));
+      const need = parseFloat(tcs.fontSize) >= 60 ? 2.4 : 3;   // very large type stays readable at lower contrast
+      const box = boxOf(node.parentElement, slide), bl = box && boxLum(box);
+      if (box && bl !== null && ratio(ink, bl) < need) hits.set(`nền ${String(box.className.baseVal ?? box.className).split(' ')[0] || box.tagName.toLowerCase()}`, node.textContent.trim().slice(0, 24));
+      if (box) continue;
+      const range = document.createRange(); range.selectNodeContents(node);
+      [...range.getClientRects()].forEach((r) => {
+        const l = { x0: (r.left - s.left) / k, x1: (r.right - s.left) / k, y0: (r.top - s.top) / k, y1: (r.bottom - s.top) / k };
+        const area = (l.x1 - l.x0) * (l.y1 - l.y0);
+        if (area < 50) return;
+        // three points along the line; under each, only the topmost actor (DOM order = z-order) counts
+        const y = (l.y0 + l.y1) / 2;
+        [0.1, 0.5, 0.9].forEach((f) => {
+          const x = l.x0 + (l.x1 - l.x0) * f;
+          // a box of the slide under the text (pill, band, card drawn in the slide) shields it
+          if (document.elementsFromPoint(s.left + x * k, s.top + y * k).some((e) => e !== slide && slide.contains(e) && boxed(e))) return;
+          const top = shapes.findLast((a) => x > a.x0 && x < a.x1 && y > a.y0 && y < a.y1);
+          if (top && ratio(ink, top.lum) < need && !hits.has(top.name)) hits.set(top.name, node.textContent.trim().slice(0, 24));
+        });
+      });
+    }
+    slide.classList.remove('active');
+    was?.classList.add('active');
+    return [...hits].map(([name, text]) => `${name} ("${text}")`);
+  }
+
+  /* biggest uncovered interval of [lo, hi] given covered spans */
+  function maxGap(spans, lo, hi) {
+    const sorted = spans.map(([a, b]) => [Math.max(a, lo), Math.min(b, hi)]).filter(([a, b]) => b > a).sort((p, q) => p[0] - q[0]);
+    let gap = 0, cursor = lo;
+    for (const [a, b] of sorted) { gap = Math.max(gap, a - cursor); cursor = Math.max(cursor, b); }
+    return Math.max(gap, hi - cursor);
+  }
+
+  function auditSlide(slide, i) {
+    const layout = slide.dataset.kind || slide.dataset.layout || 'content';   // new layouts report their own name
+    const ink = inkRects(slide);
+    const issues = [];
+    const out = ink.filter((r) => r.x0 < SAFE.x0 - 40 || r.x1 > SAFE.x1 + 40 || r.y0 < SAFE.y0 - 30 || r.y1 > SAFE.y1 + 30);
+    if (out.length) issues.push(`tràn khung (${out.length} dòng)`);
+    // text overflow = a text line box past its container (decorative pseudo-elements are ignored)
+    slide.querySelectorAll('.col, .takeaway, .highlight').forEach((box) => {
+      const b = box.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(box);
+      const past = [...range.getClientRects()].some((r) => r.height && (r.bottom > b.bottom + 2 || r.right > b.right + 2));
+      if (past) issues.push(`chữ tràn hộp .${box.className.split(' ')[0]}`);
+    });
+    slide.querySelectorAll('.viz[data-viz]').forEach((v) => {
+      if (/\d/.test(['values', 'top', 'bottom', 'left', 'right'].map((k) => v.dataset[k] || '').join('')) && !v.dataset.source) issues.push(`biểu đồ ${v.dataset.viz} thiếu data-source`);
+    });
+    if (slide.querySelector('.photo-bg, .split-img') && !slide.querySelector('.photo-credit')) issues.push('ảnh thiếu .photo-credit (tác giả, nguồn, giấy phép)');
+    const icons = slide.querySelectorAll('.ico');
+    if (icons.length > 6) issues.push(`quá nhiều icon (${icons.length}, tối đa 6)`);
+    const lost = [...slide.querySelectorAll('.ico[data-missing]')].map((e) => e.dataset.icon);
+    if (lost.length) issues.push(`icon không tồn tại: ${lost.join(', ')}`);
+    const cut = crossings(slide);
+    if (cut.length) issues.push(`chữ khó đọc trên hình ${cut.join(', ')}`);
+    const gapY = maxGap(ink.map((r) => [r.y0, r.y1]), SAFE.y0, SAFE.y1) / (SAFE.y1 - SAFE.y0);
+    const gapX = maxGap(ink.map((r) => [r.x0, r.x1]), SAFE.x0, SAFE.x1) / (SAFE.x1 - SAFE.x0);
+    const display = DISPLAY.includes(layout);
+    if (!display && gapY > (slide.dataset.frame === 'spotlight' ? 0.38 : LIMIT_Y_BY_LAYOUT[layout] || LIMIT.gapY)) issues.push(`trống dọc ${Math.round(gapY * 100)}%`);
+    if (!display && gapX > (slide.dataset.frame === 'stairs' ? 0.42 : LIMIT.gapX)) issues.push(`trống ngang ${Math.round(gapX * 100)}%`);
+    return {
+      slide: i + 1, layout, density: slide.dataset.density || '',
+      gapY: `${Math.round(gapY * 100)}%`, gapX: `${Math.round(gapX * 100)}%`,
+      status: issues.length ? 'SỬA' : 'OK', issues: issues.join('; '),
+    };
+  }
+
+  /* look of a slide = what the eye recognises: layout, pose, diagram and mock kinds, motion verbs */
+  const VERB = /^(fx-[a-z]+|draw|count|slam|shake|strike|ping|travel|gather)$/;
+  function lookOf(slide) {
+    const kinds = [...slide.querySelectorAll('.viz[data-viz]')].map((v) => v.dataset.viz)
+      .concat([...slide.querySelectorAll('.mock')].map((m) => [...m.classList].find((c) => c.startsWith('mock-')) || 'mock')).sort();
+    const verbs = new Set([...slide.querySelectorAll('[class]')].flatMap((e) => [...e.classList].filter((c) => VERB.test(c))));
+    return [slide.dataset.kind || slide.dataset.layout || 'content', slide.dataset.pose || '', slide.dataset.frame || '', kinds.join('+'), [...verbs].sort().join('+')].join('|');
+  }
+
+  /* skeleton = what the eye reads as "that slide again", whatever the words, colours or motion verbs */
+  const BODY = ['bullets', 'cols', 'stats', 'timeline', 'agenda-list', 'bento', 'process', 'ctable', 'ba', 'countdown', 'ico-grid', 'viz', 'mock', 'highlight'];
+  function skeletonOf(slide) {
+    const vizKinds = [...new Set([...slide.querySelectorAll('.viz[data-viz]')].map((v) => v.dataset.viz))].sort().join(',');   // a funnel and a matrix look different; mock windows do not
+    const body = BODY.filter((c) => slide.querySelector('.' + c)).map((c) => (c === 'viz' && vizKinds ? `viz:${vizKinds}` : c)).join('+');
+    // no standard block: a hand-drawn figure (venn, axis, pipe...) is its own look, named by its first element's class
+    const own = body ? '' : [...slide.children].find((c) => !c.matches('.title, .frame-panel, [aria-hidden="true"]'))?.classList[0] || 'text';
+    return [slide.dataset.kind || slide.dataset.layout || 'content', slide.dataset.frame || 'no-frame', slide.dataset.title || 'top', body || own].join(' | ');
+  }
+  function deckRepeats(report, slides) {
+    const inner = report.map((r, i) => i).filter((i) => !DISPLAY.includes(report[i].layout));
+    const n = inner.length;
+    const flag = (i, msg) => { const r = report[i]; r.issues = [r.issues, msg].filter(Boolean).join('; '); r.status = 'SỬA'; };
+    if (n >= 8) {
+      const cap = Math.max(3, Math.ceil(n * 0.2)), seen = {};
+      inner.forEach((i) => {
+        const k = skeletonOf(slides[i]);
+        seen[k] = (seen[k] || 0) + 1;
+        if (seen[k] > cap) flag(i, `nhàm toàn deck: dáng "${k}" lần thứ ${seen[k]} (tối đa ${cap} trên ${n} slide trong)`);
+      });
+    }
+    const framable = inner.filter((i) => report[i].layout !== 'diagram');   // a full-body diagram does not take a frame
+    const frames = new Set(framable.map((i) => slides[i].dataset.frame).filter(Boolean));
+    if (framable.length >= 10 && frames.size < 3) flag(framable[0], `ít khung: deck có ${framable.length} slide trong (không tính sơ đồ) mới dùng ${frames.size} khung (data-frame), nên dùng ít nhất 3`);
+  }
+
+  window.deck.audit = () => {
+    stage.classList.add('auditing');
+    const saved = { ...stage.dataset };
+    const slides = [...stage.querySelectorAll(':scope > .slide')];
+    const report = slides.map(auditSlide);
+    const looks = slides.map(lookOf);
+    report.forEach((r, i) => {
+      if (i < 2 || DISPLAY.includes(r.layout) || looks[i] !== looks[i - 1] || looks[i] !== looks[i - 2]) return;
+      r.issues = [r.issues, 'nhàm: giống hệt 2 slide trước'].filter(Boolean).join('; ');
+      r.status = 'SỬA';
+    });
+    deckRepeats(report, slides);
+    ['layout', 'pose', 'parity', 'variant'].forEach((key) => { stage.dataset[key] = saved[key] ?? ''; });
+    window.deck.ink?.();
+    stage.classList.remove('auditing');
+    console.table(report);
+    return report;
+  };
+})();
+
+</script>
+<script>
+/* MORPH-SLIDES STEPS: click-by-click build. Load after morph-engine.js.
+   Elements with data-step="n" wait for the n-th "next" on their slide;
+   the slide gets data-at="<steps shown>" so CSS can style each state.
+   "Back" first takes the last shown step away (its effect plays in reverse),
+   then goes to the previous slide, which arrives finished. Automated browsers
+   (deck.audit()) always see every step. */
+(() => {
+  const deck = window.deck;
+  const stage = document.querySelector('.deck-stage');
+  if (!deck || !stage) return;
+  const slides = [...stage.querySelectorAll(':scope > .slide')];
+  const auto = navigator.webdriver;
+  const last = (s) => Math.max(0, ...[...s.querySelectorAll('[data-step]')].map((e) => +e.dataset.step || 0));
+  const show = (s, n) => {
+    s.dataset.at = n;
+    s.querySelectorAll('[data-step]').forEach((e) => e.classList.toggle('pending', +e.dataset.step > n));
+  };
+  const enter = () => {
+    const s = slides[deck.index];
+    if (s) show(s, auto || stage.dataset.dir === 'back' ? last(s) : 0);
+  };
+  const { next, prev, go } = deck;
+  deck.next = () => {
+    const s = slides[deck.index];
+    if (!s) return next();
+    const at = +s.dataset.at || 0;
+    if (at < last(s)) show(s, at + 1); else { next(); enter(); }
+  };
+  deck.prev = () => {
+    const s = slides[deck.index];
+    const at = +s?.dataset.at || 0;
+    if (s && at > 0) show(s, at - 1); else { prev(); enter(); }
+  };
+  deck.go = (n) => { go(n); enter(); };
+  slides.forEach((s) => show(s, auto ? last(s) : 0));
+  new MutationObserver(enter).observe(stage, { attributes: true, attributeFilter: ['data-slide'] });
+})();
+
+</script>
+<script>
+/* MORPH-SLIDES ICONS: Tabler Icons (MIT, Paweł Kuna) for decks being edited.
+   <i class="ico" data-icon="database"></i>, data-style="filled" for the solid set.
+   While a deck is a source file, empty icons are fetched from jsDelivr (pinned
+   version). inline-assets.py embeds the SVGs, so the final deck needs no network
+   and this script then has nothing to do. A name that does not exist gets
+   data-missing, which deck.audit() reports. Load anywhere after the slides. */
+(() => {
+  const VERSION = '3.48.0';
+  const CDN = `https://cdn.jsdelivr.net/npm/@tabler/icons@${VERSION}/icons`;
+  const cache = new Map();
+  const load = (name, style) => {
+    const key = `${style}/${name}`;
+    if (!cache.has(key)) {
+      cache.set(key, fetch(`${CDN}/${key}.svg`).then((r) => (r.ok ? r.text() : Promise.reject(new Error(r.status)))));
+    }
+    return cache.get(key);
+  };
+  document.querySelectorAll('.ico[data-icon]').forEach(async (el) => {
+    if (el.querySelector('svg')) return;
+    const name = el.dataset.icon;
+    const style = el.dataset.style === 'filled' ? 'filled' : 'outline';
+    if (!/^[a-z0-9-]+$/.test(name)) { el.dataset.missing = ''; return; }
+    try {
+      const svg = (await load(name, style))
+        .replace(/\s(width|height)="24"/g, '')
+        .replace(/\sclass="[^"]*"/, ' aria-hidden="true" focusable="false"');
+      el.innerHTML = svg;
+    } catch {
+      el.dataset.missing = '';
+      console.warn('morph-icons: không tải được icon', name, style);
+    }
+  });
+})();
+
+</script>
+</body>
+</html>
