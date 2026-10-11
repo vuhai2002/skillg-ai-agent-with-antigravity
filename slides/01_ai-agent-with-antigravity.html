@@ -1130,6 +1130,18 @@ b, strong { font-weight: 700; }
 .s-tools .ai-tile > span { white-space: nowrap; }
 .s-tools .ai-tile small { display: block; margin-top: 4px; font: 400 28px/1.2 var(--font-body); color: var(--muted); }
 .s-tools .ai-logo { width: 112px; height: 112px; flex: none; color: var(--ink); }
+/* Slide minh họa Chatbot và AI Agent: nét bút lông, nhãn chữ tay */
+.s-agent .a-title { position: absolute; left: 120px; top: 90px; width: 1680px; margin: 0; font: 700 64px/1.15 var(--font-display); color: var(--fg); }
+.s-agent .ill-k, .s-agent .ill-b, .s-agent .ill-o, .s-agent .ill-ghost { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.s-agent .ill-k { stroke: #23262c; stroke-width: 7; }
+.s-agent .ill-b { stroke: #2a5cb3; stroke-width: 6; }
+.s-agent .ill-o { stroke: #d97757; stroke-width: 8; }
+.s-agent .ill-ghost { stroke: #23262c; stroke-opacity: .3; stroke-width: 5; stroke-dasharray: 9 12; }
+.s-agent .ill-fill { fill: #2a5cb3; }
+.s-agent .ill-txt { font-family: var(--font-hand); font-size: 34px; fill: #23262c; }
+.s-agent .ill-txt-o { fill: #b5502b; font-size: 38px; }
+.s-agent .a-lbl { position: absolute; top: 880px; width: 620px; margin: 0; text-align: center; font-size: 34px; line-height: 1.35; color: var(--fg); }
+.s-agent .a-lbl b { display: block; font: 400 52px/1.1 var(--font-hand); color: var(--blue); }
 </style>
 </head>
 <body>
@@ -1269,6 +1281,66 @@ b, strong { font-weight: 700; }
       <li class="reveal"><b>Gửi ảnh báo lỗi</b>: nhờ chỉ cách xử lý.</li>
       <li class="reveal"><b>Lưu ý</b>: đọc được nhiều loại chưa chắc tạo ra được nhiều loại.</li>
     </ul>
+  </section>
+
+  <!-- Minh họa: Chatbot chỉ biết nói, AI Agent có tay chân và công cụ -->
+  <section class="slide s-agent" data-layout="free">
+    <h2 class="a-title reveal">Chatbot chỉ biết nói, AI Agent có thêm tay chân</h2>
+    <svg class="reveal" aria-hidden="true" style="position:absolute;left:160px;top:250px" width="1600" height="600" viewBox="0 0 1600 600" role="img" aria-label="Chatbot chỉ có đầu và biết trả lời; AI Agent có tay chân, cầm công cụ để tự làm việc">
+  <!-- Chatbot: chỉ có đầu và bong bóng chat -->
+  <path class="ill-k" d="M262 200L400 202Q440 204 440 244L438 338Q436 380 396 380L264 378Q222 378 222 336L220 242Q221 201 262 200"/>
+  <path class="ill-k" d="M330 200L331 162"/>
+  <circle class="ill-k" cx="331" cy="148" r="13"/>
+  <circle class="ill-k" cx="290" cy="280" r="14"/>
+  <circle class="ill-k" cx="372" cy="280" r="14"/>
+  <path class="ill-k" d="M300 330Q331 352 362 330"/>
+  <path class="ill-b" d="M478 118L640 120Q662 121 662 143L661 196Q660 218 638 218L540 218L502 248L512 218L480 218Q458 218 458 196L458 142Q459 119 478 118"/>
+  <circle class="ill-fill" cx="514" cy="168" r="9"/>
+  <circle class="ill-fill" cx="560" cy="168" r="9"/>
+  <circle class="ill-fill" cx="606" cy="168" r="9"/>
+  <path class="ill-ghost" d="M258 410L404 410M258 410L250 520M404 410L412 520"/>
+  <text class="ill-txt" x="262" y="575">không có tay chân</text>
+
+  <!-- Mũi tên: thêm tay chân và công cụ (điểm nhấn) -->
+  <path class="ill-o" d="M700 300Q780 250 862 296M836 278L862 296L834 312"/>
+  <text class="ill-txt ill-txt-o" x="686" y="360">+ tay chân</text>
+  <text class="ill-txt ill-txt-o" x="692" y="402">+ công cụ</text>
+
+  <!-- AI Agent: đầu, thân, tay, chân -->
+  <path class="ill-k" d="M1160 120L1240 121Q1270 122 1270 152L1269 200Q1268 230 1238 230L1162 229Q1131 229 1131 199L1130 151Q1131 121 1160 120"/>
+  <path class="ill-k" d="M1200 120L1201 94"/>
+  <circle class="ill-k" cx="1201" cy="82" r="11"/>
+  <circle class="ill-k" cx="1172" cy="172" r="11"/>
+  <circle class="ill-k" cx="1230" cy="172" r="11"/>
+  <path class="ill-k" d="M1178 205Q1201 220 1224 205"/>
+  <path class="ill-k" d="M1200 230L1200 246"/>
+  <path class="ill-k" d="M1130 246L1272 247Q1292 248 1292 268L1291 376Q1290 396 1270 396L1132 395Q1110 395 1110 373L1110 268Q1111 247 1130 246"/>
+  <path class="ill-k" d="M1112 272L1046 330L994 304"/>
+  <path class="ill-k" d="M1290 272L1356 330L1404 298"/>
+  <path class="ill-k" d="M1160 396L1146 500L1118 506"/>
+  <path class="ill-k" d="M1242 396L1256 500L1284 506"/>
+
+  <!-- Tay trái cầm cờ lê -->
+  <path class="ill-b" d="M992 302L944 254"/>
+  <path class="ill-b" d="M930 268A27 27 0 1 1 958 240"/>
+  <!-- Tay phải cầm tài liệu -->
+  <path class="ill-b" d="M1404 230L1456 230L1478 252L1478 330L1404 330Z"/>
+  <path class="ill-b" d="M1418 262L1462 262M1418 284L1462 284M1418 306L1448 306"/>
+
+  <!-- Công cụ xung quanh -->
+  <path class="ill-b" d="M946 112L1062 112L1062 182L946 182Z M946 132L1062 132"/>
+  <circle class="ill-fill" cx="960" cy="122" r="4"/><circle class="ill-fill" cx="974" cy="122" r="4"/>
+  <text class="ill-txt" x="976" y="216">web</text>
+  <circle class="ill-b" cx="1404" cy="128" r="34"/>
+  <path class="ill-b" d="M1404 128L1404 106M1404 128L1420 138"/>
+  <text class="ill-txt" x="1356" y="196">hẹn giờ</text>
+  <path class="ill-b" d="M960 452L996 452L1008 466L1062 466L1062 518L960 518Z"/>
+  <text class="ill-txt" x="984" y="560">file</text>
+  <path class="ill-b" d="M1372 440L1470 440L1470 516L1372 516Z M1372 465L1470 465M1372 490L1470 490M1405 440L1405 516M1438 440L1438 516"/>
+  <text class="ill-txt" x="1388" y="558">Excel</text>
+</svg>
+    <p class="a-lbl reveal" style="left:180px"><b>Chatbot AI</b>Hỏi câu nào đáp câu đó</p>
+    <p class="a-lbl reveal" style="left:1050px"><b>AI Agent</b>Tự cầm công cụ, làm nhiều bước</p>
   </section>
 
   <!-- 8. Chatbot và AI Agent -->
