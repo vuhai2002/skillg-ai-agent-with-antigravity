@@ -354,13 +354,10 @@
       color: var(--text-muted);
     }
 
-    .resource-empty {
-      padding: 12px 14px;
-      border: 1px dashed var(--border-color);
-      border-radius: var(--radius-md);
-      font-size: 12.5px;
-      color: var(--text-subtle);
-      text-align: center;
+    .resource-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
     /* Session list & tabs */
@@ -1097,8 +1094,36 @@
     <aside class="sidebar" id="sidebar">
       <div>
         <div class="sidebar-section-title">Tài nguyên học tập</div>
-        <!-- Thêm link tài nguyên (GitHub...) vào đây, mỗi link dùng class "resource-card-link" -->
-        <div class="resource-empty">Đang cập nhật</div>
+        <!-- Slide dùng đường dẫn tương đối nên mở được cả trên máy lẫn GitHub Pages -->
+        <div class="resource-list">
+          <a class="resource-card-link" href="slides/01_ai-agent-with-antigravity.html" target="_blank" rel="noopener">
+            <div class="icon-box">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <div>
+              <div class="resource-text-main">Slide bài giảng</div>
+              <div class="resource-text-sub">Mở trình chiếu cả khóa học</div>
+            </div>
+          </a>
+          <a class="resource-card-link" href="https://github.com/vuhai2002/skillg-ai-agent-with-antigravity/tree/main/demo-files/buoi-01" target="_blank" rel="noopener">
+            <div class="icon-box">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div>
+              <div class="resource-text-main">Tài liệu mẫu NovaTech</div>
+              <div class="resource-text-sub">Bảng giá, quy chế, mẫu thư chào giá</div>
+            </div>
+          </a>
+          <a class="resource-card-link" href="https://github.com/vuhai2002/skillg-ai-agent-with-antigravity" target="_blank" rel="noopener">
+            <div class="icon-box">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            </div>
+            <div>
+              <div class="resource-text-main">Kho tài liệu GitHub</div>
+              <div class="resource-text-sub">Tải toàn bộ workbook, slide, file mẫu</div>
+            </div>
+          </a>
+        </div>
       </div>
 
       <div>
