@@ -3,3 +3,6 @@
 
 # Bản xem trước lúc chọn style slide
 slides/mau-xem-truoc/
+
+# Bản sao lưu deck trước khi ghi đè
+slides/_backup/

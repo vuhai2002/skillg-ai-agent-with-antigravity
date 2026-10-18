@@ -1142,6 +1142,55 @@ b, strong { font-weight: 700; }
 .s-agent .ill-txt-o { fill: #b5502b; font-size: 38px; }
 .s-agent .a-lbl { position: absolute; top: 880px; width: 620px; margin: 0; text-align: center; font-size: 34px; line-height: 1.35; color: var(--fg); }
 .s-agent .a-lbl b { display: block; font: 400 52px/1.1 var(--font-hand); color: var(--blue); }
+/* Slide File .md: khung "bạn gõ" và khung "phần mềm hiển thị" đặt cạnh nhau */
+.wb-fill-b { fill: #2a5cb3; }
+.s-md .m-title { position: absolute; left: 120px; top: 90px; width: 1680px; margin: 0; font: 700 64px/1.15 var(--font-display); color: var(--fg); }
+.s-md .m-raw, .s-md .m-out { position: absolute; top: 250px; width: 760px; height: 700px; padding: 36px 44px; border: 4px solid var(--ink); border-radius: 18px 7px 16px 9px; }
+.s-md .m-raw { left: 120px; }
+.s-md .m-out { left: 1040px; border-color: var(--blue); }
+.s-md .m-cap { margin: 0 0 18px; font: 400 40px/1 var(--font-hand); color: var(--orange-d); }
+.s-md pre { margin: 0; font: 500 34px/1.55 'JetBrains Mono', Consolas, monospace; color: var(--fg); white-space: pre-wrap; }
+.s-md .m-out p { margin: 0 0 14px; font-size: 36px; color: var(--fg); }
+.s-md .m-out .m-h1 { font: 700 52px/1.15 var(--font-display); }
+.s-md .m-out .m-h2 { font: 700 42px/1.2 var(--font-display); color: var(--blue); }
+.s-md .m-out ul { list-style: disc; margin: 0 0 20px 40px; font-size: 36px; line-height: 1.45; }
+.s-md .m-img { padding: 24px; border: 3px dashed var(--blue); border-radius: 12px; text-align: center; font: 400 32px/1 var(--font-hand); color: var(--blue); }
+.ctable-path td { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.9em; }
+/* Tiêu đề chung cho slide tự thiết kế */
+.fs-title { position: absolute; left: 120px; top: 80px; width: 1680px; margin: 0; font: 700 64px/1.15 var(--font-display); color: var(--fg); }
+
+/* Cuốn sổ ghi nhớ của AI */
+.s-note .n-col { position: absolute; left: 960px; top: 220px; width: 840px; }
+.s-note .n-lead { margin: 0 0 28px; font: 400 46px/1.25 var(--font-hand); color: var(--blue); }
+.s-note .n-box { padding: 28px 36px; border: 4px solid var(--ink); border-radius: 18px 7px 16px 9px; }
+.s-note .n-box h3 { margin: 0 0 14px; font: 700 38px/1.2 var(--font-display); color: var(--fg); }
+.s-note .n-box ol { list-style: decimal; margin: 0 0 0 44px; font-size: 34px; line-height: 1.55; color: var(--fg); }
+.s-note .n-note { margin: 28px 0 0; font: 400 42px/1.2 var(--font-hand); color: var(--orange-d); }
+
+/* Skill là gì: 3 thẻ đánh số */
+.s-what .w-card { position: absolute; left: 120px; width: 960px; padding: 22px 30px 22px 120px; border: 4px solid var(--ink); border-radius: 18px 7px 16px 9px; }
+.s-what .w-num { position: absolute; left: 28px; top: 24px; width: 64px; height: 64px; border: 4px solid var(--blue); border-radius: 50%; font: 400 40px/56px var(--font-hand); text-align: center; color: var(--blue); }
+.s-what .w-card h3 { margin: 0 0 6px; font: 700 40px/1.2 var(--font-display); color: var(--fg); }
+.s-what .w-card p { margin: 0; font-size: 30px; line-height: 1.4; color: var(--fg); }
+.s-what .w-take { position: absolute; left: 120px; top: 846px; width: 960px; margin: 0; padding: 18px 30px; border: 4px solid var(--orange); border-radius: 44px; text-align: center; font: 400 54px/1.1 var(--font-hand); color: var(--orange-d); }
+
+/* Prompt và Skill: 2 khung */
+.s-vs .v-panel { position: absolute; top: 210px; width: 810px; padding: 34px 50px 40px; border: 4px solid var(--ink); border-radius: 18px 7px 16px 9px; }
+.s-vs .v-panel.v-skill { border-color: var(--blue); }
+.s-vs .v-panel h3 { margin: 0 0 6px; font: 400 56px/1.1 var(--font-hand); color: var(--fg); }
+.s-vs .v-skill h3 { color: var(--blue); }
+.s-vs .v-panel svg { display: block; width: 100%; height: 260px; margin: 6px 0 10px; }
+.s-vs .v-lbl { margin: 18px 0 4px; font: 400 42px/1.1 var(--font-hand); color: var(--orange-d); }
+.s-vs .v-txt { margin: 0; font-size: 38px; line-height: 1.4; color: var(--fg); }
+
+/* 2 lớp Skill */
+.s-layer .l-panel { position: absolute; top: 190px; width: 810px; height: 700px; padding: 26px 46px; border: 4px solid var(--ink); border-radius: 18px 7px 16px 9px; }
+.s-layer .l-panel.l-project { border-color: var(--blue); }
+.s-layer .l-panel svg { display: block; width: 100%; height: 200px; }
+.s-layer .l-panel h3 { margin: 10px 0 18px; font: 400 52px/1.15 var(--font-hand); color: var(--fg); }
+.s-layer .l-project h3 { color: var(--blue); }
+.s-layer .l-panel ul { margin: 0 0 0 40px; list-style: disc; font-size: 36px; line-height: 1.55; color: var(--fg); }
+.s-layer .l-take { position: absolute; left: 120px; top: 920px; width: 1680px; margin: 0; padding: 16px 30px; border: 4px solid var(--orange); border-radius: 44px; text-align: center; font: 400 48px/1.1 var(--font-hand); color: var(--orange-d); }
 </style>
 </head>
 <body>
@@ -1179,7 +1228,9 @@ b, strong { font-weight: 700; }
       <li><span class="num reveal">01</span><div><h3 class="reveal" data-morph-id="ch1">Hiểu đúng về AI</h3><p class="reveal">AI tạo sinh, đa phương thức, Chatbot và AI Agent</p></div></li>
       <li><span class="num reveal">02</span><div><h3 class="reveal" data-morph-id="ch2">Tài khoản an toàn</h3><p class="reveal">Bảo mật, Profile, 5 nguyên tắc, Memory</p></div></li>
       <li><span class="num reveal">03</span><div><h3 class="reveal" data-morph-id="ch3">Trợ lý chuyên việc</h3><p class="reveal">Claude Projects, 2 case thực hành, hẹn giờ</p></div></li>
-      <li><span class="num reveal">04</span><div><h3 class="reveal" data-morph-id="ch4">Lên máy tính</h3><p class="reveal">Cài Antigravity, lộ trình tiếp theo</p></div></li>
+      <li><span class="num reveal">04</span><div><h3 class="reveal" data-morph-id="ch4">Lên máy tính</h3><p class="reveal">Cài Antigravity, quy tắc toàn cục</p></div></li>
+      <li><span class="num reveal">05</span><div><h3 class="reveal" data-morph-id="ch5">Viết bài cùng AI</h3><p class="reveal">Đọc web, file .md, xuất Word</p></div></li>
+      <li><span class="num reveal">06</span><div><h3 class="reveal" data-morph-id="ch6">Đóng gói Skill</h3><p class="reveal">Skill toàn cục và cấp project</p></div></li>
     </ol>
   </section>
 
@@ -1583,18 +1634,362 @@ b, strong { font-weight: 700; }
     </div>
   </section>
 
+  <!-- B2. Quy tắc toàn cục là một file trên máy -->
+  <section class="slide" data-layout="content" data-frame="media-right">
+    <h2 class="title reveal">Instructions của Buổi 1, giờ là một file trên máy</h2>
+    <div class="mock mock-chat" data-title="Antigravity" style="left:1080px;top:140px;width:780px;height:800px">
+      <div class="msg user type">File chỉ dẫn toàn cục của bạn nằm ở đâu trên máy tôi?</div>
+      <div class="msg ai lines think" data-who="AI">
+        <p>File quy tắc toàn cục nằm tại:</p>
+        <p><b>C:\Users\&lt;tên máy&gt;\.gemini\GEMINI.md</b></p>
+        <p>Tôi đọc file này mỗi khi bắt đầu cuộc trò chuyện mới.</p>
+      </div>
+    </div>
+    <ul class="bullets">
+      <li class="reveal"><b>Antigravity</b>: file GEMINI.md trong thư mục .gemini.</li>
+      <li class="reveal"><b>Claude Desktop</b>: file CLAUDE.md trong thư mục .claude.</li>
+      <li class="reveal"><b>AI đọc</b> mỗi khi mở cuộc trò chuyện mới, ở mọi thư mục.</li>
+    </ul>
+  </section>
+
+  <!-- B2. File quy tắc: cuốn sổ ghi nhớ của AI (tự thiết kế) -->
+  <section class="slide s-note" data-layout="free">
+    <h2 class="fs-title reveal">File quy tắc: cuốn sổ ghi nhớ của AI</h2>
+    <svg aria-hidden="true" style="position:absolute;left:120px;top:200px" width="760" height="760" viewBox="120 200 760 760">
+      <path class="wb-k draw" pathLength="1" style="--d:.1" d="M180 300Q340 262 480 302L480 820Q340 782 180 822Z"/>
+      <path class="wb-k draw" pathLength="1" style="--d:.3" d="M480 302Q620 262 780 300L780 822Q620 782 480 820Z"/>
+      <text class="wb-hand" x="212" y="380" style="font-size:46px">GEMINI.md</text>
+      <text class="wb-hand" x="512" y="380" style="font-size:46px">CLAUDE.md</text>
+      <path class="wb-t" d="M215 450L440 446M215 510L430 506M215 570L445 566M215 630L400 627M215 690L436 686"/>
+      <path class="wb-t" d="M515 450L740 446M515 510L725 506M515 570L700 566"/>
+      <path class="wb-o draw" pathLength="1" style="--d:.9" d="M560 650L595 690L670 600"/>
+      <path class="wb-k" d="M690 880L830 670M716 894L856 684M830 670L856 684M690 880L716 894M690 880L678 912L716 894"/>
+    </svg>
+    <div class="n-col">
+      <p class="n-lead reveal">AI đọc cuốn sổ này mỗi khi mở cuộc trò chuyện mới, ở mọi thư mục</p>
+      <div class="n-box reveal">
+        <h3>4 quy tắc của lớp ghi vào sổ</h3>
+        <ol>
+          <li>Tiếng Việt có dấu đầy đủ, rõ ý</li>
+          <li>Chưa rõ thì hỏi lại, không đoán</li>
+          <li>Chỉ sửa đúng phần được yêu cầu</li>
+          <li>Hỏi trước khi xóa, ghi đè file</li>
+        </ol>
+      </div>
+      <p class="n-note reveal">Sửa sổ xong, mở chat mới để AI đọc bản mới</p>
+    </div>
+  </section>
+
+  <!-- B2. Chương 5 -->
+  <section class="slide" data-layout="chapter">
+    <p class="ch-num reveal-scale" aria-hidden="true">05</p>
+    <h2 class="title reveal" data-morph-id="ch5">Viết bài cùng AI trên máy</h2>
+    <p class="subtitle reveal">Đọc web, tải ảnh, viết trên file .md, xuất ra Word</p>
+  </section>
+
+  <!-- B2. AI tải nội dung và ảnh về máy (hình vẽ tay cây thư mục) -->
+  <section class="slide" data-layout="content" data-frame="media-left">
+    <h2 class="title reveal">AI tự đọc web, tải nội dung và ảnh về máy</h2>
+    <div class="media" aria-hidden="true">
+      <svg width="780" height="800" viewBox="0 0 780 800">
+        <!-- trang web -->
+        <path class="wb-k" d="M70 90L330 92M327 88L325 300M330 296L67 298M72 302L71 88"/>
+        <path class="wb-k" d="M70 132L328 134"/>
+        <circle class="wb-fill-b" cx="92" cy="111" r="6"/><circle class="wb-fill-b" cx="114" cy="111" r="6"/>
+        <path class="wb-t" d="M100 175L250 177M100 205L292 206M100 235L220 236"/>
+        <text class="wb-hand" x="118" y="350">trang web</text>
+        <!-- mũi tên xuống máy -->
+        <path class="wb-o draw" pathLength="1" style="--d:.3" d="M380 190Q470 200 500 300M478 284L500 300L508 276"/>
+        <text class="wb-hand-o" x="420" y="160">tải về</text>
+        <!-- cây thư mục -->
+        <g class="reveal">
+          <path class="wb-k" d="M380 400L452 400L470 420L640 420L640 500L380 500Z"/>
+          <text class="wb-hand" x="400" y="475" style="font-size:34px">tu-lieu</text>
+          <path class="wb-b" d="M500 500L500 560L540 560"/>
+          <path class="wb-b" d="M548 528L612 528L632 548L632 600L548 600Z"/>
+          <text class="wb-hand-b" x="470" y="645" style="font-size:30px">gioi-thieu.md</text>
+        </g>
+        <g class="reveal">
+          <path class="wb-k" d="M80 470L152 470L170 490L340 490L340 570L80 570Z"/>
+          <text class="wb-hand" x="96" y="545" style="font-size:34px">hinh-anh</text>
+          <path class="wb-b" d="M120 570L120 690M120 640L160 640M120 690L160 690"/>
+          <path class="wb-b" d="M168 612L248 612L248 668L168 668Z M176 660L200 632L220 652L240 628"/>
+          <path class="wb-b" d="M168 676L248 676L248 732L168 732Z M176 724L200 696L220 716L240 692"/>
+          <text class="wb-hand-b" x="266" y="690" style="font-size:30px">10 ảnh</text>
+        </g>
+      </svg>
+    </div>
+    <ul class="bullets">
+      <li class="reveal"><b>Đọc trang</b> giới thiệu Thiền Tôn Phật Quang.</li>
+      <li class="reveal"><b>Lưu nội dung</b> vào tu-lieu/gioi-thieu.md.</li>
+      <li class="reveal"><b>Tải 10 ảnh</b> vào hinh-anh/, tên không dấu.</li>
+      <li class="reveal"><b>Mở File Explorer</b>: file thật đã nằm trên máy.</li>
+    </ul>
+  </section>
+
+  <!-- B2. File .md là gì (tự thiết kế: bạn gõ và phần mềm hiển thị) -->
+  <section class="slide s-md" data-layout="free">
+    <h2 class="m-title reveal">File .md: văn bản thường, thêm vài ký hiệu</h2>
+    <div class="m-raw reveal-left">
+      <p class="m-cap">Bạn gõ</p>
+      <pre># Tìm hiểu Phật Quang
+
+## Hội Yêu Rác
+Thành lập năm **2017**
+- Nhặt rác
+- Truyền thông
+
+![Hội Yêu Rác](hinh-anh/hoi-yeu-rac.jpg)</pre>
+    </div>
+    <svg aria-hidden="true" style="position:absolute;left:880px;top:520px" width="160" height="120" viewBox="880 520 160 120">
+      <path class="wb-o draw" pathLength="1" d="M896 590Q960 540 1020 584M996 568L1020 584L994 600"/>
+    </svg>
+    <div class="m-out reveal-right">
+      <p class="m-cap">Phần mềm hiển thị</p>
+      <p class="m-h1">Tìm hiểu Phật Quang</p>
+      <p class="m-h2">Hội Yêu Rác</p>
+      <p>Thành lập năm <b>2017</b></p>
+      <ul><li>Nhặt rác</li><li>Truyền thông</li></ul>
+      <div class="m-img">ảnh Hội Yêu Rác</div>
+    </div>
+  </section>
+
+  <!-- B2. Vì sao dùng .md -->
+  <section class="slide" data-layout="content" data-frame="spotlight">
+    <h2 class="title reveal">Một bản gốc .md, ra Word, web hay slide</h2>
+    <ul class="bullets">
+      <li class="reveal">AI đọc và sửa đúng chỗ, không vỡ định dạng</li>
+      <li class="reveal">Nhẹ, mở bằng Notepad cũng đọc được</li>
+      <li class="reveal">Người và AI cùng sửa một file</li>
+    </ul>
+  </section>
+
+  <!-- B2. Viết và sửa bài -->
+  <section class="slide" data-layout="process">
+    <h2 class="title reveal">Viết và sửa bài: người và AI cùng làm</h2>
+    <ol class="process">
+      <li class="reveal"><span class="n">1</span><h3>AI viết bài</h3><p>Từ tư liệu đã lưu, chèn ảnh có chú thích, ghi nguồn</p></li>
+      <li class="reveal"><span class="n">2</span><h3>AI sửa theo ý</h3><p>Rút mở bài, đổi ảnh, thêm mục mới</p></li>
+      <li class="reveal"><span class="n">3</span><h3>Bạn tự sửa</h3><p>Gõ thẳng vào file, AI soát chính tả, giữ ý bạn</p></li>
+    </ol>
+  </section>
+
+  <!-- B2. Xuất Word theo tone logo -->
+  <section class="slide" data-layout="content" data-frame="stairs">
+    <h2 class="title reveal">Xuất Word đúng tone màu logo</h2>
+    <ul class="bullets">
+      <li class="reveal"><b>Kéo thả logo</b> vào khung chat</li>
+      <li class="reveal"><b>AI phân tích dải màu</b> chủ đạo của logo</li>
+      <li class="reveal"><b>Áp tone màu</b> vào tài liệu Word</li>
+      <li class="reveal"><b>Mở file kiểm tra</b> dấu tiếng Việt, màu, ảnh</li>
+    </ul>
+  </section>
+
+  <!-- B2. Chương 6 -->
+  <section class="slide" data-layout="chapter">
+    <p class="ch-num reveal-scale" aria-hidden="true">06</p>
+    <h2 class="title reveal" data-morph-id="ch6">Đóng gói Skill</h2>
+    <p class="subtitle reveal">Làm đẹp một lần, lần sau chỉ cần một câu</p>
+  </section>
+
+  <!-- B2. Skill là gì: cẩm nang nghề đóng gói sẵn (tự thiết kế) -->
+  <section class="slide s-what" data-layout="free">
+    <h2 class="fs-title reveal">Skill là gì?</h2>
+    <div class="w-card reveal" style="top:200px"><span class="w-num">1</span><h3>Cuốn cẩm nang nghề đóng gói sẵn</h3><p>Hướng dẫn đã chuẩn hóa, dùng lại cho mọi việc tương tự.</p></div>
+    <div class="w-card reveal" style="top:410px"><span class="w-num">2</span><h3>Không có Skill</h3><p>Lần nào cũng gõ lại cả đoạn hướng dẫn: bố cục, giọng văn, lưu ý. Tốn thời gian, dễ sai.</p></div>
+    <div class="w-card reveal" style="top:620px"><span class="w-num">3</span><h3>Có Skill</h3><p>Đóng gói đúng một lần. Gặp việc tương tự, AI tự lấy ra làm đúng cách.</p></div>
+    <p class="w-take reveal-scale">Làm một lần, dùng mãi</p>
+    <svg aria-hidden="true" style="position:absolute;left:1170px;top:180px" width="640" height="760" viewBox="1170 180 640 760">
+      <path class="wb-k draw" pathLength="1" style="--d:.2" d="M1250 240L1650 242M1647 238L1645 800M1650 796L1247 798M1252 802L1251 238"/>
+      <path class="wb-t" d="M1292 242L1293 798"/>
+      <path class="wb-b" d="M1650 290L1704 292L1703 352L1650 350M1650 380L1704 382L1703 442L1650 440M1650 470L1704 472L1703 532L1650 530"/>
+      <text class="wb-hand" x="1378" y="400" style="font-size:120px">SOP</text>
+      <path class="wb-o draw" pathLength="1" style="--d:.8" d="M1360 432Q1470 452 1590 428"/>
+      <path class="wb-k" d="M1380 540Q1430 512 1470 540Q1510 512 1560 540L1560 650Q1510 622 1470 650Q1430 622 1380 650Z M1470 540L1470 650"/>
+      <path class="wb-t" d="M1400 574L1450 568M1400 604L1450 598M1490 568L1540 574M1490 598L1540 604"/>
+      <path class="wb-b" d="M1560 798L1560 870L1580 850L1600 870L1600 798"/>
+      <text class="wb-hand" x="1318" y="910" style="font-size:44px">cẩm nang nghề</text>
+    </svg>
+  </section>
+
+  <!-- B2. Gõ lệnh (Prompt) và đóng gói (Skill) (tự thiết kế) -->
+  <section class="slide s-vs" data-layout="free">
+    <h2 class="fs-title reveal">Gõ lệnh (Prompt) và đóng gói (Skill)</h2>
+    <div class="v-panel reveal-left" style="left:120px">
+      <h3>Prompt: lệnh gõ mỗi lần</h3>
+      <svg aria-hidden="true" viewBox="0 0 700 220" width="700" height="220">
+        <path class="wb-k" d="M200 30L420 32Q450 33 450 63L448 130Q447 160 418 160L300 160L262 195L270 160L230 160Q200 160 200 130L200 62Q201 31 200 30"/>
+        <circle class="wb-fill-b" cx="270" cy="96" r="9"/><circle class="wb-fill-b" cx="325" cy="96" r="9"/><circle class="wb-fill-b" cx="380" cy="96" r="9"/>
+        <path class="wb-t" d="M520 70A55 55 0 1 1 505 150M505 150L490 128M505 150L528 140"/>
+        <text class="wb-hand" x="488" y="212" style="font-size:30px">gõ lại</text>
+      </svg>
+      <p class="v-lbl">Tính chất</p><p class="v-txt">Tạm thời. Gõ lại mỗi lần, kết quả lúc được lúc không.</p>
+      <p class="v-lbl">Ví như</p><p class="v-txt">Gọi món ở quán: hôm nay mặn, mai lại nhạt.</p>
+    </div>
+    <div class="v-panel v-skill reveal-right" style="left:990px">
+      <h3>Skill: kỹ năng đóng gói</h3>
+      <svg aria-hidden="true" viewBox="0 0 700 220" width="700" height="220">
+        <path class="wb-k" d="M190 30L420 32M418 28L416 190M420 186L188 188M192 192L191 28"/>
+        <path class="wb-t" d="M220 80L380 80M220 115L390 115M220 150L350 150"/>
+        <path class="wb-o draw" pathLength="1" style="--d:.6" d="M436 112L458 136L500 86"/>
+        <path class="wb-k" d="M520 150L620 150L618 188L522 188Z M522 150Q488 104 532 88Q546 48 576 62Q606 42 620 88Q656 104 618 150"/>
+        <text class="wb-hand" x="210" y="62" style="font-size:28px">công thức</text>
+      </svg>
+      <p class="v-lbl">Tính chất</p><p class="v-txt">Lâu dài. Chỉ lấy ra khi cần, chất lượng đồng đều.</p>
+      <p class="v-lbl">Ví như</p><p class="v-txt">Đưa đầu bếp công thức gia truyền của nhà bạn.</p>
+    </div>
+  </section>
+
+  <!-- B2. Việc lặp lại thì đóng thành Skill -->
+  <section class="slide" data-layout="content" data-frame="numbered">
+    <h2 class="title reveal">Việc gì làm đi làm lại thì đóng thành Skill</h2>
+    <ul class="bullets">
+      <li class="reveal"><b>Làm thử cùng AI</b>: sửa tới khi kết quả ưng ý.</li>
+      <li class="reveal"><b>Thấy việc lặp lại</b>: tuần nào, tháng nào cũng làm.</li>
+      <li class="reveal"><b>Nhờ AI đóng gói</b>: một câu "tạo skill cho việc này".</li>
+      <li class="reveal"><b>Lần sau một câu</b>: AI tự làm đúng như lần trước.</li>
+    </ul>
+    <aside class="highlight reveal-scale">
+      <p class="hl-text">Tài liệu đủ, dặn rõ</p>
+    </aside>
+  </section>
+
+  <!-- B2. Skill gồm gì -->
+  <section class="slide" data-layout="bento">
+    <h2 class="title reveal">Bên trong một Skill</h2>
+    <div class="bento">
+      <div class="cell hot wide tall reveal"><h3>SKILL.md</h3><p>Tên skill, mô tả khi nào dùng, các bước làm</p></div>
+      <div class="cell reveal"><h3>File kèm</h3><p>Logo, mẫu tài liệu</p></div>
+      <div class="cell reveal"><h3>AI tự chọn</h3><p>Câu bạn nói khớp mô tả thì dùng</p></div>
+      <div class="cell reveal"><h3>AI viết giúp</h3><p>Như nhờ viết Instructions ở Buổi 1</p></div>
+      <div class="cell reveal"><h3>Dùng lại mãi</h3><p>Không dặn lại logo, màu, bố cục</p></div>
+    </div>
+  </section>
+
+  <!-- B2. AI chọn Skill thế nào -->
+  <section class="slide" data-layout="timeline">
+    <h2 class="title reveal">AI chọn Skill thế nào?</h2>
+    <div class="timeline">
+      <div class="step reveal"><div class="when">01</div><h3>Quét danh sách</h3><p>Đọc tên và mô tả mọi skill, chưa mở chi tiết</p></div>
+      <div class="step reveal"><div class="when">02</div><h3>Chọn skill khớp việc</h3><p>Hoặc bạn gọi thẳng tên skill</p></div>
+      <div class="step reveal"><div class="when">03</div><h3>Làm đúng quy trình</h3><p>Mở SKILL.md, làm theo từng bước đã đóng gói</p></div>
+    </div>
+  </section>
+
+  <!-- B2. Quy tắc và Skill -->
+  <section class="slide" data-layout="compare-table" data-stage="clear">
+    <h2 class="title reveal">Quy tắc luôn đọc, Skill lấy ra khi cần</h2>
+    <table class="ctable reveal">
+      <thead><tr><th></th><th>Quy tắc (GEMINI.md, CLAUDE.md)</th><th class="pick">Skill</th></tr></thead>
+      <tbody>
+        <tr><th>Giống Buổi 1</th><td>Instructions, Project Instructions</td><td class="pick">Quy trình mới</td></tr>
+        <tr><th>AI đọc khi nào</th><td>Mỗi lần làm việc</td><td class="pick"><span class="yes">Khi gặp đúng việc</span></td></tr>
+        <tr><th>Nên ghi gì</th><td>Nguyên tắc chung</td><td class="pick"><span class="yes">Cách làm một việc cụ thể</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- B2. 2 lớp Skill: toàn cục và project (tự thiết kế) -->
+  <section class="slide s-layer" data-layout="free">
+    <h2 class="fs-title reveal">2 lớp Skill: toàn cục và cấp project</h2>
+    <div class="l-panel reveal-left" style="left:120px">
+      <svg aria-hidden="true" viewBox="0 0 700 200" width="700" height="200">
+        <path class="wb-k" d="M200 90L500 92M497 88L495 190M500 186L198 188M202 192L201 88M200 122L498 124"/>
+        <path class="wb-k" d="M300 90Q300 44 350 44Q400 44 400 90"/>
+        <path class="wb-b" d="M540 180L600 110M590 92A26 26 0 1 1 616 122"/>
+      </svg>
+      <h3>Toàn cục: bộ đồ nghề mang theo người</h3>
+      <ul>
+        <li>Dùng được ở mọi thư mục trên máy</li>
+        <li>Cách làm việc riêng, mẫu tài liệu của bạn</li>
+        <li>Chỉ máy bạn có, nên sao lưu</li>
+      </ul>
+    </div>
+    <div class="l-panel l-project reveal-right" style="left:990px">
+      <svg aria-hidden="true" viewBox="0 0 700 200" width="700" height="200">
+        <path class="wb-k" d="M200 20L500 22M497 18L495 190M500 186L198 188M202 192L201 18"/>
+        <circle class="wb-fill-b" cx="226" cy="40" r="9"/><circle class="wb-fill-b" cx="474" cy="40" r="9"/>
+        <path class="wb-t" d="M240 80L460 78M240 116L440 114M240 152L400 150"/>
+      </svg>
+      <h3>Cấp project: quy trình dán trên tường phòng</h3>
+      <ul>
+        <li>Nằm trong thư mục dự án</li>
+        <li>Ai mở dự án cũng làm giống nhau</li>
+        <li>Chuẩn chung: mẫu báo cáo, cách đặt tên file</li>
+      </ul>
+    </div>
+    <p class="l-take reveal-scale">Toàn cục giúp bạn nhanh, cấp project giúp cả nhóm đều tay</p>
+  </section>
+
+  <!-- B2. So sánh nhanh Skill toàn cục và cấp project -->
+  <section class="slide" data-layout="compare-table" data-stage="clear">
+    <h2 class="title reveal">So sánh nhanh: toàn cục và cấp project</h2>
+    <table class="ctable reveal">
+      <thead><tr><th></th><th>Skill toàn cục</th><th class="pick">Skill cấp project</th></tr></thead>
+      <tbody>
+        <tr><th>Nằm ở đâu</th><td>Thư mục người dùng</td><td class="pick">Trong thư mục dự án</td></tr>
+        <tr><th>Dùng được ở</th><td>Mọi thư mục trên máy</td><td class="pick">Chỉ dự án đó</td></tr>
+        <tr><th>Ai dùng được</th><td>Một mình bạn</td><td class="pick">Ai mở dự án cũng có</td></tr>
+        <tr><th>Lưu ý</th><td>Chỉ máy bạn có, nên sao lưu</td><td class="pick">Sửa ẩu là ảnh hưởng cả nhóm</td></tr>
+        <tr><th>Ví dụ</th><td>Mẫu email, báo cáo tuần</td><td class="pick">Tài liệu chuẩn đơn vị</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- B2. Bản đồ đường dẫn -->
+  <section class="slide" data-layout="compare-table" data-stage="clear">
+    <h2 class="title reveal">Bản đồ đường dẫn (dấu ~ là C:\Users\&lt;tên máy&gt;)</h2>
+    <table class="ctable ctable-path reveal">
+      <thead><tr><th></th><th class="pick">Antigravity</th><th>Claude Desktop</th></tr></thead>
+      <tbody>
+        <tr><th>Quy tắc toàn cục</th><td class="pick">~\.gemini\GEMINI.md</td><td>~\.claude\CLAUDE.md</td></tr>
+        <tr><th>Quy tắc project</th><td class="pick">dự án\GEMINI.md</td><td>dự án\CLAUDE.md</td></tr>
+        <tr><th>Skill toàn cục</th><td class="pick">~\.gemini\config\skills\</td><td>~\.claude\skills\</td></tr>
+        <tr><th>Skill project</th><td class="pick">dự án\.agents\skills\</td><td>dự án\.claude\skills\</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- B2. Hai chỗ hay đặt sai -->
+  <section class="slide" data-layout="before-after">
+    <h2 class="title reveal">2 chỗ đặt sai khiến Antigravity bỏ qua skill</h2>
+    <div class="ba">
+      <div class="ba-side before reveal-left"><span class="ba-tag">Sai</span><h3>Bị bỏ qua</h3><ul><li>~\.agents\skills\</li><li>dự án\.agents\config\skills\</li></ul></div>
+      <div class="ba-arrow reveal">&rarr;</div>
+      <div class="ba-side after fx fx-right" data-step="1"><span class="ba-tag">Đúng</span><h3>Được đọc</h3><ul><li>~\.gemini\config\skills\</li><li>dự án\.agents\skills\</li></ul></div>
+    </div>
+  </section>
+
+  <!-- B2. Thử Skill -->
+  <section class="slide" data-layout="content" data-frame="media-right">
+    <h2 class="title reveal">Thử Skill: một câu là xong</h2>
+    <div class="mock mock-chat" data-title="Cuộc trò chuyện mới" style="left:1080px;top:140px;width:780px;height:800px">
+      <div class="msg user type">Tạo tài liệu theo chuẩn Thiền Tôn Phật Quang cho file bai-viet.md</div>
+      <div class="msg ai lines think" data-who="AI">
+        <p>Dùng skill tài liệu theo chuẩn đơn vị.</p>
+        <p>Áp logo, tone màu, bố cục như lần trước.</p>
+        <p>Đã tạo file Word trong thư mục.</p>
+      </div>
+    </div>
+    <ul class="bullets">
+      <li class="reveal"><b>Mở chat mới</b> rồi giao việc bằng một câu.</li>
+      <li class="reveal"><b>Không dặn lại</b> logo, màu, bố cục.</li>
+      <li class="reveal"><b>Muốn dùng mọi nơi</b>: nhờ AI chuyển thành skill toàn cục.</li>
+    </ul>
+  </section>
+
   <!-- 28. Tự kiểm -->
   <section class="slide" data-layout="content" data-frame="frame">
     <h2 class="title reveal">Tự kiểm: bạn đã làm được gì?</h2>
     <ul class="bullets">
-      <li class="reveal">Đã tắt "Help improve our AI models".</li>
-      <li class="reveal">Đã khai Profile, 5 nguyên tắc, bật Memory.</li>
-      <li class="reveal">Phân biệt được Chatbot AI và AI Agent.</li>
+      <li class="reveal">Đã khóa bảo mật, khai Profile, bật Memory.</li>
       <li class="reveal">Đã dựng gia sư tiếng Anh và trợ lý báo giá.</li>
-      <li class="reveal">Đã cài Antigravity và chạy lệnh thử.</li>
+      <li class="reveal">Đã cài Antigravity, thêm quy tắc toàn cục.</li>
+      <li class="reveal">Đã viết bài .md và xuất Word đúng tone logo.</li>
+      <li class="reveal">Đã tạo Skill và gọi lại bằng một câu.</li>
     </ul>
     <aside class="highlight reveal-scale">
-      <p class="hl-text">Chuẩn bị: một thư mục file công việc thật</p>
+      <p class="hl-text">Làm lại trên việc thật của bạn</p>
     </aside>
   </section>
 
@@ -1603,18 +1998,16 @@ b, strong { font-weight: 700; }
     <h2 class="title reveal">Lộ trình tiếp theo</h2>
     <div class="cols">
       <div class="col reveal-left">
-        <h3>Xử lý file và Dashboard</h3>
+        <h3>Kết nối MCP</h3>
         <ul>
-          <li>Đọc, đối chiếu số liệu nhiều file</li>
-          <li>Word, Excel, PDF cùng lúc</li>
-          <li>Dashboard trực quan chạy trên máy</li>
+          <li>Kết nối Google Drive, Sheets</li>
+          <li>AI đọc, ghi dữ liệu trên đám mây</li>
         </ul>
       </div>
       <div class="col reveal-right">
         <h3>AI Agent tự hành</h3>
         <ul>
-          <li>Đóng gói bí quyết thành Skill</li>
-          <li>Kết nối Google Drive, Sheets qua MCP</li>
+          <li>Subagent chia việc cho nhau</li>
           <li>Luồng việc tự động khép kín</li>
         </ul>
       </div>

@@ -734,6 +734,22 @@
     }
     .ill-caption strong { display: block; font-size: 15px; color: var(--text-main); }
 
+    /* Mỗi buổi học là một tab; chỉ tab đang chọn được hiện */
+    .session-pane { display: none; }
+    .session-pane.active { display: block; }
+    .session-list > li:not(.active) .sidebar-toc { display: none; }
+    .session-tab-btn:disabled { cursor: default; opacity: 0.6; }
+    .session-tab-btn:disabled:hover { background: transparent; color: var(--text-muted); }
+    .session-soon { display: block; margin-top: 3px; font-size: 11px; font-weight: 600; color: var(--text-subtle); }
+
+    /* Khung minh họa file .md sau khi phần mềm hiển thị */
+    .md-render { font-size: 14px; color: var(--text-main); }
+    .md-render-label { margin-bottom: 10px; font-size: 12px; font-weight: 600; color: var(--text-muted); }
+    .md-render .md-h1 { margin-bottom: 8px; font-family: var(--font-display); font-size: 20px; font-weight: 800; }
+    .md-render .md-h2 { margin-bottom: 6px; font-family: var(--font-display); font-size: 16px; font-weight: 700; }
+    .md-render ul { margin: 6px 0 10px 20px; }
+    .md-render .md-img { padding: 18px; border: 1px dashed var(--border-color); border-radius: var(--radius-md); text-align: center; font-size: 12px; color: var(--text-subtle); }
+
     /* Trích dẫn nguyên văn (lời dạy, case study) */
     .quote-block {
       margin: 0 0 8px;
@@ -1148,7 +1164,7 @@
       <div>
         <div class="sidebar-section-title">Lộ trình 3 buổi học</div>
         <ul class="session-list">
-          <li>
+          <li class="active">
             <button class="session-tab-btn active" data-session="1">
               <div class="session-num-badge">1</div>
               <div class="session-name">Buổi 1: Bảo mật, Projects &amp; Khởi tạo Antigravity</div>
@@ -1172,13 +1188,25 @@
           <li>
             <button class="session-tab-btn" data-session="2">
               <div class="session-num-badge">2</div>
-              <div class="session-name">Buổi 2: Xử lý file máy tính &amp; Dashboard tương tác</div>
+              <div class="session-name">Buổi 2: AI trên máy tính: File .md, Word &amp; Skill</div>
             </button>
+            <div class="sidebar-toc">
+              <ul class="toc-list">
+                <li class="toc-item"><a href="#b2-phan-0">0. Chuẩn bị &amp; an toàn</a></li>
+                <li class="toc-item"><a href="#b2-phan-1">1. Quy tắc toàn cục</a></li>
+                <li class="toc-item"><a href="#b2-phan-2">2. AI tải nội dung, ảnh về máy</a></li>
+                <li class="toc-item"><a href="#b2-phan-3">3. File .md là gì?</a></li>
+                <li class="toc-item"><a href="#b2-phan-4">4. Viết &amp; sửa bài .md</a></li>
+                <li class="toc-item"><a href="#b2-phan-5">5. Xuất Word theo tone logo</a></li>
+                <li class="toc-item"><a href="#b2-phan-6">6. Đóng gói thành Skill</a></li>
+                <li class="toc-item"><a href="#b2-phan-7">7. Tự kiểm Buổi 2</a></li>
+              </ul>
+            </div>
           </li>
           <li>
-            <button class="session-tab-btn" data-session="3">
+            <button class="session-tab-btn" data-session="3" disabled>
               <div class="session-num-badge">3</div>
-              <div class="session-name">Buổi 3: AI Agent tự hành: Skill &amp; MCP Connectors</div>
+              <div class="session-name">Buổi 3: AI Agent tự hành &amp; kết nối MCP<span class="session-soon">Sắp cập nhật</span></div>
             </button>
           </li>
         </ul>
@@ -1187,6 +1215,9 @@
 
     <!-- Main Content Area -->
     <main class="main-content">
+
+      <!-- ================= BUỔI 1 ================= -->
+      <div class="session-pane active" id="session-1" data-session="1">
 
       <!-- Session 1 Banner -->
       <section class="session-banner" id="session1-banner">
@@ -1911,7 +1942,7 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
             Nhiệm vụ chuẩn bị dữ liệu cho Buổi 2:
           </div>
           <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.6;">
-            Gom sẵn vào 01 thư mục trên laptop các file công việc thực tế của bạn (ví dụ: 5-10 file hợp đồng Word/PDF, bảng sao kê giao dịch thẻ Visa của bệnh viện/ngân hàng, hoặc bảng kê chi phí triển khai). Ở Buổi 2, chúng ta sẽ cho Antigravity tự động đọc, đối soát và xuất Dashboard tương tác trực tiếp!
+            Cài sẵn và đăng nhập trước một trong hai công cụ: <strong>Antigravity 2.0</strong> (tài khoản Google có gói Google AI Plus hoặc Pro) hoặc <strong>Claude Desktop</strong> (nếu đã có Claude Pro). Buổi 2 sẽ cho AI làm việc trực tiếp trên máy: đọc web, tải ảnh, viết bài, xuất file Word và đóng gói thành Skill.
           </p>
         </div>
       </section>
@@ -1925,16 +1956,510 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
         <div class="grid-2">
           <div class="card-panel">
             <span style="font-size: 11px; font-weight: 800; color: var(--brand-primary); text-transform: uppercase;">BUỔI 2 • CHỦ NHẬT TUẦN TỚI</span>
-            <h3 style="font-size: 16px; margin: 8px 0; color: var(--text-main);">Đưa Antigravity xuống máy tính: Xử lý file &amp; Dashboard tương tác</h3>
-            <p style="font-size: 13px; color: var(--text-muted);">Tự động quét, đối chiếu chéo số liệu giữa nhiều file Word/Excel/PDF, làm công cụ tính toán và bảng dashboard trực quan chạy ngay trên máy.</p>
+            <h3 style="font-size: 16px; margin: 8px 0; color: var(--text-main);">AI làm việc trên máy tính: File .md, Word &amp; Skill</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">AI tự đọc web, tải nội dung và ảnh về máy, cùng bạn viết bài trên file .md, xuất Word đúng tone màu logo và đóng gói quy trình thành Skill.</p>
           </div>
           <div class="card-panel">
             <span style="font-size: 11px; font-weight: 800; color: var(--brand-primary); text-transform: uppercase;">BUỔI 3 • CHỦ NHẬT TUẦN KẾ</span>
-            <h3 style="font-size: 16px; margin: 8px 0; color: var(--text-main);">Nâng cấp AI Agent tự hành: Skill &amp; MCP Connectors</h3>
-            <p style="font-size: 13px; color: var(--text-muted);">Đóng gói bí quyết thành Skill (.md), kết nối Google Drive/Sheets qua MCP và phối hợp Subagent tạo luồng công việc tự động khép kín.</p>
+            <h3 style="font-size: 16px; margin: 8px 0; color: var(--text-main);">Nâng cấp AI Agent tự hành &amp; kết nối MCP</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">Kết nối Google Drive/Sheets qua MCP và phối hợp Subagent tạo luồng công việc tự động khép kín.</p>
           </div>
         </div>
       </section>
+
+      </div>
+      <!-- ================= HẾT BUỔI 1 ================= -->
+
+      <!-- ================= BUỔI 2 ================= -->
+      <div class="session-pane" id="session-2" data-session="2">
+
+      <section class="session-banner" id="session2-banner">
+        <div class="banner-eyebrow">
+          <span class="dot"></span>
+          BUỔI 2 • AI LÀM VIỆC TRÊN MÁY TÍNH
+        </div>
+        <h1 class="banner-title">Viết bài cùng AI ngay trên máy: File .md, Word và Skill</h1>
+        <p class="banner-desc">Cho AI tự đọc trang web, tải nội dung và hình ảnh về máy, cùng bạn viết và sửa bài dưới dạng file .md, xuất ra file Word đúng tone màu logo, rồi đóng gói cả quy trình thành Skill để lần sau chỉ cần một câu là xong.</p>
+      </section>
+
+      <!-- PHẦN 0 -->
+      <section class="content-section" id="b2-phan-0">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 0</span>
+          <h2 class="section-title">Chuẩn bị: công cụ, thư mục làm việc và an toàn</h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card-panel">
+            <div class="card-title">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              Cách 1: Antigravity 2.0
+            </div>
+            <p class="card-intro">Tải tại <a href="https://antigravity.google/product/antigravity-2/" target="_blank" rel="noopener">antigravity.google</a>, đăng nhập tài khoản Google có gói <strong>Google AI Plus hoặc Pro</strong>.</p>
+            <p class="card-note">Chưa có gói thì nhắn Mentor để được hướng dẫn nâng cấp.</p>
+          </div>
+          <div class="card-panel">
+            <div class="card-title">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Cách 2: Claude Desktop
+            </div>
+            <p class="card-intro">Dành cho ai đã có <strong>Claude Pro</strong>. Tải tại <a href="https://claude.com/download" target="_blank" rel="noopener">claude.com/download</a>, đăng nhập, rồi mở tab <strong>Code</strong> để làm việc với thư mục trên máy.</p>
+            <p class="card-note">Các prompt trong buổi này dùng được cho cả hai công cụ.</p>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Tạo thư mục làm việc
+          </div>
+          <div class="step-card-grid">
+            <div class="step-card">
+              <span class="step-num">1</span>
+              <div class="step-title">Tạo thư mục trống</div>
+              <div class="step-desc">Ví dụ ở Desktop, đặt tên <code>viet-bai-phat-quang</code>.</div>
+            </div>
+            <div class="step-card">
+              <span class="step-num">2</span>
+              <div class="step-title">Mở thư mục trong công cụ</div>
+              <div class="step-desc">Antigravity: mở thư mục làm workspace. Claude Desktop: tab Code, chọn thư mục này.</div>
+            </div>
+            <div class="step-card" style="border-color: var(--accent-emerald);">
+              <span class="step-num" style="background: var(--accent-emerald);">3</span>
+              <div class="step-title">Sẵn sàng giao việc</div>
+              <div class="step-desc">Mọi file AI tạo ra sẽ nằm gọn trong thư mục này.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert-box alert-warning">
+          <span class="alert-icon">⚠️</span>
+          <div>
+            <strong>4 NGUYÊN TẮC AN TOÀN KHI CHO AI LÀM VIỆC TRÊN MÁY:</strong>
+            <ul class="concept-list" style="color: inherit;">
+              <li><strong>Dùng thư mục riêng</strong> cho mỗi việc, không mở cả ổ đĩa cho AI.</li>
+              <li><strong>Đọc kỹ trước khi bấm cho phép</strong> mỗi khi AI xin chạy lệnh, cài công cụ hay xóa file.</li>
+              <li><strong>Làm trên bản sao</strong> với file quan trọng, dặn AI không sửa file gốc.</li>
+              <li><strong>Không đưa file nhạy cảm</strong> (số thẻ, mật khẩu, hồ sơ khách hàng) khi đang thực hành.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- PHẦN 1: QUY TẮC TOÀN CỤC -->
+      <section class="content-section" id="b2-phan-1">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 1</span>
+          <h2 class="section-title">Thiết lập quy tắc toàn cục cho AI trên máy</h2>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Instructions for Claude của Buổi 1, giờ là một file trên máy
+          </div>
+          <p class="card-intro">Ở Buổi 1, bạn dán nguyên tắc ứng xử vào ô <strong>Instructions for Claude</strong> trên web. Trên máy tính, chỗ đó là <strong>một file quy tắc toàn cục</strong>: AI đọc file này mỗi khi bắt đầu cuộc trò chuyện mới, ở bất kỳ thư mục nào.</p>
+          <div class="grid-2 tile-grid" style="margin-bottom: 0;">
+            <div class="tile">
+              <div class="tile-name">Antigravity</div>
+              <div class="tile-desc"><code>C:\Users\&lt;tên máy&gt;\.gemini\GEMINI.md</code></div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Claude Desktop</div>
+              <div class="tile-desc"><code>C:\Users\&lt;tên máy&gt;\.claude\CLAUDE.md</code></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-title">Prompt 1: Hỏi AI file quy tắc toàn cục nằm ở đâu</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">File chỉ dẫn toàn cục (global) của bạn nằm ở đâu trên máy tôi?
+Nếu file đã có thì đọc cho tôi nội dung hiện tại. Nếu chưa có thì cho tôi biết bạn sẽ tạo file ở đâu.
+Chưa sửa gì cả.</pre>
+        </div>
+
+        <div class="card-title" style="margin-top: 20px;">Prompt 2: Thêm quy tắc làm việc</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Thêm các quy tắc sau vào file chỉ dẫn toàn cục của bạn. Nếu file đã có nội dung thì giữ nguyên, chỉ thêm vào cuối:
+
+ Quy tắc làm việc với tôi
+1. Luôn trả lời bằng tiếng Việt có dấu đầy đủ, rõ ý, chuyên nghiệp.
+2. Yêu cầu chưa rõ hoặc thiếu dữ liệu thì hỏi lại, không tự đoán.
+3. Chỉ sửa đúng phần tôi yêu cầu, không tự ý sửa thêm chỗ khác.
+4. Trước khi xóa hoặc ghi đè file nào, phải hỏi tôi trước.</pre>
+        </div>
+
+        <div class="card-title" style="margin-top: 20px;">Prompt 3: Mở cuộc trò chuyện mới để kiểm tra</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat mới</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Cho tôi biết bạn đang áp dụng những quy tắc nào khi làm việc với tôi.</pre>
+        </div>
+
+        <div class="alert-box alert-success" style="margin: 0;">
+          <span class="alert-icon">💡</span>
+          <div><strong>Nhớ thói quen này:</strong> AI chỉ đọc file quy tắc khi bắt đầu cuộc trò chuyện mới. Sửa quy tắc xong thì mở chat mới để AI dùng bản mới nhất, giống như sửa Project Instructions ở Buổi 1.</div>
+        </div>
+      </section>
+
+      <!-- PHẦN 2 -->
+      <section class="content-section" id="b2-phan-2">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 2</span>
+          <h2 class="section-title">AI tự đọc web, tải nội dung và hình ảnh về máy</h2>
+        </div>
+
+        <div class="grid-2">
+          <div class="card-panel" style="border-left: 4px solid var(--text-subtle);">
+            <div class="card-title">Buổi 1: AI trên trình duyệt</div>
+            <ul class="concept-list">
+              <li>Bạn tải từng file lên khung chat.</li>
+              <li>AI trả lời bằng chữ, bạn tự chép ra Word.</li>
+            </ul>
+          </div>
+          <div class="card-panel" style="border-left: 4px solid var(--brand-primary);">
+            <div class="card-title" style="color: var(--brand-primary);">Buổi 2: AI trên máy tính</div>
+            <ul class="concept-list">
+              <li>AI tự tạo thư mục, tải ảnh, ghi file thật vào máy.</li>
+              <li>Bạn mở thư mục là thấy kết quả ngay.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-title">Prompt 4: Đọc trang web, lưu nội dung và tải ảnh</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Tôi đang viết bài tìm hiểu về Thiền Tôn Phật Quang.
+Hãy đọc trang https://thientonphatquang.com/gioi-thieu và làm giúp tôi:
+1. Lưu phần nội dung chính vào file tu-lieu/gioi-thieu.md
+2. Chọn 10 ảnh tiêu biểu (cảnh chùa, các hoạt động), tải về thư mục hinh-anh/, đặt tên file tiếng Việt không dấu theo nội dung ảnh, ví dụ cong-chao-chua.jpg</pre>
+        </div>
+
+        <div class="grid-2">
+          <div class="code-container" style="margin: 0;">
+            <div class="code-header"><span>Kết quả trong thư mục</span></div>
+            <pre class="code-pre">viet-bai-phat-quang/
+  tu-lieu/
+    gioi-thieu.md
+  hinh-anh/
+    cong-chao-chua.jpg
+    san-chua.jpg
+    ... (10 ảnh)</pre>
+          </div>
+          <div class="alert-box alert-info" style="margin: 0;">
+            <span class="alert-icon">👀</span>
+            <div><strong>Mở File Explorer xem ngay:</strong> thư mục và 10 ảnh vừa xuất hiện trên máy bạn. Đây là điểm khác lớn nhất so với chat trên web: AI không chỉ trả lời, AI làm việc thật trên máy.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PHẦN 2 -->
+      <section class="content-section" id="b2-phan-3">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 3</span>
+          <h2 class="section-title">File .md là gì? Vì sao làm việc với AI nên dùng .md</h2>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Markdown (.md): văn bản thường, thêm vài ký hiệu
+          </div>
+          <p class="card-intro">File <code>.md</code> (Markdown) là file chữ bình thường như Notepad, nhưng có <strong>vài ký hiệu quy ước</strong> để đánh dấu đâu là tiêu đề, đâu là chữ đậm, đâu là ảnh. Giống như khi ghi chép tay, ta gạch chân tiêu đề, đánh dấu chấm đầu dòng: người đọc file thô vẫn hiểu, còn phần mềm thì hiển thị thành văn bản đẹp.</p>
+
+          <div class="table-container" style="margin-bottom: 0; box-shadow: none;">
+            <table>
+              <thead><tr><th style="width: 34%;">Bạn gõ</th><th style="width: 26%;">Ý nghĩa</th><th>Ví dụ</th></tr></thead>
+              <tbody>
+                <tr><td><code># Tiêu đề</code></td><td>Tiêu đề lớn của bài</td><td><code># Tìm hiểu Thiền Tôn Phật Quang</code></td></tr>
+                <tr><td><code>## Tiêu đề mục</code></td><td>Tiêu đề từng mục</td><td><code>## Hội Yêu Rác</code></td></tr>
+                <tr><td><code>**chữ đậm**</code></td><td>In đậm</td><td><code>thành lập năm **2017**</code></td></tr>
+                <tr><td><code>- ý</code></td><td>Gạch đầu dòng</td><td><code>- Nhặt rác, truyền thông</code></td></tr>
+                <tr><td><code>1. bước</code></td><td>Danh sách đánh số</td><td><code>1. Đọc tài liệu</code></td></tr>
+                <tr><td><code>![chú thích](đường dẫn ảnh)</code></td><td>Chèn ảnh</td><td><code>![Cổng chào](hinh-anh/cong-chao-chua.jpg)</code></td></tr>
+                <tr><td><code>[chữ](link)</code></td><td>Liên kết</td><td><code>[Trang chùa](https://thientonphatquang.com)</code></td></tr>
+                <tr><td><code>&gt; trích dẫn</code></td><td>Đoạn trích dẫn</td><td><code>&gt; Lời dạy giữ nguyên văn</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="code-container" style="margin: 0;">
+            <div class="code-header"><span>Bạn gõ trong file .md</span></div>
+            <pre class="code-pre"># Tìm hiểu Thiền Tôn Phật Quang
+
+## Hội Yêu Rác
+Thành lập năm **2017**, hoạt động:
+- Nhặt rác
+- Truyền thông bảo vệ môi trường
+
+![Hội Yêu Rác](hinh-anh/hoi-yeu-rac.jpg)</pre>
+          </div>
+          <div class="card-panel md-render" style="margin: 0;">
+            <div class="md-render-label">Phần mềm hiển thị thành</div>
+            <h3 class="md-h1">Tìm hiểu Thiền Tôn Phật Quang</h3>
+            <h4 class="md-h2">Hội Yêu Rác</h4>
+            <p>Thành lập năm <strong>2017</strong>, hoạt động:</p>
+            <ul><li>Nhặt rác</li><li>Truyền thông bảo vệ môi trường</li></ul>
+            <div class="md-img">[ảnh Hội Yêu Rác]</div>
+          </div>
+        </div>
+
+        <div class="card-panel" style="margin-top: 20px;">
+          <div class="card-title">Vì sao làm việc với AI nên dùng file .md?</div>
+          <div class="grid-2 tile-grid" style="margin-bottom: 0;">
+            <div class="tile">
+              <div class="tile-name">AI đọc, viết chính xác nhất</div>
+              <div class="tile-desc">Chỉ là chữ thuần, AI sửa đúng chỗ, không làm vỡ định dạng như khi sửa thẳng file Word.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Nhẹ, mở bằng gì cũng được</div>
+              <div class="tile-desc">Notepad, Antigravity, VS Code đều mở được. Không cần phần mềm trả phí.</div>
+            </div>
+            <div class="tile tile-focus">
+              <div class="tile-name">Một bản gốc, ra nhiều dạng</div>
+              <div class="tile-desc">Từ một file .md, AI xuất ra Word, trang web, slide. Sửa một chỗ, xuất lại là xong.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Người và AI cùng sửa</div>
+              <div class="tile-desc">Bạn tự sửa một đoạn, AI đọc lại và tiếp tục, như hai người cùng soạn một tài liệu.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert-box alert-success">
+          <span class="alert-icon">💡</span>
+          <div><strong>Xem file .md cho đẹp:</strong> trong Antigravity, mở file rồi bấm <code>Ctrl + Shift + V</code> (hoặc chuột phải chọn Open Preview) để xem bản hiển thị. Không có công cụ nào thì mở bằng Notepad vẫn đọc được.</div>
+        </div>
+      </section>
+
+      <!-- PHẦN 3 -->
+      <section class="content-section" id="b2-phan-4">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 4</span>
+          <h2 class="section-title">Viết và chỉnh sửa bài trên file .md</h2>
+        </div>
+
+        <div class="card-title">Prompt 5: Viết bài từ tư liệu đã lưu</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Dựa vào tu-lieu/gioi-thieu.md, viết bài "Tìm hiểu Thiền Tôn Phật Quang", lưu vào file bai-viet.md:
+- Mở bài ngắn, các mục chính, kết bài
+- Chèn các ảnh phù hợp từ thư mục hinh-anh/, mỗi ảnh có chú thích bên dưới
+- Cuối bài ghi nguồn tham khảo</pre>
+        </div>
+
+        <div class="card-title" style="margin-top: 20px;">Prompt 6: Nhờ AI chỉnh sửa</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Rút mở bài còn 3 câu, đổi ảnh ở mục Hội Yêu Rác sang ảnh khác phù hợp hơn,
+và thêm một mục ngắn về Khóa học đạo đức mùa hè.</pre>
+        </div>
+
+        <div class="card-title" style="margin-top: 20px;">Prompt 7: Bạn tự sửa, AI soát lại</div>
+        <p class="card-intro" style="margin-bottom: 0;">Mở <code>bai-viet.md</code>, tự gõ sửa đoạn thứ 2 theo ý bạn rồi lưu file. Sau đó gửi:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Tôi vừa tự sửa đoạn thứ 2 trong bai-viet.md. Đọc lại giúp tôi, sửa lỗi chính tả, giữ nguyên ý của tôi.</pre>
+        </div>
+      </section>
+
+      <!-- PHẦN 4 -->
+      <section class="content-section" id="b2-phan-5">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 5</span>
+          <h2 class="section-title">Xuất file Word theo tone màu của logo</h2>
+        </div>
+
+        <div class="step-card-grid">
+          <div class="step-card">
+            <span class="step-num">1</span>
+            <div class="step-title">Lấy logo</div>
+            <div class="step-desc">Tải logo chùa tại <a href="https://thientonphatquang.com/logo.png" target="_blank" rel="noopener">thientonphatquang.com/logo.png</a> (hoặc logo công ty bạn).</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">2</span>
+            <div class="step-title">Kéo thả logo vào khung chat</div>
+            <div class="step-desc">Gửi kèm logo cùng Prompt 8 bên dưới để AI biết "logo này" là logo nào.</div>
+          </div>
+          <div class="step-card" style="border-color: var(--accent-emerald);">
+            <span class="step-num" style="background: var(--accent-emerald);">3</span>
+            <div class="step-title">Cho phép cài công cụ</div>
+            <div class="step-desc">AI có thể xin cài thêm công cụ để tạo file Word: đọc qua rồi bấm cho phép.</div>
+          </div>
+        </div>
+
+        <div class="card-title">Prompt 8: Tạo file Word đúng tone màu logo</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat (kèm file logo)</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Nội dung ổn rồi. Bây giờ hãy tạo cho tôi 1 file Word (.docx) nhé
+Yêu cầu định dạng: phân tích dải màu chủ đạo từ logo này và áp dụng tone màu này vào tài liệu sao cho đẹp, hiện đại. Lưu ý file docx phải chuẩn tiếng Việt và không bị lỗi dấu.</pre>
+        </div>
+
+        <div class="alert-box alert-info">
+          <span class="alert-icon">✅</span>
+          <div><strong>Mở file Word kiểm tra 3 điểm:</strong> chữ tiếng Việt đủ dấu, không lỗi ô vuông; màu tiêu đề hợp với logo; ảnh và chú thích ảnh đúng chỗ. Chỗ nào chưa ưng thì nói tiếp với AI để sửa, giống khi sửa bài .md.</div>
+        </div>
+      </section>
+
+      <!-- PHẦN 5 -->
+      <section class="content-section" id="b2-phan-6">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 6</span>
+          <h2 class="section-title">Đóng gói quy trình thành Skill</h2>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            Skill là gì?
+          </div>
+          <p class="card-intro"><strong>Skill là một quy trình đã đóng gói sẵn</strong>, giống cuốn sổ "công thức nấu ăn" của nhân viên AI: lần đầu bạn và AI mất công làm ra file Word đẹp, giờ ghi lại cách làm thành Skill. Lần sau chỉ cần nói một câu, AI mở đúng công thức ra làm, không phải dặn lại màu, font, bố cục.</p>
+          <div class="grid-3 tile-grid" style="margin-bottom: 0;">
+            <div class="tile">
+              <div class="tile-name">Skill gồm gì?</div>
+              <div class="tile-desc">Một thư mục có file <code>SKILL.md</code> (tên, mô tả, các bước), có thể kèm logo, file mẫu.</div>
+            </div>
+            <div class="tile tile-focus">
+              <div class="tile-name">AI dùng khi nào?</div>
+              <div class="tile-desc">AI đọc phần mô tả của skill. Câu bạn nói khớp mô tả thì AI tự lấy skill ra dùng.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Ai viết skill?</div>
+              <div class="tile-desc">Chính AI viết giúp bạn, như cách nhờ AI viết Instructions ở Buổi 1.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">Quy tắc và Skill: AI luôn đọc và AI lấy ra khi cần</div>
+          <div class="table-container" style="margin-bottom: 0; box-shadow: none;">
+            <table>
+              <thead><tr><th style="width: 22%;"></th><th>Quy tắc (CLAUDE.md, GEMINI.md)</th><th>Skill</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Giống Buổi 1</strong></td><td>Instructions for Claude, Project Instructions</td><td>Quy trình mới, Buổi 1 chưa có</td></tr>
+                <tr><td><strong>AI đọc khi nào</strong></td><td>Luôn đọc, mỗi lần làm việc</td><td>Chỉ khi gặp đúng việc cần dùng</td></tr>
+                <tr><td><strong>Nên ghi gì</strong></td><td>Phong cách, nguyên tắc chung: tiếng Việt, không bịa số liệu</td><td>Cách làm một việc cụ thể: xuất Word theo tone logo</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">Skill toàn cục và Skill cấp project</div>
+          <div class="table-container" style="margin-bottom: 0; box-shadow: none;">
+            <table>
+              <thead><tr><th style="width: 22%;"></th><th>Skill toàn cục</th><th style="background: var(--brand-primary-glow); color: var(--brand-primary);">Skill cấp project</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Dùng ở đâu</strong></td><td>Mọi thư mục trên máy</td><td>Chỉ trong thư mục (project) này</td></tr>
+                <tr><td><strong>Hợp với việc</strong></td><td>Việc dùng ở mọi nơi: lưu trang web về máy, biên bản họp</td><td>Việc riêng của một dự án: tài liệu theo chuẩn một đơn vị</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="card-note" style="margin-top: 12px;">Không cần nhớ đường dẫn: chỉ cần nói rõ "skill cấp project" hay "skill toàn cục", AI tự tạo file đúng chỗ.</p>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Bản đồ đường dẫn: quy tắc và skill nằm ở đâu
+          </div>
+          <p class="card-intro"><code>&lt;tên máy&gt;</code> là tên thư mục người dùng trên Windows. <code>&lt;thư mục dự án&gt;</code> là thư mục bạn đang mở để làm việc, ví dụ <code>viet-bai-phat-quang</code>.</p>
+          <div class="table-container" style="margin-bottom: 0; box-shadow: none;">
+            <table>
+              <thead><tr><th style="width: 20%;"></th><th>Antigravity</th><th>Claude Desktop</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Quy tắc toàn cục</strong></td><td><code>C:\Users\&lt;tên máy&gt;\.gemini\GEMINI.md</code></td><td><code>C:\Users\&lt;tên máy&gt;\.claude\CLAUDE.md</code></td></tr>
+                <tr><td><strong>Quy tắc cấp project</strong></td><td><code>&lt;thư mục dự án&gt;\GEMINI.md</code> (hoặc <code>AGENTS.md</code>)</td><td><code>&lt;thư mục dự án&gt;\CLAUDE.md</code></td></tr>
+                <tr><td><strong>Skill toàn cục</strong></td><td><code>C:\Users\&lt;tên máy&gt;\.gemini\config\skills\&lt;tên-skill&gt;\SKILL.md</code></td><td><code>C:\Users\&lt;tên máy&gt;\.claude\skills\&lt;tên-skill&gt;\SKILL.md</code></td></tr>
+                <tr><td><strong>Skill cấp project</strong></td><td><code>&lt;thư mục dự án&gt;\.agents\skills\&lt;tên-skill&gt;\SKILL.md</code></td><td><code>&lt;thư mục dự án&gt;\.claude\skills\&lt;tên-skill&gt;\SKILL.md</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="alert-box alert-warning">
+          <span class="alert-icon">⚠️</span>
+          <div>
+            <strong>2 CHỖ HAY ĐẶT SAI KHIẾN ANTIGRAVITY BỎ QUA SKILL:</strong>
+            <ul class="concept-list" style="color: inherit;">
+              <li><strong>Không tạo thư mục <code>.agents</code> trong thư mục người dùng</strong> (<code>C:\Users\&lt;tên máy&gt;\.agents\</code>). Skill toàn cục chỉ được đọc trong <code>.gemini\config\skills\</code>.</li>
+              <li><strong>Trong dự án, không chèn thêm <code>config</code></strong>: đúng là <code>.agents\skills\</code>, sai là <code>.agents\config\skills\</code>. Chữ <code>config</code> chỉ có ở skill toàn cục.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card-title">Prompt 9: Đóng gói thành Skill cấp project</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Tôi thấy file này đẹp rồi, bây giờ hãy tạo cho tôi skill đóng gói tài liệu đẹp và đúng tone màu như vậy, sau này khi tôi nói tạo tài liệu theo chuẩn &lt;tên công ty của tôi&gt; thì hãy áp dụng skill này cho tôi. Skill lưu tại folder skill cấp project này cho tôi nhé</pre>
+        </div>
+
+        <div class="card-title" style="margin-top: 20px;">Thử Skill: mở cuộc trò chuyện mới rồi gõ</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat mới</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Tạo tài liệu theo chuẩn Thiền Tôn Phật Quang cho file bai-viet.md</pre>
+        </div>
+        <div class="alert-box alert-success" style="margin: 0;">
+          <span class="alert-icon">🎯</span>
+          <div><strong>Khoảnh khắc "à":</strong> không phải dặn lại logo, màu hay bố cục, AI tự lấy Skill ra và làm đúng như lần trước. Muốn dùng Skill này ở mọi thư mục, chỉ cần nói AI "chuyển skill này thành skill toàn cục".</div>
+        </div>
+      </section>
+
+      <!-- PHẦN 6 -->
+      <section class="content-section" id="b2-phan-7">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 7</span>
+          <h2 class="section-title">Tự kiểm Buổi 2</h2>
+        </div>
+        <div class="card-panel">
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Đánh dấu vào các mục bạn đã tự tay làm được:</p>
+          <div class="checklist-wrapper" id="checklist-buoi-2">
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã thêm quy tắc làm việc vào file quy tắc toàn cục và kiểm tra bằng cuộc trò chuyện mới.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã mở được thư mục làm việc trong Antigravity hoặc Claude Desktop.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">AI đã lưu được nội dung web vào <strong>tu-lieu/gioi-thieu.md</strong> và tải 10 ảnh vào <strong>hinh-anh/</strong>.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Hiểu file .md là gì và đọc được các ký hiệu cơ bản.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã viết, nhờ AI sửa và tự sửa bài <strong>bai-viet.md</strong>.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã xuất file Word đúng tone màu logo, tiếng Việt không lỗi dấu.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã tạo Skill cấp project và gọi lại được bằng một câu.</span></label>
+          </div>
+        </div>
+      </section>
+
+      </div>
+      <!-- ================= HẾT BUỔI 2 ================= -->
 
     </main>
   </div>
@@ -1945,9 +2470,10 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
     const themeToggle = document.getElementById('themeToggle');
     const htmlEl = document.documentElement;
 
+    // localStorage có thể bị chặn (ẩn danh, chặn cookie, trang mở dạng data:): lỗi ở đây không được làm dừng cả script
     function setTheme(theme) {
       htmlEl.setAttribute('data-theme', theme);
-      localStorage.setItem('ag_theme', theme);
+      try { localStorage.setItem('ag_theme', theme); } catch (e) {}
     }
 
     themeToggle.addEventListener('click', () => {
@@ -1955,7 +2481,8 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
       setTheme(current === 'light' ? 'dark' : 'light');
     });
 
-    const savedTheme = localStorage.getItem('ag_theme');
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem('ag_theme'); } catch (e) {}
     if (savedTheme) {
       setTheme(savedTheme);
     }
@@ -2024,7 +2551,7 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
-        const sections = document.querySelectorAll('.content-section');
+        const sections = document.querySelectorAll('.session-pane.active .content-section');
 
         sections.forEach(sec => {
           if (!query) {
@@ -2044,6 +2571,47 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
         }
       });
     }
+
+    // Chuyển buổi học: mỗi buổi là một .session-pane, nút trên thanh bên bật đúng pane
+    function showSession(n, scrollTop) {
+      const pane = document.getElementById('session-' + n);
+      if (!pane) return;
+      document.querySelectorAll('.session-pane').forEach(p => p.classList.toggle('active', p === pane));
+      document.querySelectorAll('.session-tab-btn').forEach(b => {
+        const on = b.dataset.session === String(n);
+        b.classList.toggle('active', on);
+        b.closest('li').classList.toggle('active', on);
+      });
+      if (searchInput && searchInput.value) {
+        searchInput.value = '';
+        searchInput.dispatchEvent(new Event('input'));
+      }
+      if (scrollTop) window.scrollTo({ top: 0 });
+    }
+
+    document.querySelectorAll('.session-tab-btn:not([disabled])').forEach(btn => {
+      btn.addEventListener('click', () => {
+        showSession(btn.dataset.session, true);
+        try { history.replaceState(null, '', '#buoi-' + btn.dataset.session); } catch (e) {}
+        if (sidebar && window.innerWidth <= 992) sidebar.classList.remove('open');
+      });
+    });
+
+    // Mở đúng buổi theo đường dẫn: #buoi-2 mở cả buổi, #b2-phan-3 mở buổi chứa mục đó
+    function openFromHash() {
+      const h = decodeURIComponent(location.hash.slice(1));
+      if (!h) return;
+      const m = h.match(/^buoi-(\d+)$/);
+      if (m) { showSession(m[1], true); return; }
+      const target = document.getElementById(h);
+      const pane = target && target.closest('.session-pane');
+      if (pane) {
+        showSession(pane.dataset.session, false);
+        target.scrollIntoView();
+      }
+    }
+    window.addEventListener('hashchange', openFromHash);
+    openFromHash();
   </script>
 </body>
 </html>
