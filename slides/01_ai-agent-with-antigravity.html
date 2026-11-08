@@ -1156,6 +1156,8 @@ b, strong { font-weight: 700; }
 .s-md .m-out ul { list-style: disc; margin: 0 0 20px 40px; font-size: 36px; line-height: 1.45; }
 .s-md .m-img { padding: 24px; border: 3px dashed var(--blue); border-radius: 12px; text-align: center; font: 400 32px/1 var(--font-hand); color: var(--blue); }
 .ctable-path td { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.9em; }
+/* Slide video dọc: khung ngang biến thành khung dọc */
+.s-video .v-cap { position: absolute; left: 120px; top: 860px; width: 900px; margin: 0; font-size: 34px; line-height: 1.4; color: var(--fg); }
 /* Tiêu đề chung cho slide tự thiết kế */
 .fs-title { position: absolute; left: 120px; top: 80px; width: 1680px; margin: 0; font: 700 64px/1.15 var(--font-display); color: var(--fg); }
 
@@ -1225,12 +1227,17 @@ b, strong { font-weight: 700; }
   <section class="slide" data-layout="agenda">
     <h2 class="title reveal">Hành trình khóa học</h2>
     <ol class="agenda-list">
-      <li><span class="num reveal">01</span><div><h3 class="reveal" data-morph-id="ch1">Hiểu đúng về AI</h3><p class="reveal">AI tạo sinh, đa phương thức, Chatbot và AI Agent</p></div></li>
-      <li><span class="num reveal">02</span><div><h3 class="reveal" data-morph-id="ch2">Tài khoản an toàn</h3><p class="reveal">Bảo mật, Profile, 5 nguyên tắc, Memory</p></div></li>
-      <li><span class="num reveal">03</span><div><h3 class="reveal" data-morph-id="ch3">Trợ lý chuyên việc</h3><p class="reveal">Claude Projects, 2 case thực hành, hẹn giờ</p></div></li>
-      <li><span class="num reveal">04</span><div><h3 class="reveal" data-morph-id="ch4">Lên máy tính</h3><p class="reveal">Cài Antigravity, quy tắc toàn cục</p></div></li>
-      <li><span class="num reveal">05</span><div><h3 class="reveal" data-morph-id="ch5">Viết bài cùng AI</h3><p class="reveal">Đọc web, file .md, xuất Word</p></div></li>
-      <li><span class="num reveal">06</span><div><h3 class="reveal" data-morph-id="ch6">Đóng gói Skill</h3><p class="reveal">Skill toàn cục và cấp project</p></div></li>
+      <li><span class="num reveal">01</span><div><h3 class="reveal" data-morph-id="ch1">Hiểu đúng về AI</h3><p class="reveal">Buổi 1: Chatbot, AI Agent, bối cảnh</p></div></li>
+      <li><span class="num reveal">02</span><div><h3 class="reveal" data-morph-id="ch2">Tài khoản an toàn</h3><p class="reveal">Buổi 1: Privacy, 5 nguyên tắc, Memory</p></div></li>
+      <li><span class="num reveal">03</span><div><h3 class="reveal" data-morph-id="ch3">Trợ lý chuyên việc</h3><p class="reveal">Buổi 1: Projects, model, Gmail</p></div></li>
+      <li><span class="num reveal">04</span><div><h3 class="reveal" data-morph-id="ch4">Lên máy tính</h3><p class="reveal">Buổi 2: Antigravity, project, quyền</p></div></li>
+      <li><span class="num reveal">05</span><div><h3 class="reveal" data-morph-id="ch5">Viết bài cùng AI</h3><p class="reveal">Buổi 2: file .md, văn phong, Word</p></div></li>
+      <li><span class="num reveal">06</span><div><h3 class="reveal" data-morph-id="ch6">Đóng gói Skill</h3><p class="reveal">Buổi 2: toàn cục và cấp project</p></div></li>
+      <li><span class="num reveal">07</span><div><h3 class="reveal" data-morph-id="ch7">AI nghiên cứu</h3><p class="reveal">Buổi 3: báo cáo .md, built-in browser</p></div></li>
+      <li><span class="num reveal">08</span><div><h3 class="reveal" data-morph-id="ch8">Skill cộng đồng</h3><p class="reveal">Buổi 3: GitHub, kiểm mã độc, slash command</p></div></li>
+      <li><span class="num reveal">09</span><div><h3 class="reveal" data-morph-id="ch9">Slide và video</h3><p class="reveal">Buổi 3: /slide-morph, video dọc 9:16</p></div></li>
+      <li><span class="num reveal">10</span><div><h3 class="reveal" data-morph-id="ch10">Web portfolio</h3><p class="reveal">Buổi 4: research mẫu, đưa lên Vercel</p></div></li>
+      <li><span class="num reveal">11</span><div><h3 class="reveal" data-morph-id="ch11">Video bằng code</h3><p class="reveal">Buổi 4: 3 bộ skill, giọng AI Studio</p></div></li>
     </ol>
   </section>
 
@@ -1414,6 +1421,19 @@ b, strong { font-weight: 700; }
     <h2 class="statement reveal">Không cần chọn chế độ. Bạn chỉ giao việc, <mark>Claude tự quyết</mark> cách làm.</h2>
   </section>
 
+  <!-- B1. Viết prompt: chỉ cần nhớ bối cảnh -->
+  <section class="slide" data-layout="content" data-frame="poster">
+    <h2 class="title reveal">Viết prompt: chỉ cần nhớ một từ "bối cảnh"</h2>
+    <ul class="bullets">
+      <li class="reveal">Không cần học kỹ thuật viết prompt.</li>
+      <li class="reveal">Ngắn quá AI không hiểu.</li>
+      <li class="reveal">Giao như giao cho trợ lý mới.</li>
+    </ul>
+    <aside class="highlight reveal-scale">
+      <p class="hl-text">Context = bối cảnh</p>
+    </aside>
+  </section>
+
   <!-- 10. Chương 2 -->
   <section class="slide" data-layout="chapter">
     <p class="ch-num reveal-scale" aria-hidden="true">02</p>
@@ -1428,7 +1448,7 @@ b, strong { font-weight: 700; }
       <li class="reveal"><span class="n">1</span><h3>Settings</h3><p>Bấm ảnh đại diện góc dưới trái</p></li>
       <li class="reveal"><span class="n">2</span><h3>Privacy</h3><p>Chọn mục Privacy bên trái</p></li>
       <li class="reveal"><span class="n">3</span><h3>Tìm dòng</h3><p>"Help improve our AI models"</p></li>
-      <li class="reveal"><span class="n">4</span><h3>Gạt OFF</h3><p>Chat không dùng để huấn luyện AI</p></li>
+      <li class="reveal"><span class="n">4</span><h3>Gạt OFF</h3><p>Vẫn không đưa số tài khoản, CCCD lên AI</p></li>
     </ol>
   </section>
 
@@ -1440,19 +1460,19 @@ b, strong { font-weight: 700; }
         <h3>Profile</h3>
         <ul>
           <li>Vào Settings, General</li>
-          <li>Họ tên của bạn</li>
-          <li>Cách xưng hô, công việc của bạn</li>
+          <li>Họ tên, cách muốn được gọi</li>
+          <li>Chọn ngành: AI trả lời sát chuyên môn</li>
         </ul>
       </div>
       <div class="col reveal-right">
         <h3>Memory</h3>
         <ul>
-          <li>Vào Settings, Memory, gạt bật</li>
-          <li>Claude tự nhớ bối cảnh qua các cuộc trò chuyện</li>
+          <li>Bật Generate memory from chat history</li>
+          <li>Tắt mục nhớ chủ đề nhạy cảm</li>
         </ul>
       </div>
     </div>
-    <p class="takeaway reveal">Khai báo một lần, không phải giới thiệu lại mỗi lần chat.</p>
+    <p class="takeaway reveal">Nhắn "còn nợ 95 câu", hôm sau mở chat mới Claude vẫn nhớ.</p>
   </section>
 
   <!-- 13. 5 nguyên tắc -->
@@ -1466,7 +1486,7 @@ b, strong { font-weight: 700; }
       <li class="reveal">Không bịa thông tin, số liệu, điều khoản.</li>
     </ul>
     <aside class="highlight reveal-scale">
-      <p class="hl-text">Dán vào Settings, General</p>
+      <p class="hl-text">Chỉ dẫn toàn cục: áp cho cả tài khoản</p>
     </aside>
   </section>
 
@@ -1480,7 +1500,7 @@ b, strong { font-weight: 700; }
   <!-- 15. Project là ngăn kéo hồ sơ (tự thiết kế) -->
   <section class="slide s-drawer" data-layout="free">
     <h2 class="d-title reveal">Project là một ngăn kéo hồ sơ cho từng đầu việc</h2>
-    <p class="d-sub reveal">Chat thường mở mới là quên sạch. Project giữ sẵn mọi thứ cho mỗi lần làm việc.</p>
+    <p class="d-sub reveal">Chat mãi một cuộc dài thì AI dễ sai ý. Việc làm hằng ngày thì đưa vào Project.</p>
     <svg aria-hidden="true" style="position:absolute;left:100px;top:300px" width="1720" height="660" viewBox="100 300 1720 660">
       <!-- thân ngăn kéo -->
       <path class="wb-k draw" pathLength="1" style="--d:.1" d="M140 330L1782 334M1778 328L1776 800M1782 796L136 800M141 804L140 326"/>
@@ -1489,9 +1509,9 @@ b, strong { font-weight: 700; }
       <!-- ba ngăn -->
       <path class="wb-t" d="M680 360L682 770M1240 360L1238 770"/>
     </svg>
-    <p class="d-cell reveal" style="left:200px"><span class="d-name">Tài liệu</span><span class="d-role">AI biết gì</span><span class="d-desc">Bảng giá, quy chế, mẫu biểu. Nạp một lần, chat nào cũng dùng được.</span></p>
+    <p class="d-cell reveal" style="left:200px"><span class="d-name">Context</span><span class="d-role">AI biết gì</span><span class="d-desc">Hồ sơ, bảng giá, quy chế. Nạp một lần, chat nào cũng dùng được.</span></p>
     <p class="d-cell d-key reveal" style="left:760px"><span class="d-name">Instructions</span><span class="d-role">AI làm thế nào</span><span class="d-desc">Sổ tay quy trình: vai trò, các bước, quy tắc không được vi phạm.</span></p>
-    <p class="d-cell reveal" style="left:1300px"><span class="d-name">Trò chuyện</span><span class="d-role">Nơi giao việc</span><span class="d-desc">Mỗi việc một chat riêng, chat nào cũng có sẵn tài liệu và quy trình.</span></p>
+    <p class="d-cell reveal" style="left:1300px"><span class="d-name">Memory</span><span class="d-role">AI nhớ gì</span><span class="d-desc">Trí nhớ riêng của Project, tự ghi lại qua các lần trò chuyện.</span></p>
   </section>
 
   <!-- 16. AI đọc Instructions khi nào -->
@@ -1527,6 +1547,19 @@ b, strong { font-weight: 700; }
     </ul>
   </section>
 
+  <!-- B1. Chọn model -->
+  <section class="slide" data-layout="compare-table" data-stage="clear">
+    <h2 class="title reveal">Chọn model: càng cao càng giỏi, càng tốn</h2>
+    <table class="ctable reveal">
+      <thead><tr><th></th><th>Haiku</th><th class="pick">Sonnet</th><th>Opus</th></tr></thead>
+      <tbody>
+        <tr><th>Hình dung</th><td>Em bé 6 tuổi</td><td class="pick">Bạn 10 tuổi học giỏi</td><td>Tiến sĩ</td></tr>
+        <tr><th>Dùng khi</th><td>Việc đơn giản, gói miễn phí</td><td class="pick"><span class="yes">Việc hằng ngày</span></td><td>Lập trình, việc khó</td></tr>
+        <tr><th>Mức suy nghĩ</th><td colspan="3">Thường để Medium. Càng cao càng kỹ, càng tốn hạn mức.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
   <!-- 19. Lời dạy: giữ nguyên văn, không sửa câu chữ -->
   <section class="slide s-teach" data-layout="free">
     <p class="t-kicker reveal">Case study: Phương pháp học tiếng Anh</p>
@@ -1540,12 +1573,13 @@ b, strong { font-weight: 700; }
   </section>
 
   <!-- 20. Case 1: dựng gia sư -->
-  <section class="slide" data-layout="process">
-    <h2 class="title reveal">Case 1: Dựng gia sư tiếng Anh trong 3 bước</h2>
+  <section class="slide" data-layout="process" data-stage="clear">
+    <h2 class="title reveal">Case 1: Dựng gia sư tiếng Anh trong 4 bước</h2>
     <ol class="process">
-      <li class="reveal"><span class="n">1</span><h3>Viết Instructions</h3><p>Sửa lỗi ngắn gọn, cách nói bản xứ, phiên âm IPA</p></li>
-      <li class="reveal"><span class="n">2</span><h3>Nạp 2 tài liệu</h3><p>Hồ sơ người học và lời dạy của Bác TCN</p></li>
-      <li class="reveal"><span class="n">3</span><h3>Gửi câu mỗi ngày</h3><p>Không dặn lại, gia sư tự sửa theo hồ sơ</p></li>
+      <li class="reveal"><span class="n">1</span><h3>Tạo Project, nạp Context</h3><p>Hồ sơ người học và lời dạy của Bác TCN</p></li>
+      <li class="reveal"><span class="n">2</span><h3>Nhờ AI viết Instructions</h3><p>Chọn model, mức Medium, gửi prompt</p></li>
+      <li class="reveal"><span class="n">3</span><h3>Đọc lại rồi dán</h3><p>Sửa chỗ chưa đúng ý, dán vào ô Instructions</p></li>
+      <li class="reveal"><span class="n">4</span><h3>Mỗi ngày một chat mới</h3><p>Gửi câu, gia sư tự sửa theo hồ sơ</p></li>
     </ol>
   </section>
 
@@ -1563,13 +1597,23 @@ b, strong { font-weight: 700; }
     <ul class="bullets">
       <li class="reveal"><b>Hồ sơ người học</b>: gia sư sửa sát công việc, trình độ của bạn.</li>
       <li class="reveal"><b>Mục tiêu</b>: giao tiếp tiếng Anh trong công việc.</li>
-      <li class="reveal"><b>Viết giỏi rồi</b> nói sẽ nhanh và tự nhiên.</li>
+      <li class="reveal"><b>Tự trả lời tiếng Việt</b>: nhờ chỉ dẫn toàn cục.</li>
     </ul>
+  </section>
+
+  <!-- B1. Artifact -->
+  <section class="slide" data-layout="before-after">
+    <h2 class="title reveal">Artifact: sửa thẳng, đỡ tốn hạn mức</h2>
+    <div class="ba">
+      <div class="ba-side before reveal-left"><span class="ba-tag">File đã tạo</span><h3>Đã đóng gói xong</h3><ul><li>Thêm một cột là tạo lại cả file</li><li>Sửa nhiều lần rất tốn hạn mức</li></ul></div>
+      <div class="ba-arrow reveal">&rarr;</div>
+      <div class="ba-side after fx fx-right" data-step="1"><span class="ba-tag">Artifact</span><h3>Sửa ngay khung bên phải</h3><ul><li>AI chỉ thêm đúng cột cần thêm</li><li>ChatGPT gọi là Canvas</li><li>Rê chuột vào tiêu đề để tải về</li></ul></div>
+    </div>
   </section>
 
   <!-- 22. Case 2: phân cấp duyệt -->
   <section class="slide" data-layout="stats" data-source="Quy chế chiết khấu thương mại - NovaTech (tài liệu mẫu của khóa học)">
-    <h2 class="title reveal">Case 2: Trợ lý báo giá giữ đúng thẩm quyền</h2>
+    <h2 class="title reveal">Bài tập Case 2: trợ lý báo giá giữ đúng thẩm quyền</h2>
     <div class="stats">
       <div class="stat reveal"><span class="stat-num">5%</span><span class="stat-label">Đến 5%: <b>Sales</b> tự quyết chiết khấu</span></div>
       <div class="stat reveal"><span class="stat-num">8%</span><span class="stat-label">Trên 5% đến 8%: <b>Trưởng phòng</b> duyệt</span></div>
@@ -1591,17 +1635,35 @@ b, strong { font-weight: 700; }
     </aside>
   </section>
 
+  <!-- B1. Kết nối Gmail, Google Drive -->
+  <section class="slide" data-layout="content" data-frame="media-right">
+    <h2 class="title reveal">Kết nối Gmail và Google Drive</h2>
+    <div class="mock mock-chat" data-title="Claude + Gmail" style="left:1080px;top:140px;width:780px;height:800px">
+      <div class="msg user type">Kiểm tra giúp tôi các email chưa đọc từ hôm qua đến giờ, có việc gì quan trọng tôi cần làm trước không?</div>
+      <div class="msg ai lines think" data-who="Claude">
+        <p>Có 3 mail cần xử lý trước.</p>
+        <p>Đã soạn sẵn 2 thư trả lời.</p>
+        <p>Thư nằm trong mục Thư nháp của Gmail.</p>
+      </div>
+    </div>
+    <ul class="bullets">
+      <li class="reveal"><b>Customize, Connectors</b>: bấm dấu cộng, chọn Gmail, Drive.</li>
+      <li class="reveal"><b>AI soạn sẵn thư</b>: lúc này Claude là AI Agent.</li>
+      <li class="reveal"><b>Từ khóa MCP</b>: cách các công cụ kết nối với nhau.</li>
+    </ul>
+  </section>
+
   <!-- 24. Hẹn giờ -->
   <section class="slide" data-layout="content" data-frame="split-left">
-    <h2 class="title reveal">Scheduled Tasks: hẹn giờ cho AI tự làm</h2>
+    <h2 class="title reveal">Scheduled: lịch tự động cho AI tự làm</h2>
     <ul class="bullets">
       <li class="reveal"><b>Việc lặp lại</b>: hẹn một lần, AI tự chạy định kỳ.</li>
-      <li class="reveal"><b>Chạy trên Cloud</b>: không cần ngồi trực máy.</li>
-      <li class="reveal"><b>Ví dụ</b>: tổng hợp deal đã chốt, deal bị kẹt gửi Trưởng phòng.</li>
+      <li class="reveal"><b>Chỉ có ở gói trả phí</b>: gói miễn phí không có mục này.</li>
+      <li class="reveal"><b>Ví dụ</b>: nhắc học tiếng Anh theo lời dạy của Bác.</li>
     </ul>
     <aside class="highlight reveal-scale">
-      <p class="hl-big">17:00</p>
-      <p class="hl-text">Thứ Sáu hằng tuần</p>
+      <p class="hl-big">6:00</p>
+      <p class="hl-text">Mỗi sáng</p>
     </aside>
   </section>
 
@@ -1616,9 +1678,9 @@ b, strong { font-weight: 700; }
   <section class="slide" data-layout="before-after">
     <h2 class="title reveal">Vì sao cần Antigravity?</h2>
     <div class="ba">
-      <div class="ba-side before reveal-left"><span class="ba-tag">Trước</span><h3>Claude trên trình duyệt</h3><ul><li>Bị "nhốt" trong trình duyệt</li><li>Tải lên từng file bằng tay</li><li>File nhiều là nhanh hết lượt dùng</li></ul></div>
+      <div class="ba-side before reveal-left"><span class="ba-tag">Buổi 1</span><h3>Claude trên trình duyệt</h3><ul><li>Pro gần 650 nghìn mỗi tháng</li><li>Bản miễn phí nhanh hết lượt</li><li>Tải lên từng file bằng tay</li></ul></div>
       <div class="ba-arrow reveal">&rarr;</div>
-      <div class="ba-side after fx fx-right" data-step="1"><span class="ba-tag">Sau</span><h3>Antigravity trên máy tính</h3><ul><li>AI chạm thẳng vào thư mục</li><li>Đọc, ghi hàng loạt file tự động</li><li>Làm việc ngay trên file thật</li></ul></div>
+      <div class="ba-side after fx fx-right" data-step="1"><span class="ba-tag">Buổi 2</span><h3>Antigravity trên máy tính</h3><ul><li>Gói Google AI Pro, hạn mức rộng</li><li>AI chạm thẳng vào thư mục</li><li>Dữ liệu nằm trên máy bạn</li></ul></div>
     </div>
   </section>
 
@@ -1626,12 +1688,63 @@ b, strong { font-weight: 700; }
   <section class="slide" data-layout="timeline">
     <h2 class="title reveal">Cài Antigravity tại lớp: 5 bước</h2>
     <div class="timeline">
-      <div class="step reveal"><div class="when">01</div><h3>Tải bộ cài</h3><p>Link do Mentor cung cấp</p></div>
+      <div class="step reveal"><div class="when">01</div><h3>Tải bộ cài</h3><p>antigravity.google</p></div>
       <div class="step reveal"><div class="when">02</div><h3>Cài đặt</h3><p>Để mặc định, Next, Finish</p></div>
-      <div class="step reveal"><div class="when">03</div><h3>Đăng nhập</h3><p>Tài khoản Google cá nhân</p></div>
-      <div class="step reveal"><div class="when">04</div><h3>Gõ lệnh thử</h3><p>Nhờ kiểm tra, xác nhận sẵn sàng</p></div>
-      <div class="step reveal"><div class="when">05</div><h3>Xong</h3><p>Agent truy cập được thư mục</p></div>
+      <div class="step reveal"><div class="when">03</div><h3>Đăng nhập</h3><p>Google có gói AI Pro</p></div>
+      <div class="step reveal"><div class="when">04</div><h3>Kiểm tra gói</h3><p>Settings, tên tài khoản, Plan</p></div>
+      <div class="step reveal"><div class="when">05</div><h3>Cập nhật</h3><p>Menu Antigravity, Check for updates</p></div>
     </div>
+  </section>
+
+  <!-- B2. Tạo project: mỗi việc một thư mục -->
+  <section class="slide" data-layout="content" data-frame="numbered">
+    <h2 class="title reveal">Tạo project: mỗi việc một thư mục riêng</h2>
+    <ul class="bullets">
+      <li class="reveal"><b>New project</b>, chọn nơi lưu, ví dụ Desktop.</li>
+      <li class="reveal"><b>New folder</b>, đặt tên buoi-2, chọn thư mục đó.</li>
+      <li class="reveal"><b>Kiểm tra</b>: ô thư mục ghi buoi-2, không phải Desktop.</li>
+      <li class="reveal"><b>No project</b>: chỉ dùng cho câu hỏi nhanh.</li>
+    </ul>
+    <aside class="highlight reveal-scale">
+      <p class="hl-text">Project = một thư mục</p>
+    </aside>
+  </section>
+
+  <!-- B2. Chọn quyền -->
+  <section class="slide" data-layout="compare-table" data-stage="clear">
+    <h2 class="title reveal">Chọn quyền: AI được tự làm đến đâu?</h2>
+    <table class="ctable reveal">
+      <thead><tr><th></th><th>Request review</th><th class="pick">Default</th><th>Turbo</th></tr></thead>
+      <tbody>
+        <tr><th>AI làm thế nào</th><td>Bước nào cũng hỏi</td><td class="pick">Chỉ hỏi khi tạo, xóa file</td><td>Tự làm hết, không hỏi</td></tr>
+        <tr><th>Khi nào dùng</th><td>Muốn soi từng bước</td><td class="pick"><span class="yes">Người mới nên dùng</span></td><td>Đã quen, thư mục riêng</td></tr>
+        <tr><th>Claude Desktop</th><td>Mặc định</td><td class="pick">Accept edits</td><td>Bypass permissions</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- B2. Model và hạn mức -->
+  <section class="slide" data-layout="two-col">
+    <h2 class="title reveal">Chọn model và canh hạn mức</h2>
+    <div class="cols">
+      <div class="col reveal-left">
+        <h3>Model</h3>
+        <ul>
+          <li>Gemini 3.8 Flash, mức High</li>
+          <li>Môi trường để Local</li>
+          <li>Model Claude trong Antigravity: vài câu là hết</li>
+        </ul>
+      </div>
+      <div class="col reveal-right">
+        <h3>Hạn mức</h3>
+        <ul>
+          <li>Xem ở View usage</li>
+          <li>Khung 5 giờ: đếm từ tin nhắn đầu</li>
+          <li>Khung tuần: 5% khung 5 giờ khoảng 1% tuần</li>
+        </ul>
+      </div>
+    </div>
+    <p class="takeaway reveal">Ba việc trước khi gửi prompt: chọn thư mục, chọn quyền, chọn model.</p>
   </section>
 
   <!-- B2. Quy tắc toàn cục là một file trên máy -->
@@ -1648,7 +1761,7 @@ b, strong { font-weight: 700; }
     <ul class="bullets">
       <li class="reveal"><b>Antigravity</b>: file GEMINI.md trong thư mục .gemini.</li>
       <li class="reveal"><b>Claude Desktop</b>: file CLAUDE.md trong thư mục .claude.</li>
-      <li class="reveal"><b>AI đọc</b> mỗi khi mở cuộc trò chuyện mới, ở mọi thư mục.</li>
+      <li class="reveal"><b>Trước đó</b>: Settings, tắt thu thập dữ liệu như Buổi 1.</li>
     </ul>
   </section>
 
@@ -1754,24 +1867,52 @@ Thành lập năm **2017**
     </div>
   </section>
 
+  <!-- B2. Word và .md: AI đọc bao nhiêu -->
+  <section class="slide" data-layout="before-after">
+    <h2 class="title reveal">Cùng hai chữ "xin chào", AI đọc bao nhiêu?</h2>
+    <div class="ba">
+      <div class="ba-side before reveal-left"><span class="ba-tag">File Word</span><h3>Lội qua cả đống thẻ</h3><ul><li>&lt;w:r&gt;&lt;w:rPr&gt;&lt;w:b/&gt;...</li><li>Sửa xong đóng gói lại cả file</li></ul></div>
+      <div class="ba-arrow reveal">&rarr;</div>
+      <div class="ba-side after fx fx-right" data-step="1"><span class="ba-tag">File .md</span><h3>**xin chào**</h3><ul><li>Chỉ đúng phần chữ</li><li>Đỡ tốn hạn mức (token)</li></ul></div>
+    </div>
+  </section>
+
   <!-- B2. Vì sao dùng .md -->
   <section class="slide" data-layout="content" data-frame="spotlight">
-    <h2 class="title reveal">Một bản gốc .md, ra Word, web hay slide</h2>
+    <h2 class="title reveal">Sửa đi sửa lại thì để .md, chốt rồi mới ra Word</h2>
     <ul class="bullets">
-      <li class="reveal">AI đọc và sửa đúng chỗ, không vỡ định dạng</li>
-      <li class="reveal">Nhẹ, mở bằng Notepad cũng đọc được</li>
-      <li class="reveal">Người và AI cùng sửa một file</li>
+      <li class="reveal">Đỡ tốn hạn mức hơn file Word</li>
+      <li class="reveal">AI sửa đúng chỗ, không vỡ định dạng</li>
+      <li class="reveal">Xem ở tab Review, tự sửa bằng Notepad</li>
     </ul>
   </section>
 
   <!-- B2. Viết và sửa bài -->
-  <section class="slide" data-layout="process">
+  <section class="slide" data-layout="process" data-stage="clear">
     <h2 class="title reveal">Viết và sửa bài: người và AI cùng làm</h2>
     <ol class="process">
-      <li class="reveal"><span class="n">1</span><h3>AI viết bài</h3><p>Từ tư liệu đã lưu, chèn ảnh có chú thích, ghi nguồn</p></li>
-      <li class="reveal"><span class="n">2</span><h3>AI sửa theo ý</h3><p>Rút mở bài, đổi ảnh, thêm mục mới</p></li>
-      <li class="reveal"><span class="n">3</span><h3>Bạn tự sửa</h3><p>Gõ thẳng vào file, AI soát chính tả, giữ ý bạn</p></li>
+      <li class="reveal"><span class="n">1</span><h3>AI viết bài</h3><p>Từ tư liệu đã lưu, chèn ảnh, ghi nguồn</p></li>
+      <li class="reveal"><span class="n">2</span><h3>Học văn phong</h3><p>Đưa đoạn văn mẫu, bảo AI viết lại</p></li>
+      <li class="reveal"><span class="n">3</span><h3>Sửa bằng comment</h3><p>Rê chuột vào đoạn, bấm dấu cộng, ghi chú</p></li>
+      <li class="reveal"><span class="n">4</span><h3>Bạn tự sửa</h3><p>AI soát chính tả, giữ ý bạn</p></li>
     </ol>
+  </section>
+
+  <!-- B2. Học văn phong từ bài mẫu -->
+  <section class="slide" data-layout="content" data-frame="media-right">
+    <h2 class="title reveal">Đưa bài mẫu cho AI học giọng văn</h2>
+    <div class="mock mock-chat" data-title="Antigravity" style="left:1080px;top:140px;width:780px;height:800px">
+      <div class="msg user type">[đoạn văn mẫu 1] ---------- [đoạn văn mẫu 2] ---------- Style viết trong bai-viet.md của bạn chưa hợp lắm. Học theo cách hành văn và style viết của hai đoạn trên, viết lại bài bai-viet.md cho tôi.</div>
+      <div class="msg ai lines think" data-who="AI">
+        <p>Đã đọc hai đoạn mẫu.</p>
+        <p>Đã viết lại bai-viet.md theo giọng văn đó.</p>
+      </div>
+    </div>
+    <ul class="bullets">
+      <li class="reveal"><b>Văn mẫu</b>: chép từ tin bài trên trang chùa.</li>
+      <li class="reveal"><b>Shift + Enter</b> để xuống dòng, Enter là gửi.</li>
+      <li class="reveal"><b>Nói rõ file cần viết lại</b>, đừng tiết kiệm chữ.</li>
+    </ul>
   </section>
 
   <!-- B2. Xuất Word theo tone logo -->
@@ -1779,9 +1920,9 @@ Thành lập năm **2017**
     <h2 class="title reveal">Xuất Word đúng tone màu logo</h2>
     <ul class="bullets">
       <li class="reveal"><b>Kéo thả logo</b> vào khung chat</li>
-      <li class="reveal"><b>AI phân tích dải màu</b> chủ đạo của logo</li>
-      <li class="reveal"><b>Áp tone màu</b> vào tài liệu Word</li>
-      <li class="reveal"><b>Mở file kiểm tra</b> dấu tiếng Việt, màu, ảnh</li>
+      <li class="reveal"><b>AI phân tích dải màu</b>, áp vào file Word</li>
+      <li class="reveal"><b>Mở bằng File Explorer</b>: Antigravity không xem được .docx</li>
+      <li class="reveal"><b>Lỗi trình bày</b>: chụp màn hình gửi AI sửa</li>
     </ul>
   </section>
 
@@ -1972,46 +2113,471 @@ Thành lập năm **2017**
       </div>
     </div>
     <ul class="bullets">
-      <li class="reveal"><b>Mở chat mới</b> rồi giao việc bằng một câu.</li>
+      <li class="reveal"><b>Gõ /</b> rồi tên skill: hiện ra là đã tạo đúng.</li>
       <li class="reveal"><b>Không dặn lại</b> logo, màu, bố cục.</li>
-      <li class="reveal"><b>Muốn dùng mọi nơi</b>: nhờ AI chuyển thành skill toàn cục.</li>
+      <li class="reveal"><b>Chia sẻ</b>: gửi nguyên thư mục trong .agents\skills.</li>
     </ul>
   </section>
 
   <!-- 28. Tự kiểm -->
   <section class="slide" data-layout="content" data-frame="frame">
-    <h2 class="title reveal">Tự kiểm: bạn đã làm được gì?</h2>
+    <h2 class="title reveal">Tự kiểm Buổi 1 và Buổi 2</h2>
     <ul class="bullets">
-      <li class="reveal">Đã khóa bảo mật, khai Profile, bật Memory.</li>
-      <li class="reveal">Đã dựng gia sư tiếng Anh và trợ lý báo giá.</li>
-      <li class="reveal">Đã cài Antigravity, thêm quy tắc toàn cục.</li>
-      <li class="reveal">Đã viết bài .md và xuất Word đúng tone logo.</li>
-      <li class="reveal">Đã tạo Skill và gọi lại bằng một câu.</li>
+      <li class="reveal">Đã tắt chia sẻ dữ liệu, dán 5 nguyên tắc, bật Memory.</li>
+      <li class="reveal">Đã dựng gia sư tiếng Anh, thử artifact, kết nối Gmail.</li>
+      <li class="reveal">Đã tạo project, chọn đúng quyền và model.</li>
+      <li class="reveal">Đã viết bài .md theo văn phong mẫu, xuất Word.</li>
+      <li class="reveal">Đã tạo Skill, gõ / thấy tên skill.</li>
     </ul>
     <aside class="highlight reveal-scale">
       <p class="hl-text">Làm lại trên việc thật của bạn</p>
     </aside>
   </section>
 
-  <!-- 29. Lộ trình tiếp theo -->
-  <section class="slide" data-layout="two-col" data-title="center">
-    <h2 class="title reveal">Lộ trình tiếp theo</h2>
+  <!-- B3. Chương 7 -->
+  <section class="slide" data-layout="chapter">
+    <p class="ch-num reveal-scale" aria-hidden="true">07</p>
+    <h2 class="title reveal" data-morph-id="ch7">AI nghiên cứu</h2>
+    <p class="subtitle reveal">Tự tìm, tự đọc, viết báo cáo ra file .md</p>
+  </section>
+
+  <!-- B3. Giao việc nghiên cứu -->
+  <section class="slide" data-layout="content" data-frame="media-right">
+    <h2 class="title reveal">Giao việc nghiên cứu, nhận về một file .md</h2>
+    <div class="mock mock-chat" data-title="Antigravity: demo-research" style="left:1080px;top:140px;width:780px;height:800px">
+      <div class="msg user type">Tìm kiếm nhanh và cho tôi báo cáo ngắn gọn (khoảng 2 trang giấy A4) về 3 xu hướng ứng dụng AI và tự động hóa trong quản trị doanh nghiệp năm 2026. Xuất thành file md cho tôi nhé. đọc khoảng 3-5 nguồn thôi</div>
+      <div class="msg ai lines think" data-who="AI">
+        <p>Đã tìm và đọc 5 nguồn.</p>
+        <p>Đã lưu báo cáo vào file .md trong project.</p>
+      </div>
+    </div>
+    <ul class="bullets">
+      <li class="reveal"><b>Project mới</b>: thư mục demo-research.</li>
+      <li class="reveal"><b>Gemini 3.8 Flash High</b>, bật Turbo.</li>
+      <li class="reveal"><b>Lười gõ</b>: bấm micro, nói đủ bối cảnh.</li>
+    </ul>
+  </section>
+
+  <!-- B3. Trên lớp và khi làm thật -->
+  <section class="slide" data-layout="compare-table" data-stage="clear">
+    <h2 class="title reveal">Prompt trên lớp rút gọn, làm thật thì sửa lại</h2>
+    <table class="ctable reveal">
+      <thead><tr><th></th><th>Trên lớp</th><th class="pick">Khi làm thật</th></tr></thead>
+      <tbody>
+        <tr><th>Cách tìm</th><td>Tìm kiếm nhanh</td><td class="pick"><span class="yes">Research</span></td></tr>
+        <tr><th>Số nguồn</th><td>Đọc 3-5 nguồn</td><td class="pick">Bỏ giới hạn</td></tr>
+        <tr><th>Độ dài</th><td>Khoảng 2 trang A4</td><td class="pick">Bỏ giới hạn</td></tr>
+        <tr><th>Nguồn</th><td class="no">Chưa dặn</td><td class="pick"><span class="yes">Kèm trích dẫn, link</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- B3. AI nghiên cứu như thế nào -->
+  <section class="slide" data-layout="process" data-stage="clear">
+    <h2 class="title reveal">AI nghiên cứu như thế nào?</h2>
+    <ol class="process">
+      <li class="reveal"><span class="n">1</span><h3>Gõ từ khóa</h3><p>Trên một trình duyệt ẩn, y như bạn</p></li>
+      <li class="reveal"><span class="n">2</span><h3>Chọn link</h3><p>Lấy vài trang phù hợp nhất</p></li>
+      <li class="reveal"><span class="n">3</span><h3>Đọc và tổng hợp</h3><p>Bấm Thought for để xem nó đã đọc gì</p></li>
+      <li class="reveal"><span class="n">4</span><h3>Ghi ra file .md</h3><p>Sửa nhiều vòng, chốt rồi mới ra Word</p></li>
+    </ol>
+  </section>
+
+  <!-- B3. Built-in browser -->
+  <section class="slide" data-layout="bento">
+    <h2 class="title reveal">Built-in browser: AI nhìn thấy, bấm được</h2>
+    <div class="bento">
+      <div class="cell hot wide tall reveal"><h3>Bạn đăng nhập sẵn</h3><p>Facebook, nhóm kín chặn AI tự vào. Mở sẵn trang trên built-in browser rồi mới giao việc.</p></div>
+      <div class="cell reveal"><h3>Nhóm Facebook</h3><p>Đọc bài, học cách viết, đặt lịch đăng</p></div>
+      <div class="cell reveal"><h3>Google Sheets</h3><p>AI tự đọc và điền dữ liệu</p></div>
+      <div class="cell reveal"><h3>Trang tạo video</h3><p>Flow, Veo: AI bấm tạo, tải về</p></div>
+      <div class="cell reveal"><h3>Web chưa quen</h3><p>AI tự tìm nút tải báo cáo</p></div>
+    </div>
+  </section>
+
+  <!-- B3. An toàn khi dùng built-in browser -->
+  <section class="slide" data-layout="statement" data-stage="clear">
+    <p class="kicker reveal">An toàn khi cho AI bấm trên tài khoản thật</p>
+    <h2 class="statement reveal">Tự tay đăng nhập. Bước Đăng, Gửi thì <mark>dặn AI dừng</mark> cho bạn xem trước.</h2>
+  </section>
+
+  <!-- B3. Chương 8 -->
+  <section class="slide" data-layout="chapter">
+    <p class="ch-num reveal-scale" aria-hidden="true">08</p>
+    <h2 class="title reveal" data-morph-id="ch8">Skill cộng đồng</h2>
+    <p class="subtitle reveal">Dùng lại Skill của mình, cài Skill của người khác an toàn</p>
+  </section>
+
+  <!-- B3. Hai cách gọi Skill -->
+  <section class="slide" data-layout="two-col">
+    <h2 class="title reveal">Gọi Skill: 2 cách</h2>
     <div class="cols">
       <div class="col reveal-left">
-        <h3>Kết nối MCP</h3>
+        <h3>Gọi đúng tên</h3>
         <ul>
-          <li>Kết nối Google Drive, Sheets</li>
-          <li>AI đọc, ghi dữ liệu trên đám mây</li>
+          <li>Gõ /, chọn skill bằng mũi tên</li>
+          <li>Bấm Tab rồi viết yêu cầu</li>
         </ul>
       </div>
       <div class="col reveal-right">
-        <h3>AI Agent tự hành</h3>
+        <h3>Chỉ cần mô tả</h3>
         <ul>
-          <li>Subagent chia việc cho nhau</li>
-          <li>Luồng việc tự động khép kín</li>
+          <li>"Đóng gói báo cáo này theo chuẩn &lt;tên đơn vị&gt;"</li>
+          <li>Khớp mô tả là AI tự gọi skill</li>
         </ul>
       </div>
     </div>
+    <p class="takeaway reveal">Đừng tự đổi tên thư mục skill bằng tay, hãy nhờ AI đổi.</p>
+  </section>
+
+  <!-- B3. Skill tốt sinh ra từ quá trình làm việc -->
+  <section class="slide" data-layout="statement" data-stage="clear">
+    <p class="kicker reveal">Muốn Skill chuẩn</p>
+    <h2 class="statement reveal">Làm cùng AI, <mark>sửa nhiều vòng</mark>, thấy ổn rồi mới đóng gói.</h2>
+  </section>
+
+  <!-- B3. GitHub và repo -->
+  <section class="slide" data-layout="content" data-frame="spotlight">
+    <h2 class="title reveal">GitHub: giống Google Drive, nhưng chuyên chứa code</h2>
+    <ul class="bullets">
+      <li class="reveal">Cộng đồng chia sẻ skill trên đây</li>
+      <li class="reveal">Mỗi kho gọi là repo (repository)</li>
+      <li class="reveal">Sao là số người lưu: chọn từ 1.000 sao</li>
+    </ul>
+  </section>
+
+  <!-- B3. Kiểm tra trước, cài sau -->
+  <section class="slide" data-layout="content" data-frame="media-right">
+    <h2 class="title reveal">Kiểm tra mã độc trước, cài sau</h2>
+    <div class="mock mock-chat" data-title="Antigravity" style="left:1080px;top:140px;width:780px;height:800px">
+      <div class="msg user type">https://github.com/vuhai2002/slide-morph repo này là gì? nó có chứa mã độc gì hay không? kiểm tra kỹ cho tôi nhé để tôi chuẩn bị cài</div>
+      <div class="msg ai lines think" data-who="AI">
+        <p>Đã kiểm tra từng file: an toàn.</p>
+        <p>Chưa cài gì, chờ bạn yêu cầu.</p>
+      </div>
+    </div>
+    <ul class="bullets">
+      <li class="reveal"><b>Dặn thêm</b>: chưa cài gì cho đến khi tôi yêu cầu.</li>
+      <li class="reveal"><b>Cài</b>: đặt tại folder skill cấp project.</li>
+      <li class="reveal"><b>Đúng chỗ</b>: nằm trong .agents\skills.</li>
+    </ul>
+  </section>
+
+  <!-- B3. Slash command -->
+  <section class="slide" data-layout="statement" data-stage="clear">
+    <p class="kicker reveal">Gõ dấu / trong khung chat, danh sách skill hiện ra</p>
+    <h2 class="statement reveal">Cách gọi đó có tên chuẩn là <mark>slash command</mark>.</h2>
+  </section>
+
+  <!-- B3. Hai bộ skill nổi tiếng -->
+  <section class="slide" data-layout="two-col">
+    <h2 class="title reveal">Hai bộ skill nổi tiếng, về nhà thử</h2>
+    <div class="cols">
+      <div class="col reveal-left">
+        <h3>marketingskills</h3>
+        <ul>
+          <li>Hơn 50 skill marketing</li>
+          <li>Tiếng Anh, chọn vài skill thật cần</li>
+        </ul>
+      </div>
+      <div class="col reveal-right">
+        <h3>humanizer</h3>
+        <ul>
+          <li>Viết bớt "giọng AI"</li>
+          <li>Khi cài, nhờ AI chỉnh cho tiếng Việt</li>
+        </ul>
+      </div>
+    </div>
+    <p class="takeaway reveal">Nhờ AI đánh giá có hợp với project của bạn không, rồi mới cài.</p>
+  </section>
+
+  <!-- B3. Chương 9 -->
+  <section class="slide" data-layout="chapter">
+    <p class="ch-num reveal-scale" aria-hidden="true">09</p>
+    <h2 class="title reveal" data-morph-id="ch9">Slide và video</h2>
+    <p class="subtitle reveal">Slide HTML bằng /slide-morph, video dọc 9:16 cho mạng xã hội</p>
+  </section>
+
+  <!-- B3. Vì sao slide HTML -->
+  <section class="slide" data-layout="content" data-frame="magazine">
+    <h2 class="title reveal">Vì sao làm slide bằng file HTML?</h2>
+    <ul class="bullets">
+      <li class="reveal"><b>PowerPoint do AI làm</b> thường lệch, không hiệu ứng.</li>
+      <li class="reveal"><b>File HTML</b>: mở bằng Chrome là trình chiếu.</li>
+      <li class="reveal"><b>Cần gửi điện thoại</b>: nhờ AI xuất PDF.</li>
+      <li class="reveal"><b>Excel nhiều số</b>: nhờ AI dựng dashboard HTML.</li>
+    </ul>
+    <aside class="highlight reveal">
+      <p class="hl-text">Skill /slide-morph: thư viện 85 style để chọn.</p>
+    </aside>
+  </section>
+
+  <!-- B3. Làm slide với /slide-morph -->
+  <section class="slide" data-layout="timeline">
+    <h2 class="title reveal">Làm slide với /slide-morph: 4 bước</h2>
+    <div class="timeline">
+      <div class="step reveal"><div class="when">01</div><h3>Chọn style</h3><p>Trong thư viện 85 style</p></div>
+      <div class="step reveal"><div class="when">02</div><h3>Chép tên style</h3><p>Ví dụ midcentury-toon</p></div>
+      <div class="step reveal"><div class="when">03</div><h3>Đưa nội dung</h3><p>Kéo file .md, không dùng .docx</p></div>
+      <div class="step reveal"><div class="when">04</div><h3>Gửi lệnh</h3><p>sử dụng skill /slide-morph tạo cho tôi 1 slide theo style ...</p></div>
+    </div>
+  </section>
+
+  <!-- B3. Bắt AI tự soát slide -->
+  <section class="slide" data-layout="content" data-frame="media-right">
+    <h2 class="title reveal">Slide lỗi? Bắt AI tự mở ra soát từng slide</h2>
+    <div class="mock mock-chat" data-title="Antigravity" style="left:1080px;top:140px;width:780px;height:800px">
+      <div class="msg user type">slide này đang bị lỗi nè. Và có rất nhiều slide bị lỗi tương tự. Hình như bạn chưa mở xem trực tiếp thì phải. Bạn hãy mở slide trong built-in browser để tự xem và check lại từng slide rồi chỉnh sao cho chính xác, ko còn lỗi nhé</div>
+      <div class="msg ai lines think" data-who="AI">
+        <p>Đang mở và chụp từng slide.</p>
+        <p>Đã sửa các slide bị lỗi.</p>
+      </div>
+    </div>
+    <ul class="bullets">
+      <li class="reveal"><b>Gửi kèm</b> ảnh chụp một slide lỗi.</li>
+      <li class="reveal"><b>AI viết bằng code</b> nên không tự nhìn thấy.</li>
+      <li class="reveal"><b>Mở slide</b>: chuột phải, Open with, Chrome.</li>
+    </ul>
+  </section>
+
+  <!-- B3. Video ngang thành video dọc (tự thiết kế) -->
+  <section class="slide s-video" data-layout="free">
+    <h2 class="fs-title reveal">Dự án: video bài giảng ngang thành video dọc 9:16</h2>
+    <svg aria-hidden="true" style="position:absolute;left:120px;top:200px" width="1680" height="640" viewBox="0 0 1680 640">
+      <path class="wb-k draw" pathLength="1" style="--d:.1" d="M40 160L642 162M639 158L637 500M642 496L37 498M42 502L41 158"/>
+      <path class="wb-b" d="M300 270L300 390L400 330Z"/>
+      <text class="wb-hand" x="150" y="570">video ngang 16:9</text>
+      <path class="wb-o draw" pathLength="1" style="--d:.5" d="M700 330Q830 260 960 330M934 314L960 330L932 346"/>
+      <text class="wb-hand-o" x="760" y="250">AI làm</text>
+      <g class="reveal">
+        <path class="wb-k" d="M1060 10L1400 12M1397 8L1395 622M1400 618L1057 620M1062 624L1061 8"/>
+        <path class="wb-dot" d="M1090 560C1180 520 1280 580 1370 540"/>
+        <path class="wb-o" d="M1100 70L1360 72M1120 120L1340 121"/>
+        <path class="wb-b" d="M1080 230L1378 232M1376 228L1374 400M1378 396L1078 398M1082 402L1081 228"/>
+        <path class="wb-b" d="M1210 285L1210 345L1260 315Z"/>
+        <text class="wb-hand" x="1440" y="300">video dọc</text>
+        <text class="wb-hand-b" x="1470" y="360">9:16</text>
+      </g>
+    </svg>
+    <p class="v-cap reveal">Nguồn: bài giảng ngắn trên trang chùa. AI tự tạo ảnh nền 9:16, gắn tiêu đề, sẵn sàng đăng TikTok, Facebook, YouTube.</p>
+  </section>
+
+  <!-- B3. Prompt làm video có gì -->
+  <section class="slide" data-layout="content" data-frame="numbered">
+    <h2 class="title reveal">Prompt làm video: kể như đang nói với người</h2>
+    <ul class="bullets">
+      <li class="reveal">Ý tưởng, mục tiêu, kèm 2, 3 ảnh mẫu bạn thích.</li>
+      <li class="reveal">Nguồn video ở đâu, làm thử 1 video trước.</li>
+      <li class="reveal">Tự mở link bằng built-in browser.</li>
+      <li class="reveal">Tự tạo ảnh nền 9:16 (multimodal).</li>
+      <li class="reveal">Có gì chưa rõ thì hỏi lại.</li>
+    </ul>
+    <aside class="highlight reveal-scale">
+      <p class="hl-text">Ổn rồi mới làm hàng loạt</p>
+    </aside>
+  </section>
+
+  <!-- B3. Tự kiểm -->
+  <section class="slide" data-layout="content" data-frame="rail">
+    <h2 class="title reveal">Tự kiểm Buổi 3</h2>
+    <ul class="bullets">
+      <li class="reveal">AI nghiên cứu ra báo cáo .md có nguồn.</li>
+      <li class="reveal">Mở được built-in browser, biết khi nào dùng.</li>
+      <li class="reveal">Báo cáo ra Word theo logo, đóng gói Skill.</li>
+      <li class="reveal">Kiểm mã độc rồi cài /slide-morph, làm slide.</li>
+      <li class="reveal">Làm được video dọc 9:16 đầu tiên.</li>
+    </ul>
+    <aside class="highlight reveal">
+      <p class="hl-text">Làm lại trên việc thật của bạn</p>
+    </aside>
+  </section>
+
+  <!-- B4. Chương 10 -->
+  <section class="slide" data-layout="chapter">
+    <p class="ch-num reveal-scale" aria-hidden="true">10</p>
+    <h2 class="title reveal" data-morph-id="ch10">Web portfolio</h2>
+    <p class="subtitle reveal">Research mẫu, AI hỏi lại cho đúng ý, đưa lên mạng bằng Vercel</p>
+  </section>
+
+  <!-- B4. Portfolio gồm gì -->
+  <section class="slide" data-layout="bento">
+    <h2 class="title reveal">Portfolio: hồ sơ năng lực online của bạn</h2>
+    <div class="bento">
+      <div class="cell hot wide tall reveal"><h3>Phần đầu trang</h3><p>Tên, nghề, một câu giới thiệu ấn tượng, nút liên hệ nổi bật.</p></div>
+      <div class="cell reveal"><h3>Dự án tiêu biểu</h3><p>Ảnh, việc bạn làm, kết quả</p></div>
+      <div class="cell reveal"><h3>Giới thiệu, kỹ năng</h3><p>Câu chuyện, kinh nghiệm</p></div>
+      <div class="cell reveal"><h3>Bằng chứng</h3><p>Cảm nhận, con số nổi bật</p></div>
+      <div class="cell reveal"><h3>Liên hệ</h3><p>Dễ bấm trên điện thoại</p></div>
+    </div>
+  </section>
+
+  <!-- B4. Tone màu theo ngành -->
+  <section class="slide" data-layout="compare-table" data-stage="clear">
+    <h2 class="title reveal">Tone màu theo ngành</h2>
+    <table class="ctable reveal">
+      <thead><tr><th></th><th>Tone màu thường gặp</th><th class="pick">Cảm giác</th></tr></thead>
+      <tbody>
+        <tr><th>Tài chính, luật</th><td>Xanh navy, xám, trắng</td><td class="pick">Tin cậy, chắc chắn</td></tr>
+        <tr><th>Y tế, giáo dục</th><td>Xanh dương nhạt, xanh lá</td><td class="pick">Sạch sẽ, an tâm</td></tr>
+        <tr><th>Ăn uống, bán lẻ</th><td>Cam, đỏ, vàng</td><td class="pick">Năng động</td></tr>
+        <tr><th>Cao cấp</th><td>Đen, vàng đồng, kem</td><td class="pick">Sang trọng</td></tr>
+        <tr><th>Công nghệ</th><td>Xanh tím, nền tối</td><td class="pick">Hiện đại, sáng tạo</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- B4. Giao việc dựng portfolio -->
+  <section class="slide" data-layout="content" data-frame="media-right">
+    <h2 class="title reveal">Giao việc: research, hỏi lại, rồi mới dựng</h2>
+    <div class="mock mock-chat" data-title="Antigravity: portfolio" style="left:1080px;top:140px;width:780px;height:800px">
+      <div class="msg user type">Hiện tại tôi cần làm 1 web portfolio cho cá nhân tôi. Tôi cần bạn research thêm các mẫu trong cùng ngành xem style và tone màu nên sử dụng như thế nào. Hãy hỏi lại tôi để chắc chắn bạn làm đúng ý tôi... Cần gì thì hỏi lại tôi grill-me</div>
+      <div class="msg ai lines think" data-who="AI">
+        <p>Đã xem các mẫu trên Dribbble, Pinterest.</p>
+        <p>Câu 1: bạn làm nghề gì, ai sẽ xem trang?</p>
+      </div>
+    </div>
+    <ul class="bullets">
+      <li class="reveal"><b>Gửi kèm</b> ảnh chụp một mẫu web bạn ưng.</li>
+      <li class="reveal"><b>Ảnh</b>: Unsplash, Pexels, hoặc AI tạo bằng Flow.</li>
+      <li class="reveal"><b>Trả lời cụ thể</b> thì trang càng đúng ý.</li>
+    </ul>
+  </section>
+
+  <!-- B4. grill-me -->
+  <section class="slide" data-layout="statement" data-stage="clear">
+    <p class="kicker reveal">Thêm chữ "grill-me" vào cuối prompt</p>
+    <h2 class="statement reveal">AI <mark>hỏi dồn từng câu</mark>, hiểu rõ ý bạn rồi mới bắt tay làm.</h2>
+  </section>
+
+  <!-- B4. Đưa web lên Vercel -->
+  <section class="slide" data-layout="process" data-stage="clear">
+    <h2 class="title reveal">Đưa web lên mạng bằng Vercel</h2>
+    <ol class="process">
+      <li class="reveal"><span class="n">1</span><h3>Tạo tài khoản</h3><p>vercel.com, đăng nhập bằng GitHub hoặc Google</p></li>
+      <li class="reveal"><span class="n">2</span><h3>Kết nối</h3><p>AI tự cài, bạn tự đăng nhập, bấm cho phép</p></li>
+      <li class="reveal"><span class="n">3</span><h3>Đẩy web lên</h3><p>Kiểm tra kết nối trước, xong gửi lại link</p></li>
+      <li class="reveal"><span class="n">4</span><h3>Mở trên điện thoại</h3><p>Người xem phần lớn dùng điện thoại</p></li>
+    </ol>
+  </section>
+
+  <!-- B4. Vercel: link và gói miễn phí -->
+  <section class="slide" data-layout="content" data-frame="split-right">
+    <h2 class="title reveal">Một link chính, luôn là bản mới nhất</h2>
+    <ul class="bullets">
+      <li class="reveal"><b>Deploy</b>: mỗi lần đưa lên có link xem thử riêng.</li>
+      <li class="reveal"><b>Link chính</b>: gửi cho mọi người, tự cập nhật.</li>
+      <li class="reveal"><b>Sửa web</b>: bảo AI "đẩy bản mới lên Vercel".</li>
+    </ul>
+    <aside class="highlight reveal-scale">
+      <p class="hl-text">Gói miễn phí chỉ cho mục đích cá nhân: portfolio dùng được, web bán hàng cần gói Pro.</p>
+    </aside>
+  </section>
+
+  <!-- B4. Chương 11 -->
+  <section class="slide" data-layout="chapter">
+    <p class="ch-num reveal-scale" aria-hidden="true">11</p>
+    <h2 class="title reveal" data-morph-id="ch11">Video bằng code</h2>
+    <p class="subtitle reveal">Cài 3 bộ skill, làm video dọc có giọng đọc, nhạc, hiệu ứng</p>
+  </section>
+
+  <!-- B4. Hai cách AI làm video -->
+  <section class="slide" data-layout="compare-table" data-stage="clear">
+    <h2 class="title reveal">Hai cách AI làm video</h2>
+    <table class="ctable reveal">
+      <thead><tr><th></th><th>Mô hình sinh video</th><th class="pick">Làm phim bằng code</th></tr></thead>
+      <tbody>
+        <tr><th>Cách làm</th><td>Gõ mô tả, AI vẽ cả đoạn</td><td class="pick">AI viết trang hoạt hình, chụp từng khung</td></tr>
+        <tr><th>Mạnh</th><td>Cảnh giống thật</td><td class="pick"><span class="yes">Chữ, logo, số chính xác</span></td></tr>
+        <tr><th>Sửa một chi tiết</th><td class="no">Thường tạo lại cả đoạn</td><td class="pick"><span class="yes">Sửa đúng chỗ đó</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- B4. Từ kịch bản đến MP4 -->
+  <section class="slide" data-layout="timeline">
+    <h2 class="title reveal">Video giống cuốn sách lật: máy làm 5 bước</h2>
+    <div class="timeline">
+      <div class="step reveal"><div class="when">01</div><h3>Kịch bản</h3><p>Lời đọc, chia cảnh, giây nào hiện gì</p></div>
+      <div class="step reveal"><div class="when">02</div><h3>Trang hoạt hình</h3><p>Mỗi thời điểm vẽ một khung hình</p></div>
+      <div class="step reveal"><div class="when">03</div><h3>Chrome chạy ngầm</h3><p>Chụp lần lượt từng khung</p></div>
+      <div class="step reveal"><div class="when">04</div><h3>FFmpeg ghép</h3><p>Ra MP4, trộn giọng, nhạc, hiệu ứng</p></div>
+      <div class="step reveal"><div class="when">05</div><h3>Xem, sửa</h3><p>Render lại tới khi ưng</p></div>
+    </div>
+  </section>
+
+  <!-- B4. Ba bộ skill -->
+  <section class="slide" data-layout="content" data-frame="zigzag" data-stage="clear">
+    <h2 class="title reveal">Ba bộ skill làm video</h2>
+    <ul class="bullets">
+      <li class="reveal"><b>Lemo-Opuscar</b>: hơn 60 phong cách phim bằng code, gọi /lemo-opuscar.</li>
+      <li class="reveal"><b>motion-design</b>: nguyên tắc chuyển động cho mượt, có hồn.</li>
+      <li class="reveal"><b>HyperFrames</b>: viết HTML rồi render thành video.</li>
+    </ul>
+  </section>
+
+  <!-- B4. Cài 3 bộ skill -->
+  <section class="slide" data-layout="content" data-frame="media-right">
+    <h2 class="title reveal">Kiểm tra rồi cài cả 3 bộ cùng lúc</h2>
+    <div class="mock mock-chat" data-title="Antigravity" style="left:1080px;top:140px;width:780px;height:800px">
+      <div class="msg user type">[3 link repo: lemo-opuscar, motion-design-skill, HyperFrames] === kiểm tra và cài các bộ skill này cho tôi nhé. Đặt tại thư mục skill cấp project</div>
+      <div class="msg ai lines think" data-who="AI">
+        <p>Đã soát 3 repo: an toàn, giấy phép mở.</p>
+        <p>Đã cài kèm Node.js, FFmpeg, Python.</p>
+      </div>
+    </div>
+    <ul class="bullets">
+      <li class="reveal"><b>Đọc rồi cho phép</b> khi AI xin chạy lệnh.</li>
+      <li class="reveal"><b>Gõ /</b> thấy đủ 3 skill là xong.</li>
+      <li class="reveal"><b>Style tối ưu cho Claude</b>: Antigravity có thể kém đẹp hơn.</li>
+    </ul>
+  </section>
+
+  <!-- B4. Hook -->
+  <section class="slide" data-layout="statement" data-stage="clear">
+    <p class="kicker reveal">Hook: phần mở đầu của video</p>
+    <h2 class="statement reveal">Vài giây đầu quyết định người xem <mark>lướt qua hay ở lại</mark>.</h2>
+  </section>
+
+  <!-- B4. Giao việc làm video -->
+  <section class="slide" data-layout="content" data-frame="media-left">
+    <h2 class="title reveal">Viết kịch bản, xem 5 style rồi mới làm full</h2>
+    <div class="mock mock-chat" data-title="Antigravity" style="left:60px;top:140px;width:780px;height:800px">
+      <div class="msg user type">[nội dung bài viết] === đọc và dựa vào nội dung này, viết kịch bản và dùng skill /lemo-opuscar để làm video cho nội dung trên... video khung dọc. Cho tôi 5 style phù hợp, sáng tạo, thu hút trước để tôi chọn trước khi làm full nhé</div>
+      <div class="msg ai lines think" data-who="AI">
+        <p>Đã viết kịch bản có hook.</p>
+        <p>Đây là 5 style để bạn chọn.</p>
+      </div>
+    </div>
+    <ul class="bullets">
+      <li class="reveal"><b>Giọng đọc</b>: AI Studio, giọng nam nhanh nhẹn.</li>
+      <li class="reveal"><b>/browser</b>: AI tự mở trình duyệt tạo giọng.</li>
+      <li class="reveal"><b>Nhạc, hiệu ứng</b>: gắn đúng từng khung hình.</li>
+    </ul>
+  </section>
+
+  <!-- B4. Các bước làm video -->
+  <section class="slide" data-layout="process" data-stage="clear">
+    <h2 class="title reveal">Từ 5 style đến file MP4</h2>
+    <ol class="process">
+      <li class="reveal"><span class="n">1</span><h3>Chọn 1 style</h3><p>Xem thêm trang gallery cho ưng</p></li>
+      <li class="reveal"><span class="n">2</span><h3>Đăng nhập AI Studio</h3><p>Bạn tự đăng nhập Google, AI làm tiếp</p></li>
+      <li class="reveal"><span class="n">3</span><h3>AI làm full</h3><p>Giọng, nhạc, hiệu ứng, render MP4</p></li>
+      <li class="reveal"><span class="n">4</span><h3>Góp ý cụ thể</h3><p>"Cảnh đầu dài thêm 2 giây", "nhạc nhỏ lại"</p></li>
+    </ol>
+  </section>
+
+  <!-- B4. Tự kiểm -->
+  <section class="slide" data-layout="content" data-frame="frame">
+    <h2 class="title reveal">Tự kiểm Buổi 4</h2>
+    <ul class="bullets">
+      <li class="reveal">Web portfolio của bạn đã lên Vercel.</li>
+      <li class="reveal">Mở được link trên điện thoại.</li>
+      <li class="reveal">Đã soát và cài đủ 3 bộ skill làm video.</li>
+      <li class="reveal">Video dọc có hook, giọng đọc, nhạc, hiệu ứng.</li>
+    </ul>
+    <aside class="highlight reveal-scale">
+      <p class="hl-text">Gửi link web và video lên nhóm</p>
+    </aside>
   </section>
 
   <!-- 30. Kết -->

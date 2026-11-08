@@ -742,6 +742,28 @@
     .session-tab-btn:disabled:hover { background: transparent; color: var(--text-muted); }
     .session-soon { display: block; margin-top: 3px; font-size: 11px; font-weight: 600; color: var(--text-subtle); }
 
+    /* Tắt chữ nối của font code: "===" hay "->" phải hiện đúng từng ký tự học viên cần gõ */
+    .code-pre { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+
+    /* Link xem lại record buổi học, đặt dưới mô tả banner */
+    .banner-link {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 8px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--brand-primary);
+      text-decoration: none;
+    }
+    .banner-link:hover { border-color: var(--brand-primary); }
+    .banner-link .icon { width: 16px; height: 16px; }
+
     /* Khung minh họa file .md sau khi phần mềm hiển thị */
     .md-render { font-size: 14px; color: var(--text-main); }
     .md-render-label { margin-bottom: 10px; font-size: 12px; font-weight: 600; color: var(--text-muted); }
@@ -1162,7 +1184,7 @@
       </div>
 
       <div>
-        <div class="sidebar-section-title">Lộ trình 3 buổi học</div>
+        <div class="sidebar-section-title">Lộ trình khóa học</div>
         <ul class="session-list">
           <li class="active">
             <button class="session-tab-btn active" data-session="1">
@@ -1174,13 +1196,16 @@
                 <li class="toc-item"><a href="#b1-phan-0">0. Khóa này giúp bạn bớt việc gì?</a></li>
                 <li class="toc-item toc-sub"><a href="#b1-ai-landscape">Bức tranh AI hiện nay</a></li>
                 <li class="toc-item toc-sub"><a href="#b1-chatbot-agent">Từ Chatbot AI đến AI Agent</a></li>
-                <li class="toc-item"><a href="#b1-phan-1">1. Bảo mật Privacy &amp; Ký ức Memory</a></li>
+                <li class="toc-item"><a href="#b1-phan-1">1. Tài khoản, Privacy &amp; Memory</a></li>
                 <li class="toc-item"><a href="#b1-phan-2">2. Dựng Trợ lý với Claude Projects</a></li>
                 <li class="toc-item toc-sub"><a href="#b1-projects">2.1. Claude Projects là gì?</a></li>
                 <li class="toc-item toc-sub"><a href="#b1-instructions">2.2. Project Instructions</a></li>
-                <li class="toc-item toc-sub"><a href="#b1-case-1">2.3. Case 1: Gia sư Tiếng Anh</a></li>
-                <li class="toc-item toc-sub"><a href="#b1-case-2">2.4. Case 2: Trợ lý Báo giá B2B</a></li>
-                <li class="toc-item"><a href="#b1-phan-3">3. Scheduled Tasks &amp; Nghiệm thu</a></li>
+                <li class="toc-item toc-sub"><a href="#b1-model">2.3. Chọn model</a></li>
+                <li class="toc-item toc-sub"><a href="#b1-case-1">2.4. Case 1: Gia sư Tiếng Anh</a></li>
+                <li class="toc-item toc-sub"><a href="#b1-artifact">2.5. Xuất file &amp; Artifact</a></li>
+                <li class="toc-item toc-sub"><a href="#b1-case-2">2.6. Case 2: Báo giá B2B (bài tập)</a></li>
+                <li class="toc-item"><a href="#b1-phan-3">3. Gmail, Drive, lịch tự động</a></li>
+                <li class="toc-item toc-sub"><a href="#b1-connectors">3.1. Kết nối Gmail &amp; Drive</a></li>
                 <li class="toc-item"><a href="#b1-phan-7">4. Chuyển giao: Cài Antigravity</a></li>
               </ul>
             </div>
@@ -1193,10 +1218,14 @@
             <div class="sidebar-toc">
               <ul class="toc-list">
                 <li class="toc-item"><a href="#b2-phan-0">0. Chuẩn bị &amp; an toàn</a></li>
-                <li class="toc-item"><a href="#b2-phan-1">1. Quy tắc toàn cục</a></li>
+                <li class="toc-item toc-sub"><a href="#b2-tao-project">Tạo project &amp; chọn thư mục</a></li>
+                <li class="toc-item toc-sub"><a href="#b2-3-buoc">Quyền, model, hạn mức</a></li>
+                <li class="toc-item"><a href="#b2-phan-1">1. Tài khoản &amp; quy tắc toàn cục</a></li>
                 <li class="toc-item"><a href="#b2-phan-2">2. AI tải nội dung, ảnh về máy</a></li>
                 <li class="toc-item"><a href="#b2-phan-3">3. File .md là gì?</a></li>
                 <li class="toc-item"><a href="#b2-phan-4">4. Viết &amp; sửa bài .md</a></li>
+                <li class="toc-item toc-sub"><a href="#b2-van-phong">Học văn phong từ bài mẫu</a></li>
+                <li class="toc-item toc-sub"><a href="#b2-comment">Sửa bằng comment</a></li>
                 <li class="toc-item"><a href="#b2-phan-5">5. Xuất Word theo tone logo</a></li>
                 <li class="toc-item"><a href="#b2-phan-6">6. Đóng gói thành Skill</a></li>
                 <li class="toc-item"><a href="#b2-phan-7">7. Tự kiểm Buổi 2</a></li>
@@ -1204,10 +1233,38 @@
             </div>
           </li>
           <li>
-            <button class="session-tab-btn" data-session="3" disabled>
+            <button class="session-tab-btn" data-session="3">
               <div class="session-num-badge">3</div>
-              <div class="session-name">Buổi 3: AI Agent tự hành &amp; kết nối MCP<span class="session-soon">Sắp cập nhật</span></div>
+              <div class="session-name">Buổi 3: Nghiên cứu, Skill cộng đồng &amp; Video dọc</div>
             </button>
+            <div class="sidebar-toc">
+              <ul class="toc-list">
+                <li class="toc-item"><a href="#b3-phan-0">0. Chuẩn bị project mới</a></li>
+                <li class="toc-item"><a href="#b3-phan-1">1. AI nghiên cứu ra báo cáo .md</a></li>
+                <li class="toc-item"><a href="#b3-phan-2">2. Built-in browser</a></li>
+                <li class="toc-item"><a href="#b3-phan-3">3. Word theo logo &amp; Skill</a></li>
+                <li class="toc-item"><a href="#b3-phan-4">4. Cài Skill cộng đồng an toàn</a></li>
+                <li class="toc-item"><a href="#b3-phan-5">5. Slide HTML với /slide-morph</a></li>
+                <li class="toc-item"><a href="#b3-phan-6">6. Dự án video dọc 9:16</a></li>
+                <li class="toc-item"><a href="#b3-phan-7">7. Tự kiểm Buổi 3</a></li>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <button class="session-tab-btn" data-session="4">
+              <div class="session-num-badge">4</div>
+              <div class="session-name">Buổi 4: Web portfolio, Vercel &amp; Video bằng code</div>
+            </button>
+            <div class="sidebar-toc">
+              <ul class="toc-list">
+                <li class="toc-item"><a href="#b4-phan-0">0. Chuẩn bị</a></li>
+                <li class="toc-item"><a href="#b4-phan-1">1. Làm web portfolio</a></li>
+                <li class="toc-item"><a href="#b4-phan-2">2. Đưa web lên Vercel</a></li>
+                <li class="toc-item"><a href="#b4-phan-3">3. Cài 3 bộ skill làm video</a></li>
+                <li class="toc-item"><a href="#b4-phan-4">4. Video dọc có giọng đọc</a></li>
+                <li class="toc-item"><a href="#b4-phan-5">5. Tự kiểm Buổi 4</a></li>
+              </ul>
+            </div>
           </li>
         </ul>
       </div>
@@ -1226,7 +1283,11 @@
           BUỔI 1 • THỰC CHIẾN TỪ WEB SANG MÁY TÍNH
         </div>
         <h1 class="banner-title">Thiết lập Bảo mật, Dựng Trợ lý Chuyên việc &amp; Khởi tạo Antigravity</h1>
-        <p class="banner-desc">Hết cảnh mỗi lần mở chat mới là phải giải thích lại từ đầu. Thiết lập bảo mật dữ liệu doanh nghiệp, đóng gói kinh nghiệm vào Claude Projects và cài đặt Antigravity IDE sẵn sàng làm việc trực tiếp trên file máy tính.</p>
+        <p class="banner-desc">Hết cảnh mỗi lần mở chat mới là phải giải thích lại từ đầu. Thiết lập bảo mật và chỉ dẫn cho tài khoản Claude, dựng trợ lý riêng bằng Claude Projects, kết nối Gmail và Google Drive, rồi cài sẵn Antigravity để Buổi 2 làm việc trực tiếp trên file máy tính.</p>
+        <a class="banner-link" href="https://youtu.be/2TAVIXqsjpg" target="_blank" rel="noopener">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          Xem lại record Buổi 1 (11/10)
+        </a>
       </section>
 
       <!-- PHẦN 0 -->
@@ -1411,6 +1472,14 @@
             <p>Từ tháng 9/2026, Claude đã gộp Chat và Cowork vào chung một khung trò chuyện (đang mở dần theo gói, Pro và Max trước). Bạn chỉ việc giao việc, Claude tự quyết khi nào trả lời nhanh như chatbot, khi nào chạy nhiều bước như một AI Agent.</p>
           </div>
         </div>
+
+        <div class="alert-box alert-success" style="margin-bottom: 0;">
+          <span class="alert-icon">🔑</span>
+          <div>
+            <strong>VIẾT PROMPT: CHỈ CẦN NHỚ MỘT TỪ "BỐI CẢNH" (CONTEXT)</strong>
+            <p>Không cần học thuộc kỹ thuật viết prompt nào cả. Prompt quá ngắn thì AI không hiểu, còn prompt dài và phức tạp quá lại dễ khiến AI rối. Cứ giao việc như giao cho một trợ lý mới: nói đủ bối cảnh, việc cần làm, kết quả mong muốn. Thiếu bối cảnh thì AI đoán bừa.</p>
+          </div>
+        </div>
       </section>
 
       <!-- PHẦN 1 -->
@@ -1423,21 +1492,21 @@
         <div class="alert-box alert-warning">
           <span class="alert-icon">⚠️</span>
           <div>
-            <strong>BẢO MẬT DỮ LIỆU CÔNG VIỆC LÀ ƯU TIÊN SỐ 1:</strong>
-            <p>Mặc định các nền tảng AI có thể thu thập nội dung chat để huấn luyện mô hình. Hãy tắt tính năng này ngay để đảm bảo an toàn tuyệt đối cho bảng giá, hợp đồng và dữ liệu khách hàng của bạn.</p>
+            <strong>BẢO MẬT DỮ LIỆU LÀ VIỆC LÀM ĐẦU TIÊN:</strong>
+            <p>Mặc định các bên AI đều bật sẵn mục cho phép lấy nội dung trò chuyện của bạn để huấn luyện lại mô hình, cho mô hình ngày càng chính xác hơn. ChatGPT, Gemini cũng có mục tương tự. Việc đầu tiên khi dùng AI là tắt mục này.</p>
           </div>
         </div>
 
         <div class="card-panel">
           <div class="card-title">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            1.1. Bốn bước khóa bảo mật Privacy ngay lập tức
+            1.1. Bốn bước tắt chia sẻ dữ liệu (Privacy)
           </div>
           <div class="step-card-grid">
             <div class="step-card">
               <span class="step-num">1</span>
               <div class="step-title">Settings</div>
-              <div class="step-desc">Bấm ảnh đại diện góc dưới bên trái ➔ Chọn Settings.</div>
+              <div class="step-desc">Bấm ảnh đại diện góc dưới bên trái, chọn Settings.</div>
             </div>
             <div class="step-card">
               <span class="step-num">2</span>
@@ -1447,36 +1516,31 @@
             <div class="step-card">
               <span class="step-num">3</span>
               <div class="step-title">Tìm tính năng</div>
-              <div class="step-desc">Tìm dòng <em>"Help improve our AI models"</em>.</div>
+              <div class="step-desc">Tìm dòng <em>"Help improve our AI models"</em> (giúp cải thiện mô hình AI). Mặc định đang bật màu xanh.</div>
             </div>
             <div class="step-card" style="border-color: var(--accent-emerald);">
               <span class="step-num" style="background: var(--accent-emerald);">4</span>
               <div class="step-title">Gạt TẮT (OFF)</div>
-              <div class="step-desc">Gạt công tắc sang xám (OFF). Dữ liệu được cô lập 100%.</div>
+              <div class="step-desc">Gạt công tắc sang xám (OFF).</div>
             </div>
           </div>
+          <p class="card-note">Nút tắt này là cam kết trên giao diện, phía sau ta không tự kiểm chứng được. Vì vậy dù đã tắt, vẫn <strong>không đưa số tài khoản, số căn cước, mật khẩu</strong> lên AI.</p>
         </div>
 
-        <div class="grid-2">
-          <div class="card-panel">
-            <div class="card-title">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              1.2. Profile Cá nhân
-            </div>
-            <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 12px;">Vào <strong>Settings ➔ General</strong> để khai báo danh xưng:</p>
-            <div style="background: var(--bg-input); padding: 12px 16px; border-radius: var(--radius-md); font-size: 13px;">
-              <div>• <strong>Full name:</strong> [Họ và tên bạn]</div>
-              <div>• <strong>What should Claude call you?:</strong> [Anh/Chị/Em...]</div>
-              <div>• <strong>What best describes your work?:</strong> [Quản lý / Sales / Pháp chế...]</div>
-            </div>
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            1.2. Hồ sơ cá nhân (Settings &gt; General)
           </div>
-
-          <div class="card-panel">
-            <div class="card-title">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
-              1.4. Bật Ký ức Memory
+          <div class="grid-2 tile-grid" style="margin-bottom: 0;">
+            <div class="tile">
+              <div class="tile-name">Full name, What should Claude call you?</div>
+              <div class="tile-desc">Gõ họ tên hoặc tên bạn muốn được gọi.</div>
             </div>
-            <p style="font-size: 13.5px; color: var(--text-muted);">Vào <strong>Settings ➔ Memory</strong> và gạt bật xanh là xong. Claude sẽ tự ghi nhớ bối cảnh công việc của bạn qua các cuộc trò chuyện.</p>
+            <div class="tile">
+              <div class="tile-name">What best describes your work?</div>
+              <div class="tile-desc">Chọn ngành của bạn trong danh sách xổ xuống, ví dụ Engineering, Finance, Sales, Marketing. Claude sẽ trả lời sát với chuyên môn của bạn hơn.</div>
+            </div>
           </div>
         </div>
 
@@ -1485,6 +1549,7 @@
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
             1.3. Năm (05) Nguyên tắc ứng xử gốc (Dán vào Instructions for Claude)
           </div>
+          <p class="card-intro">Ô <strong>Instructions for Claude</strong> (ngay dưới phần hồ sơ, trong Settings &gt; General) là <strong>chỉ dẫn toàn cục</strong>: áp dụng cho mọi cuộc trò chuyện, mọi Project trong tài khoản. Dán 5 nguyên tắc dưới đây vào, bấm ra ngoài là tự sắp xếp lại.</p>
           <div class="code-container">
             <div class="code-header">
               <span>Instructions for Claude (Settings &gt; General)</span>
@@ -1496,6 +1561,20 @@
 4. Nếu yêu cầu thiếu dữ liệu cần thiết, hãy đặt câu hỏi ngắn để làm rõ thay vì tự đoán mò.
 5. Tuyệt đối không tự bịa thông tin, số liệu, tên người hoặc điều khoản khi tài liệu không đề cập.</pre>
           </div>
+          <p class="card-note">Đây chỉ là 5 nguyên tắc cơ bản, bạn thêm bớt tùy ý. Ví dụ muốn AI chào hỏi lịch sự thì xóa dòng 2. Thử ngay: mở chat mới, hỏi một câu bất kỳ. AI trả lời tiếng Việt, đi thẳng vào ý là chỉ dẫn đã có tác dụng.</p>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+            1.4. Bật trí nhớ Memory (Settings &gt; Memory)
+          </div>
+          <ul class="concept-list">
+            <li><strong>Bật</strong> mục <code>Generate memory from chat history</code>: Claude tự ghi nhớ những gì bạn trao đổi, sang cuộc trò chuyện khác vẫn nhớ.</li>
+            <li><strong>Tắt</strong> mục cho phép nhớ các chủ đề nhạy cảm (sensitive), ví dụ tôn giáo.</li>
+            <li>Tải lại trang để thấy phần Memory hiện ra.</li>
+          </ul>
+          <p class="card-note" style="margin-top: 10px;">Ví dụ: hôm nay bạn nhắn "hôm nay tôi mới đặt 5 câu, còn nợ 95 câu, nhớ giúp tôi". Hôm sau mở chat mới hỏi lại, Claude vẫn nhớ bạn còn nợ bao nhiêu câu.</p>
         </div>
       </section>
 
@@ -1512,26 +1591,28 @@
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
             2.1. Claude Projects là gì? Vì sao cần?
           </div>
-          <p class="card-intro"><strong>Nỗi khổ của chat thường:</strong> cứ mở chat mới là AI "quên sạch". Hôm nay dặn chiết khấu tối đa 8%, mai mở chat mới nó quên và tự ý giảm 15%; lần nào cũng phải đính kèm lại bảng giá, giải thích lại từ đầu.</p>
-          <p class="card-intro"><strong>Project giống một "ngăn kéo hồ sơ" riêng cho từng đầu việc</strong> (ví dụ Project "Báo giá B2B", Project "Gia sư Tiếng Anh"). Mỗi ngăn kéo có 3 thứ:</p>
+          <p class="card-intro"><strong>Nỗi khổ của chat thường:</strong> cứ mở chat mới là AI "quên sạch", lần nào cũng phải dán lại một đoạn dài "bạn là gia sư của tôi, hãy sửa giúp tôi...". Còn nếu cứ chat mãi trong một cuộc vì thấy nó đang trả lời đúng ý, thì càng về sau AI càng dễ sai ý (ảo giác).</p>
+          <p class="card-intro"><strong>Project giống một "kho hồ sơ" riêng cho từng đầu việc</strong> (ví dụ Project "Gia sư Tiếng Anh", Project "Báo giá B2B"). Mọi chỉ dẫn, tài liệu, lịch sử trò chuyện của việc đó nằm gọn trong kho, làm càng nhiều AI càng hiểu sâu. Việc làm đi làm lại hằng ngày thì đưa vào Project; câu hỏi nhanh một lần thì chat thường là đủ.</p>
+          <p class="card-intro"><strong>Tạo Project:</strong> bấm <code>Projects</code>, chọn <code>New project</code>, đặt tên (ví dụ <code>Gia sư Tiếng Anh</code>), phần mô tả để trống cũng được, bấm tạo. Khung bên phải của Project có 3 mục:</p>
 
           <div class="grid-3 tile-grid" style="margin-bottom: 0;">
-            <div class="tile">
-              <div class="tile-name">Tài liệu (Project Knowledge)</div>
-              <div class="tile-desc">Bảng giá, quy chế, mẫu biểu... Nạp một lần, mọi cuộc trò chuyện trong Project đều dùng được.</div>
-              <div class="tile-meta">Nguyên liệu: AI biết gì</div>
-            </div>
             <div class="tile tile-focus">
-              <div class="tile-name">Project Instructions</div>
+              <div class="tile-name">Instructions</div>
               <div class="tile-desc">Sổ tay quy trình: AI đóng vai gì, làm theo bước nào, quy tắc gì không được vi phạm.</div>
               <div class="tile-meta">Cách làm: AI làm thế nào</div>
             </div>
             <div class="tile">
-              <div class="tile-name">Các cuộc trò chuyện</div>
-              <div class="tile-desc">Mỗi việc mở một chat riêng trong Project. Chat nào cũng có sẵn tài liệu và quy trình ở trên.</div>
-              <div class="tile-meta">Nơi bạn giao việc hằng ngày</div>
+              <div class="tile-name">Memory</div>
+              <div class="tile-desc">Trí nhớ riêng của Project: Claude tự ghi lại những gì đã trao đổi trong kho này. Cần bật Memory ở mục 1.4.</div>
+              <div class="tile-meta">AI nhớ gì về việc này</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Context</div>
+              <div class="tile-desc">Tài liệu bối cảnh: bảng giá, quy chế, mẫu biểu, hồ sơ... Nạp một lần, mọi cuộc trò chuyện trong Project đều dùng được.</div>
+              <div class="tile-meta">Nguyên liệu: AI biết gì</div>
             </div>
           </div>
+          <p class="card-note" style="margin-top: 12px;">Mỗi việc, mỗi ngày mở một chat mới ngay trong Project. Chat nào cũng có sẵn Instructions và Context ở trên. ChatGPT cũng có Project tương tự: học thạo một công cụ là dùng được công cụ khác, chỉ khác vị trí nút bấm.</p>
         </div>
 
         <!-- 2.2 PROJECT INSTRUCTIONS -->
@@ -1630,12 +1711,42 @@
           </div>
         </div>
 
-        <!-- 2.3 CASE 1: GIA SƯ TIẾNG ANH -->
+        <!-- 2.3 CHỌN MODEL -->
+        <div class="card-panel" id="b1-model">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-4 12.7V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3A7 7 0 0 0 12 2z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
+            2.3. Chọn model và mức suy nghĩ trước khi gửi
+          </div>
+          <p class="card-intro">Bấm vào tên model ở khung chat để chọn. Dễ hình dung: model càng cao càng "lớn tuổi", càng thông minh, nhưng cũng càng tốn hạn mức.</p>
+          <div class="table-container" style="box-shadow: none;">
+            <table>
+              <thead><tr><th style="width: 16%;">Model</th><th style="width: 30%;">Hình dung</th><th>Dùng khi nào</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Haiku</strong></td><td>Một em bé 6 tuổi: nhanh, rẻ nhất</td><td>Việc đơn giản. Tài khoản miễn phí nên chọn Haiku cho đỡ hết lượt.</td></tr>
+                <tr><td><strong>Sonnet</strong></td><td>Một bạn 10 tuổi học giỏi</td><td><strong>Đủ cho việc hằng ngày</strong>: soạn thư mời, báo giá, trợ lý. Tài khoản Pro dùng Sonnet 5.5.</td></tr>
+                <tr><td><strong>Opus</strong></td><td>Một tiến sĩ: thông minh nhất</td><td>Lập trình, làm web, hoặc việc Sonnet làm chưa được. Tốn gần gấp đôi Sonnet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="grid-2 tile-grid" style="margin-bottom: 0;">
+            <div class="tile">
+              <div class="tile-name">More models: chọn bản mới nhất</div>
+              <div class="tile-desc">Cùng một dòng (ví dụ Sonnet 5.5, Sonnet 5, Sonnet 4.6) thì cùng giá, bản càng mới càng thông minh. Không lý do gì chọn bản cũ.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Mức suy nghĩ (effort)</div>
+              <div class="tile-desc">Mức càng cao, AI càng tự đọc lại kết quả, đối chiếu với yêu cầu trước khi trả lời, nên càng kỹ nhưng càng tốn. Thường để <code>Medium</code> là đủ.</div>
+            </div>
+          </div>
+          <p class="card-note" style="margin-top: 12px;">Dùng công cụ AI khác không biết model nào mạnh? Chụp màn hình danh sách model, hỏi chính AI đó: "model nào thông minh nhất, việc hằng ngày của tôi nên dùng model nào?". Model bây giờ đủ thông minh để không cần hướng dẫn dài, nhưng model càng yếu thì càng cần dặn kỹ.</p>
+        </div>
+
+        <!-- 2.4 CASE 1: GIA SƯ TIẾNG ANH -->
         <div class="accordion open" id="b1-case-1">
           <div class="accordion-header" onclick="toggleAccordion(this)">
             <div class="accordion-title-wrap">
               <div class="accordion-icon-tag">1</div>
-              <div class="accordion-title">2.3. Case 1: Dựng Trợ lý "Gia sư Tiếng Anh Cá nhân hóa" (15 phút)</div>
+              <div class="accordion-title">2.4. Case 1: Dựng Trợ lý "Gia sư Tiếng Anh Cá nhân hóa" (15 phút)</div>
             </div>
             <span class="accordion-arrow">▼</span>
           </div>
@@ -1654,21 +1765,11 @@
               <footer>Bác TCN</footer>
             </blockquote>
 
-            <div class="card-title" style="margin-top: 20px;">Bước 1: Prompt tiếng Việt đời thường nhờ AI viết Instructions</div>
-            <div class="code-container">
-              <div class="code-header">
-                <span>Prompt nạp vào chat để sinh Instructions</span>
-                <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
-              </div>
-              <pre class="code-pre">Tôi đang tạo một Project trên Claude làm gia sư tiếng Anh cho tôi. Mỗi ngày tôi tự đặt 100 câu tiếng Anh rồi gửi lên, mục tiêu là giỏi tiếng Anh sau 3 tháng. Với mỗi câu tôi gửi, gia sư cần:
-1. Sửa lỗi và giải thích ngắn gọn về ngữ pháp, từ vựng.
-2. Gợi ý cách nói tự nhiên như người bản xứ.
-3. Ghi phiên âm IPA để tôi đọc bắt chước theo cho đúng.
-Hãy viết giúp tôi bản Project Instructions để dán vào cài đặt Project. Yêu cầu: viết ngắn gọn, chỉ giữ những quy tắc thật cần thiết.</pre>
-            </div>
+            <div class="card-title" style="margin-top: 20px;">Bước 1: Tạo Project "Gia sư Tiếng Anh"</div>
+            <p class="card-intro" style="margin-bottom: 0;">Bấm <code>Projects</code>, chọn <code>New project</code>, đặt tên <code>Gia sư Tiếng Anh</code>, bấm tạo (xem mục 2.1).</p>
 
-            <div class="card-title" style="margin-top: 20px;">Bước 2: Nạp 2 tài liệu vào Tài liệu của Project</div>
-            <p class="card-intro" style="margin-bottom: 0;">Cách nạp mỗi tài liệu: trong Project, ở khung tài liệu bên phải bấm dấu <strong>+</strong> ➔ <strong>Add text content</strong> ➔ gõ tên vào ô <strong>Title</strong> ➔ dán nội dung vào ô <strong>Content</strong> ➔ bấm <strong>Add Content</strong>. Làm lần lượt cho 2 tài liệu dưới đây.</p>
+            <div class="card-title" style="margin-top: 20px;">Bước 2: Nạp 2 tài liệu vào Context của Project</div>
+            <p class="card-intro" style="margin-bottom: 0;">Cách nạp mỗi tài liệu: ở mục <strong>Context</strong> bên phải bấm dấu <strong>+</strong>, chọn <strong>Add text content</strong>, gõ tên vào ô <strong>Title</strong> (nhớ đặt tên để dễ tìm), dán nội dung vào ô <strong>Content</strong>, bấm <strong>Add Content</strong>. Có sẵn file Word, PDF thì chọn <strong>Upload from device</strong>. Làm lần lượt cho 2 tài liệu dưới đây.</p>
 
             <p class="card-intro" style="margin: 16px 0 0;"><strong>Tài liệu 1:</strong> Title gõ <code>Hồ sơ người học</code>, sửa lại thông tin trong ngoặc vuông cho đúng với bạn. Gia sư sẽ sửa bài sát với công việc và trình độ của bạn.</p>
             <div class="code-container">
@@ -1702,7 +1803,32 @@ Tại sao phải đặt câu? Vì đặt câu viết giỏi rồi sẽ đặt c�
 Bác TCN</pre>
             </div>
 
-            <div class="card-title" style="margin-top: 20px;">Bước 3: Thực hành trải nghiệm ngay tại lớp (Chỉ 5 giây)</div>
+            <div class="card-title" style="margin-top: 20px;">Bước 3: Mở chat trong Project, chọn model rồi nhờ AI viết Instructions</div>
+            <p class="card-intro" style="margin-bottom: 0;">Mở một chat mới ngay trong Project, chọn model và mức suy nghĩ như mục 2.3, rồi gửi prompt dưới đây. Viết prompt bằng lời bình thường, đủ bối cảnh là được.</p>
+            <div class="code-container">
+              <div class="code-header">
+                <span>Prompt nạp vào chat để sinh Instructions</span>
+                <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+              </div>
+              <pre class="code-pre">Tôi đang tạo một Project trên Claude làm gia sư tiếng Anh cho tôi. Mỗi ngày tôi tự đặt 100 câu tiếng Anh rồi gửi lên, mục tiêu là giỏi tiếng Anh sau 3 tháng. Với mỗi câu tôi gửi, gia sư cần:
+1. Sửa lỗi và giải thích ngắn gọn về ngữ pháp, từ vựng.
+2. Gợi ý cách nói tự nhiên như người bản xứ.
+3. Ghi phiên âm IPA để tôi đọc bắt chước theo cho đúng.
+Hãy viết giúp tôi bản Project Instructions để dán vào cài đặt Project. Yêu cầu: viết ngắn gọn, chỉ giữ những quy tắc thật cần thiết.</pre>
+            </div>
+
+            <div class="card-title" style="margin-top: 20px;">Bước 4: Đọc lại bản AI viết rồi dán vào ô Instructions</div>
+            <ul class="concept-list">
+              <li><strong>Đọc kỹ trước khi dán</strong>, đừng lấy nguyên xi. Chỗ nào chưa đúng ý thì sửa, ví dụ chọn giọng Anh-Anh hay Anh-Mỹ, có đánh dấu trọng âm, nối âm hay không. Trợ lý làm việc thật như báo giá thì càng phải soát kỹ.</li>
+              <li>Câu trả lời có thể nằm trong khung có nút copy, cũng có thể là chữ thường: đều được, cứ chép đúng đoạn Instructions.</li>
+              <li>Bấm tên Project để ra màn hình Project, bấm dấu <code>+</code> ở mục <code>Instructions</code>, dán vào rồi lưu.</li>
+            </ul>
+            <div class="alert-box alert-success" style="margin-bottom: 0;">
+              <span class="alert-icon">💡</span>
+              <div><strong>Để ý:</strong> prompt không hề nhắc "trả lời tiếng Việt, không chào hỏi", vậy mà bản AI viết vẫn làm đúng như thế. Đó là chỉ dẫn toàn cục ở mục 1.3 đang có tác dụng. Chỉ dẫn toàn cục áp cho cả tài khoản, còn Instructions của Project chỉ áp cho riêng Project này.</div>
+            </div>
+
+            <div class="card-title" style="margin-top: 20px;">Bước 5: Thử sửa câu ngay tại lớp</div>
             <div class="code-container">
               <div class="code-header">
                 <span>Câu lệnh học viên gõ nộp bài</span>
@@ -1713,21 +1839,68 @@ Bác TCN</pre>
 2. We need to delay the meeting to next Monday.
 3. Can you send me the price table as soon as fast?</pre>
             </div>
+
+            <div class="card-title" style="margin-top: 20px;">Bước 6: Ngày mới, mở chat mới ngay trong Project</div>
+            <p class="card-intro" style="margin-bottom: 0;">Mỗi ngày mở một chat mới trong Project rồi giao việc ngắn gọn. Project tự hiểu bạn đang học với gia sư theo phương pháp của Bác. Cùng câu này mà gõ ở chat ngoài trang chủ thì AI không có bối cảnh, dễ trả lời lạc đề.</p>
+            <div class="code-container">
+              <div class="code-header">
+                <span>Gõ vào chat mới trong Project</span>
+                <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+              </div>
+              <pre class="code-pre">Cho tôi 20 câu tiếng Anh giao tiếp hằng ngày kèm nghĩa tiếng Việt để tôi học.</pre>
+            </div>
+            <p class="card-note" style="margin: 0;">Bí từ, bí cách đặt câu thì nhờ gia sư gợi ý vài từ khóa hoặc vài mẫu câu. Học xong nhắn "hôm nay tôi mới đặt 5 câu, còn nợ 95 câu" để Memory ghi nhớ.</p>
           </div>
         </div>
 
-        <!-- 2.4 CASE 2: BÁO GIÁ B2B -->
+        <!-- 2.5 ARTIFACT -->
+        <div class="card-panel" id="b1-artifact">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/></svg>
+            2.5. Xuất file và sửa trực tiếp trên Artifact
+          </div>
+          <p class="card-intro">Câu AI vừa sửa muốn in ra để đọc? Trước đây phải tự chép từng câu sang Word. Giờ chỉ cần một câu là AI tạo file luôn:</p>
+          <div class="code-container">
+            <div class="code-header">
+              <span>Gõ tiếp trong cuộc trò chuyện</span>
+              <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+            </div>
+            <pre class="code-pre">Đưa nội dung này vào file Word và file Excel cho tôi.</pre>
+          </div>
+
+          <p class="card-intro"><strong>Artifact</strong> là sản phẩm AI tạo ra trong lúc trò chuyện, hiện ở khung bên phải, mà <strong>bạn chỉnh sửa trực tiếp được</strong> ngay trên đó. ChatGPT gọi cái này là Canvas. Nếu AI chỉ trả về file mà không hiện khung để sửa, gõ:</p>
+          <div class="code-container">
+            <div class="code-header">
+              <span>Gõ vào khung chat</span>
+              <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+            </div>
+            <pre class="code-pre">Tạo file trong artifact để tôi xem và sửa trước.</pre>
+          </div>
+
+          <div class="table-container" style="box-shadow: none;">
+            <table>
+              <thead><tr><th style="width: 22%;"></th><th>File đã tạo</th><th style="background: var(--brand-primary-glow); color: var(--brand-primary);">Artifact</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Muốn thêm một cột phiên âm</strong></td><td>File đã đóng gói xong, AI phải tạo lại cả file từ đầu.</td><td>AI chỉ thêm đúng cột đó, nhanh và gọn.</td></tr>
+                <tr><td><strong>Hạn mức</strong></td><td>Sửa nhiều lần rất tốn.</td><td><strong>Đỡ tốn hơn hẳn</strong>, vì chỉ sửa đúng chỗ.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="card-note" style="margin: 0;">Sửa xong muốn tải về: rê chuột vào tiêu đề artifact, chọn dạng file cần tải. Trong danh sách có thể thấy dạng file <code>.md</code> lạ mắt: Buổi 2 sẽ học kỹ loại file này.</p>
+        </div>
+
+        <!-- 2.6 CASE 2: BÁO GIÁ B2B -->
         <div class="accordion open" id="b1-case-2">
           <div class="accordion-header" onclick="toggleAccordion(this)">
             <div class="accordion-title-wrap">
               <div class="accordion-icon-tag">2</div>
-              <div class="accordion-title">2.4. Case 2: Trợ lý Báo giá &amp; Xử lý Deal Bán hàng B2B (NovaTech)</div>
+              <div class="accordion-title">2.6. Case 2 (bài tập về nhà): Trợ lý Báo giá &amp; Xử lý Deal Bán hàng B2B (NovaTech)</div>
             </div>
             <span class="accordion-arrow">▼</span>
           </div>
           <div class="accordion-body">
             <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 12px;">
-              <strong>Tài liệu nạp vào Project Knowledge</strong> (có sẵn trong thư mục <code>demo-files/buoi-01</code>): <code>Bảng giá phần mềm quản trị và giải pháp số 2026 - NovaTech.pdf</code>, <code>Quy chế chiết khấu thương mại và chính sách thanh toán - NovaTech.docx</code>, <code>Mẫu thư chào giá và thỏa thuận dịch vụ chuẩn - NovaTech.docx</code>.
+              <strong>Bài tập về nhà:</strong> làm lại đúng các bước của Case 1 với trợ lý báo giá. Prompt và tình huống đã soạn sẵn bên dưới. <strong>Tài liệu nạp vào Context của Project</strong> (có sẵn trong thư mục <code>demo-files/buoi-01</code>): <code>Bảng giá phần mềm quản trị và giải pháp số 2026 - NovaTech.pdf</code>, <code>Quy chế chiết khấu thương mại và chính sách thanh toán - NovaTech.docx</code>, <code>Mẫu thư chào giá và thỏa thuận dịch vụ chuẩn - NovaTech.docx</code>.
             </p>
 
             <div class="card-panel" style="background: var(--bg-card); padding: 16px 20px; margin-bottom: 16px;">
@@ -1825,38 +1998,88 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
       <section class="content-section" id="b1-phan-3">
         <div class="section-header">
           <span class="section-badge">PHẦN 3</span>
-          <h2 class="section-title">Lên lịch tự động (Scheduled Tasks) &amp; Nghiệm thu Buổi 1</h2>
+          <h2 class="section-title">Kết nối Gmail, Google Drive, lịch tự động &amp; Nghiệm thu Buổi 1</h2>
+        </div>
+
+        <div class="card-panel" id="b1-connectors">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            3.1. Kết nối Gmail và Google Drive: lúc này Claude đã là AI Agent
+          </div>
+          <p class="card-intro">Bản miễn phí cũng dùng được. Kết nối xong, sáng ra bạn không cần mở Gmail: chỉ cần nhờ Claude xem mail chưa đọc, việc nào quan trọng cần làm trước, rồi soạn sẵn thư trả lời. Thư nằm sẵn trong mục Thư nháp của Gmail, bạn vào đọc lại và bấm gửi. AI đã chạm vào công cụ của bạn và làm thay bạn: <strong>đó chính là AI Agent</strong>.</p>
+          <div class="step-card-grid">
+            <div class="step-card">
+              <span class="step-num">1</span>
+              <div class="step-title">Mở Customize</div>
+              <div class="step-desc">Bấm mục <code>Customize</code>, vào phần <code>Connectors</code> (kết nối).</div>
+            </div>
+            <div class="step-card">
+              <span class="step-num">2</span>
+              <div class="step-title">Bấm dấu cộng</div>
+              <div class="step-desc">Chọn <code>Gmail</code>, chọn tài khoản Google, tích chọn tất cả quyền, bấm tiếp tục. Google Drive làm tương tự; không thấy thì gõ tìm trong ô tìm kiếm.</div>
+            </div>
+            <div class="step-card" style="border-color: var(--accent-emerald);">
+              <span class="step-num" style="background: var(--accent-emerald);">3</span>
+              <div class="step-title">Thử ngay</div>
+              <div class="step-desc">Mở chat mới, hỏi "bạn có đọc được Gmail của tôi không?".</div>
+            </div>
+          </div>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span>Prompt mẫu: xem mail và soạn sẵn thư trả lời</span>
+              <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+            </div>
+            <pre class="code-pre">Kiểm tra giúp tôi các email chưa đọc từ hôm qua đến giờ, có việc gì quan trọng tôi cần làm trước không?
+Với mail nào cần trả lời, soạn sẵn thư trả lời để tôi vào Gmail đọc lại và bấm gửi.</pre>
+          </div>
+
+          <div class="grid-2 tile-grid" style="margin-bottom: 0;">
+            <div class="tile">
+              <div class="tile-name">Ý tưởng kết hợp</div>
+              <div class="tile-desc">Có Trợ lý báo giá (Case 2) rồi: nhờ AI đưa bản báo giá lên Google Drive, soạn mail gửi khách kèm link Drive. Bạn chỉ ngồi một chỗ ra lệnh.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Lưu ý khi kết nối</div>
+              <div class="tile-desc">Mỗi tài khoản Claude chỉ kết nối được một Gmail. Muốn đổi: vào Gmail trong Connectors, bấm dấu ba chấm, chọn <code>Disconnect</code> rồi kết nối Gmail khác. Outlook không có sẵn trong danh sách này. Kết nối mail rồi thì AI đọc được nội dung mail, kể cả thông tin nhạy cảm trong đó.</div>
+            </div>
+          </div>
+          <p class="card-note" style="margin-top: 12px;">Cách các công cụ này kết nối với nhau có tên chuẩn là <strong>MCP</strong>. Ghi nhớ từ khóa này, các buổi sau sẽ học thêm.</p>
         </div>
 
         <div class="card-panel">
           <div class="card-title">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            3.1. Scheduled Tasks: Hẹn giờ tác vụ định kỳ trên Cloud
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            3.2. Scheduled: lịch tự động (chỉ có ở gói trả phí)
           </div>
-          <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 14px;">
-            Nhìn xuống góc dưới cùng bên phải của Project, bấm vào biểu tượng <code>Scheduled (+)</code> để lên lịch tự động:
-          </p>
-          <div style="background: var(--bg-input); padding: 14px 18px; border-radius: var(--radius-md);">
-            <strong style="color: var(--brand-primary); font-size: 13px;">17:00 THỨ SÁU HÀNG TUẦN:</strong>
-            <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;">Tự động quét các cuộc trò chuyện đàm phán giá trong tuần, tổng hợp danh sách deal đã chốt và các deal đang bị kẹt báo cáo cho Trưởng phòng.</p>
+          <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 14px;">Gói trả phí có thêm khu vực <strong>Scheduled</strong> để cài việc tự động chạy theo giờ. Gói miễn phí không có mục này. Ví dụ:</p>
+          <div class="grid-2" style="margin-bottom: 0;">
+            <div style="background: var(--bg-input); padding: 14px 18px; border-radius: var(--radius-md);">
+              <strong style="color: var(--brand-primary); font-size: 13px;">6:00 SÁNG MỖI NGÀY:</strong>
+              <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;">Nhắc tôi học tiếng Anh theo chỉ dạy của Bác TCN: hôm nay cần đặt bao nhiêu câu, hôm qua còn nợ bao nhiêu câu.</p>
+            </div>
+            <div style="background: var(--bg-input); padding: 14px 18px; border-radius: var(--radius-md);">
+              <strong style="color: var(--brand-primary); font-size: 13px;">17:00 THỨ SÁU HÀNG TUẦN:</strong>
+              <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;">Tổng hợp các cuộc trò chuyện đàm phán giá trong tuần, liệt kê deal đã chốt và deal đang bị kẹt để báo cáo Trưởng phòng.</p>
+            </div>
           </div>
         </div>
 
         <div class="card-panel">
           <div class="card-title">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            3.2. Bảng kiểm nghiệm thu Buổi 1 (Checklist tương tác)
+            3.3. Bảng kiểm nghiệm thu Buổi 1 (Checklist tương tác)
           </div>
-          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Đánh dấu vào các mục bạn đã tự tay hoàn thành tại lớp hôm nay:</p>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Đánh dấu vào các mục bạn đã tự tay hoàn thành:</p>
 
           <div class="checklist-wrapper" id="checklist-buoi-1">
             <label class="checklist-item">
               <input type="checkbox" onchange="toggleCheck(this)">
-              <span class="checklist-text">Đã khóa bảo mật <strong>Help improve our AI models</strong> trong Settings &gt; Privacy.</span>
+              <span class="checklist-text">Đã tắt <strong>Help improve our AI models</strong> trong Settings &gt; Privacy.</span>
             </label>
             <label class="checklist-item">
               <input type="checkbox" onchange="toggleCheck(this)">
-              <span class="checklist-text">Đã thiết lập Profile và 5 nguyên tắc ứng xử gốc trong Settings &gt; General.</span>
+              <span class="checklist-text">Đã điền hồ sơ, chọn ngành và dán 5 nguyên tắc vào <strong>Instructions for Claude</strong> (Settings &gt; General).</span>
             </label>
             <label class="checklist-item">
               <input type="checkbox" onchange="toggleCheck(this)">
@@ -1864,15 +2087,23 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
             </label>
             <label class="checklist-item">
               <input type="checkbox" onchange="toggleCheck(this)">
-              <span class="checklist-text">Đã phân biệt được Chatbot AI và AI Agent để giao đúng kiểu việc cho AI.</span>
+              <span class="checklist-text">Phân biệt được Chatbot AI và AI Agent, chỉ dẫn toàn cục và chỉ dẫn của Project.</span>
             </label>
             <label class="checklist-item">
               <input type="checkbox" onchange="toggleCheck(this)">
-              <span class="checklist-text">Đã dựng thành công <strong>Trợ lý Gia sư Tiếng Anh</strong>, kiểm tra sửa bài &amp; phiên âm IPA Shadowing.</span>
+              <span class="checklist-text">Đã dựng <strong>Trợ lý Gia sư Tiếng Anh</strong>: nạp 2 tài liệu vào Context, chọn model, dán Instructions và thử sửa câu.</span>
             </label>
             <label class="checklist-item">
               <input type="checkbox" onchange="toggleCheck(this)">
-              <span class="checklist-text">Đã dựng thành công <strong>Trợ lý Báo giá B2B</strong> và xử lý trọn vẹn Deal Nam Hải.</span>
+              <span class="checklist-text">Đã xuất file và sửa thử trên <strong>Artifact</strong>.</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" onchange="toggleCheck(this)">
+              <span class="checklist-text">Đã kết nối <strong>Gmail và Google Drive</strong>, nhờ Claude đọc mail thử.</span>
+            </label>
+            <label class="checklist-item">
+              <input type="checkbox" onchange="toggleCheck(this)">
+              <span class="checklist-text">Bài tập về nhà: dựng <strong>Trợ lý Báo giá B2B</strong> và xử lý trọn vẹn Deal Nam Hải.</span>
             </label>
           </div>
         </div>
@@ -1882,14 +2113,19 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
       <section class="content-section" id="b1-phan-7">
         <div class="section-header">
           <span class="section-badge" style="background: var(--brand-primary-dark);">CHUYỂN GIAO</span>
-          <h2 class="section-title">Cài đặt &amp; Chuẩn bị Antigravity IDE cho Buổi 2</h2>
+          <h2 class="section-title">Cài đặt &amp; Chuẩn bị Antigravity cho Buổi 2</h2>
         </div>
 
         <div class="alert-box alert-info">
           <span class="alert-icon">🚀</span>
           <div>
-            <strong>VÌ SAO BUỔI 2 CẦN CHUYỂN SANG ANTIGRAVITY?</strong>
-            <p>Claude Web ở Buổi 1 rất hay nhưng bị <em>"nhốt trong trình duyệt"</em>. Muốn xử lý 20 file Word hợp đồng hay bảng sao kê ngân hàng lớn, bạn phải bấm tải lên từng file thủ công và rất dễ cạn quota chat free. <strong>Antigravity giải phóng hoàn toàn:</strong> AI chạm thẳng vào ổ cứng máy tính, đọc/ghi hàng loạt file tự động, dùng mô hình Gemini 2.0 / 3.0 ngữ cảnh khổng lồ và hoàn toàn miễn phí!</p>
+            <strong>VÌ SAO TỪ BUỔI 2 CHUYỂN SANG ANTIGRAVITY?</strong>
+            <ul class="concept-list" style="color: inherit;">
+              <li><strong>Claude khá đắt:</strong> gói Pro khoảng 20 USD cộng thuế, gần 650 nghìn đồng mỗi tháng. Bản miễn phí dùng nhiều là nhanh hết lượt, mà gói Pro chia sẻ cho nhiều người thì hạn mức cũng không được bao nhiêu.</li>
+              <li><strong>Antigravity của Google</strong> dùng gói <strong>Google AI Pro</strong> (mua được với giá rẻ hơn, mentor hướng dẫn nâng cấp), hạn mức rộng rãi, đủ cho việc hằng ngày.</li>
+              <li><strong>Làm việc thẳng trên máy:</strong> Claude trên web bị "nhốt trong trình duyệt", muốn xử lý nhiều file phải tải lên từng file. Antigravity đọc, ghi file ngay trên máy bạn.</li>
+            </ul>
+            <p>Những gì học hôm nay (chỉ dẫn, Project, bối cảnh) dùng y hệt trên Antigravity, chỉ khác vị trí nút bấm. Đã có Claude Pro thì cứ dùng tiếp Claude Desktop.</p>
           </div>
         </div>
 
@@ -1902,17 +2138,17 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
             <div class="step-card">
               <span class="step-num">1</span>
               <div class="step-title">Tải bộ cài đặt</div>
-              <div class="step-desc">Mở link tải Antigravity IDE do Mentor cung cấp về laptop (Windows/macOS).</div>
+              <div class="step-desc">Tải Antigravity 2.0 tại <a href="https://antigravity.google/product/antigravity-2/" target="_blank" rel="noopener">antigravity.google</a> về laptop (Windows/macOS).</div>
             </div>
             <div class="step-card">
               <span class="step-num">2</span>
               <div class="step-title">Chạy cài đặt</div>
-              <div class="step-desc">Mở file setup, chọn cấu hình mặc định và bấm Next ➔ Finish.</div>
+              <div class="step-desc">Mở file setup, giữ cấu hình mặc định, bấm Next rồi Finish.</div>
             </div>
             <div class="step-card">
               <span class="step-num">3</span>
               <div class="step-title">Đăng nhập Google</div>
-              <div class="step-desc">Đăng nhập bằng tài khoản Google cá nhân để kích hoạt quota làm việc.</div>
+              <div class="step-desc">Đăng nhập tài khoản Google có gói <strong>Google AI Pro</strong>. Chưa có gói thì nhắn Mentor để được hướng dẫn nâng cấp.</div>
             </div>
             <div class="step-card">
               <span class="step-num">4</span>
@@ -1961,8 +2197,8 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
           </div>
           <div class="card-panel">
             <span style="font-size: 11px; font-weight: 800; color: var(--brand-primary); text-transform: uppercase;">BUỔI 3 • CHỦ NHẬT TUẦN KẾ</span>
-            <h3 style="font-size: 16px; margin: 8px 0; color: var(--text-main);">Nâng cấp AI Agent tự hành &amp; kết nối MCP</h3>
-            <p style="font-size: 13px; color: var(--text-muted);">Kết nối Google Drive/Sheets qua MCP và phối hợp Subagent tạo luồng công việc tự động khép kín.</p>
+            <h3 style="font-size: 16px; margin: 8px 0; color: var(--text-main);">Nghiên cứu, Skill cộng đồng &amp; Video dọc</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">AI tự nghiên cứu ra báo cáo, thao tác trên built-in browser, cài Skill từ GitHub an toàn, làm slide HTML và biến video ngang thành video dọc 9:16.</p>
           </div>
         </div>
       </section>
@@ -1980,6 +2216,10 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
         </div>
         <h1 class="banner-title">Viết bài cùng AI ngay trên máy: File .md, Word và Skill</h1>
         <p class="banner-desc">Cho AI tự đọc trang web, tải nội dung và hình ảnh về máy, cùng bạn viết và sửa bài dưới dạng file .md, xuất ra file Word đúng tone màu logo, rồi đóng gói cả quy trình thành Skill để lần sau chỉ cần một câu là xong.</p>
+        <a class="banner-link" href="https://youtu.be/ywTomxDnESk" target="_blank" rel="noopener">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          Xem lại record Buổi 2 (18/10)
+        </a>
       </section>
 
       <!-- PHẦN 0 -->
@@ -2003,33 +2243,118 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
               <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               Cách 2: Claude Desktop
             </div>
-            <p class="card-intro">Dành cho ai đã có <strong>Claude Pro</strong>. Tải tại <a href="https://claude.com/download" target="_blank" rel="noopener">claude.com/download</a>, đăng nhập, rồi mở tab <strong>Code</strong> để làm việc với thư mục trên máy.</p>
-            <p class="card-note">Các prompt trong buổi này dùng được cho cả hai công cụ.</p>
+            <p class="card-intro">Dành cho ai đã có <strong>Claude Pro</strong>. Tải tại <a href="https://claude.com/download" target="_blank" rel="noopener">claude.com/download</a>, đăng nhập, rồi chuyển sang tab <strong>Code</strong>. Tab Chat chỉ làm việc như trên web, tab Code mới làm việc với thư mục trên máy.</p>
+            <p class="card-note">Lớp làm chính trên Antigravity. Các prompt trong buổi này dùng được cho cả hai công cụ, chỉ khác vị trí nút bấm.</p>
           </div>
         </div>
 
         <div class="card-panel">
           <div class="card-title">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-            Tạo thư mục làm việc
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Trên web đã làm được nhiều việc, sao còn cần ứng dụng trên máy?
           </div>
+          <div class="grid-3 tile-grid" style="margin-bottom: 0;">
+            <div class="tile">
+              <div class="tile-name">AI chạm thẳng vào file thật</div>
+              <div class="tile-desc">AI tự tạo thư mục, tải ảnh, ghi file ngay trên máy. Bạn không phải tải lên từng file rồi chép kết quả ra như trên web.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Dữ liệu nằm trên máy bạn</div>
+              <div class="tile-desc">File không phải đưa lên đám mây của bên AI. Thư mục, tên file, nội dung đều nằm gọn trên máy, rất dễ quản lý.</div>
+            </div>
+            <div class="tile tile-focus">
+              <div class="tile-name">Mạnh hơn máy ảo trên web</div>
+              <div class="tile-desc">Trên web, mỗi người được cấp một máy ảo cấu hình thấp vì hàng triệu người dùng chung. Ứng dụng trên máy dùng sức mạnh máy bạn, làm được việc nặng như xử lý ảnh, video.</div>
+            </div>
+          </div>
+          <p class="card-note" style="margin-top: 12px;">Máy nóng hơn, quạt kêu to hơn khi AI đang làm việc là bình thường: AI đang dùng tài nguyên máy của bạn.</p>
+        </div>
+
+        <div class="card-panel" id="b2-tao-project">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Tạo project: mỗi việc một thư mục riêng
+          </div>
+          <p class="card-intro">Nhớ hình ảnh Project ở Buổi 1: <strong>một cái kho riêng</strong> cho từng việc. Trên máy tính, cái kho đó chính là <strong>một thư mục</strong>. Chưa chọn thư mục thì AI không biết lưu file vào đâu.</p>
           <div class="step-card-grid">
             <div class="step-card">
               <span class="step-num">1</span>
-              <div class="step-title">Tạo thư mục trống</div>
-              <div class="step-desc">Ví dụ ở Desktop, đặt tên <code>viet-bai-phat-quang</code>.</div>
+              <div class="step-title">Bấm New project</div>
+              <div class="step-desc">Ở ô chọn project trong Antigravity, bấm <code>New project</code>. Claude Desktop: tab Code, bấm chọn thư mục.</div>
             </div>
             <div class="step-card">
               <span class="step-num">2</span>
-              <div class="step-title">Mở thư mục trong công cụ</div>
-              <div class="step-desc">Antigravity: mở thư mục làm workspace. Claude Desktop: tab Code, chọn thư mục này.</div>
+              <div class="step-title">Tạo thư mục mới</div>
+              <div class="step-desc">Chọn nơi lưu, ví dụ Desktop, bấm <code>New folder</code>, đặt tên <code>buoi-2</code> rồi chọn thư mục vừa tạo.</div>
             </div>
             <div class="step-card" style="border-color: var(--accent-emerald);">
               <span class="step-num" style="background: var(--accent-emerald);">3</span>
-              <div class="step-title">Sẵn sàng giao việc</div>
-              <div class="step-desc">Mọi file AI tạo ra sẽ nằm gọn trong thư mục này.</div>
+              <div class="step-title">Kiểm tra tên thư mục</div>
+              <div class="step-desc">Ô thư mục phải hiện <code>buoi-2</code>, không phải <code>Desktop</code>. Claude hỏi <code>Trust workspace</code> thì bấm đồng ý.</div>
             </div>
           </div>
+          <div class="grid-2" style="margin: 16px 0 0;">
+            <div class="alert-box alert-warning" style="margin: 0;">
+              <span class="alert-icon">⚠️</span>
+              <div><strong>Chọn nhầm cả Desktop làm project:</strong> AI coi toàn bộ Desktop là kho của nó, file dễ bị đặt lẫn lộn chỗ này chỗ kia. Cách kiểm tra: mở tab Files, gốc cây thư mục phải là <code>buoi-2</code>.</div>
+            </div>
+            <div class="alert-box alert-info" style="margin: 0;">
+              <span class="alert-icon">💬</span>
+              <div><strong>No project (No folder) dùng khi nào?</strong> Khi chỉ hỏi nhanh một, hai câu. AI tự tạo một thư mục tạm và tự xóa sau một thời gian. Việc làm lâu dài, cần giữ file thì luôn tạo project.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-panel" id="b2-3-buoc">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Ba việc trước khi gửi prompt: thư mục, quyền, model
+          </div>
+          <p class="card-intro">Antigravity hay Claude đều theo cùng một triết lý: <strong>chọn thư mục, chọn quyền, chọn model</strong>. Đổi công cụ chỉ là đổi vị trí nút bấm.</p>
+
+          <div class="sub-section-title" style="margin-top: 0;">Chọn quyền: AI được tự làm đến đâu?</div>
+          <div class="table-container" style="box-shadow: none;">
+            <table>
+              <thead><tr><th style="width: 22%;">Mức trong Antigravity</th><th>AI làm thế nào</th><th style="width: 30%;">Khi nào dùng</th></tr></thead>
+              <tbody>
+                <tr><td><code>Request review</code></td><td>Bước nào cũng hỏi, bạn phải bấm chấp nhận liên tục.</td><td>Khi muốn soi kỹ từng bước.</td></tr>
+                <tr><td><code>Default</code></td><td>Chỉ hỏi với việc có rủi ro như tạo, xóa file. Đọc web thì tự làm.</td><td><strong>Người mới nên dùng</strong>, để quen giao diện.</td></tr>
+                <tr><td><code>Turbo</code></td><td>Tự làm hết, không hỏi gì.</td><td>Khi đã quen và làm trong thư mục riêng.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="card-note" style="margin: -8px 0 14px;">Claude Desktop có nhiều mức hơn. Người mới chọn <code>Accept edits</code>: tự tạo, sửa file nhưng xóa file vẫn hỏi. <code>Bypass permissions</code> là không hỏi gì cả.</p>
+
+          <div class="grid-2 tile-grid">
+            <div class="tile">
+              <div class="tile-name">Khi AI xin phép</div>
+              <div class="tile-desc">Có 4 lựa chọn: cho phép một lần, trong cuộc trò chuyện này, trong project này, hoặc luôn luôn ở mọi project. Thường chọn <strong>trong project này</strong>. Bấm <code>Skip</code> thì AI bỏ qua, không làm bước đó.</div>
+            </div>
+            <div class="tile tile-focus">
+              <div class="tile-name">Chọn model</div>
+              <div class="tile-desc">Antigravity: <code>Gemini 3.8 Flash</code>, rê chuột vào model để chọn mức suy nghĩ <code>High</code>. Môi trường để <code>Local</code>. Claude Desktop: <code>Sonnet 5.5</code>, mức <code>Medium</code> là đủ.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Xem AI đang nghĩ gì</div>
+              <div class="tile-desc">Bấm vào dòng <code>Thought for ...s</code> để mở phần suy nghĩ. Thường là tiếng Anh, đọc lướt từ nào hiểu từ đó, cần thì nhờ AI dịch.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Kiểm tra gói và cập nhật</div>
+              <div class="tile-desc">Settings, bấm vào tên tài khoản: dòng Plan hiện <code>Google AI Pro</code> là đúng gói. Bấm chữ <code>Antigravity</code> trên cùng, chọn <code>Check for updates</code> để cập nhật.</div>
+            </div>
+          </div>
+
+          <div class="sub-section-title">Hạn mức sử dụng: hai đồng hồ đếm ngược</div>
+          <div class="table-container" style="margin-bottom: 0; box-shadow: none;">
+            <table>
+              <thead><tr><th style="width: 22%;">Hạn mức</th><th>Cách tính</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Khung 5 giờ</strong></td><td>Bắt đầu đếm từ tin nhắn đầu tiên. Về 0% thì chờ đến giờ reset, hệ thống trả lại 100%.</td></tr>
+                <tr><td><strong>Khung tuần</strong></td><td>Tụt dần theo mức dùng, reset sau một tuần. Kinh nghiệm: dùng khoảng 5% khung 5 giờ thì tụt khoảng 1% khung tuần.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="card-note" style="margin-top: 12px;">Antigravity: bấm <code>View usage</code> cạnh ô chọn model. Claude Desktop: bấm nút tròn dưới khung chat. Xem trước và sau một prompt để biết việc nào tốn hạn mức. Model Claude có trong Antigravity nhưng hạn mức rất ít, vài câu là hết, nên tạm bỏ qua.</p>
         </div>
 
         <div class="alert-box alert-warning">
@@ -2050,9 +2375,19 @@ Xuất văn bản hoàn chỉnh để tôi in ra trình ký đóng dấu ngay.</
       <section class="content-section" id="b2-phan-1">
         <div class="section-header">
           <span class="section-badge">PHẦN 1</span>
-          <h2 class="section-title">Thiết lập quy tắc toàn cục cho AI trên máy</h2>
+          <h2 class="section-title">Thiết lập tài khoản và quy tắc toàn cục cho AI trên máy</h2>
         </div>
 
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Bước 1: Tắt chia sẻ dữ liệu, giống Buổi 1
+          </div>
+          <p class="card-intro">Vào <strong>Settings</strong>, mở phần tài khoản, tìm mục có chữ <code>Collect usage data</code> hoặc "cải thiện" (improve) rồi <strong>tắt đi</strong>. Mặc định các bên AI đều bật sẵn mục này.</p>
+          <p class="card-note">File nằm trên máy, nhưng nội dung bạn gửi vẫn phải đi qua máy chủ của bên AI để xử lý. Tắt mục này là bước đầu tiên để yên tâm hơn về dữ liệu, giống mục Help improve ở Buổi 1.</p>
+        </div>
+
+        <div class="card-title">Bước 2: Viết quy tắc toàn cục</div>
         <div class="card-panel">
           <div class="card-title">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -2151,7 +2486,7 @@ Hãy đọc trang https://thientonphatquang.com/gioi-thieu và làm giúp tôi:
         <div class="grid-2">
           <div class="code-container" style="margin: 0;">
             <div class="code-header"><span>Kết quả trong thư mục</span></div>
-            <pre class="code-pre">viet-bai-phat-quang/
+            <pre class="code-pre">buoi-2/
   tu-lieu/
     gioi-thieu.md
   hinh-anh/
@@ -2161,9 +2496,10 @@ Hãy đọc trang https://thientonphatquang.com/gioi-thieu và làm giúp tôi:
           </div>
           <div class="alert-box alert-info" style="margin: 0;">
             <span class="alert-icon">👀</span>
-            <div><strong>Mở File Explorer xem ngay:</strong> thư mục và 10 ảnh vừa xuất hiện trên máy bạn. Đây là điểm khác lớn nhất so với chat trên web: AI không chỉ trả lời, AI làm việc thật trên máy.</div>
+            <div><strong>Xem kết quả ngay:</strong> trong Antigravity bấm biểu tượng <strong>Files</strong> ở góc trên bên phải để thấy cây thư mục, hoặc mở File Explorer. Ảnh đã được AI đặt tên theo nội dung, không còn kiểu 1, 2, 3. Đây là điểm khác lớn nhất so với chat trên web: AI không chỉ trả lời, AI làm việc thật trên máy.</div>
           </div>
         </div>
+        <p class="card-note" style="margin-top: 14px;">Dùng Claude Desktop sẽ thấy thêm thư mục <code>.claude</code> trong project: đó là chỗ Claude lưu cài đặt riêng của project, cứ để nguyên.</p>
       </section>
 
       <!-- PHẦN 2 -->
@@ -2219,16 +2555,34 @@ Thành lập năm **2017**, hoạt động:
           </div>
         </div>
 
+        <div class="card-title" style="margin-top: 20px;">Cùng hai chữ "xin chào" in đậm, AI phải đọc bao nhiêu?</div>
+        <div class="grid-2">
+          <div class="code-container" style="margin: 0;">
+            <div class="code-header"><span>Bên trong file Word (rút gọn)</span></div>
+            <pre class="code-pre">&lt;w:p&gt;&lt;w:pPr&gt;&lt;w:spacing w:after="160"/&gt;&lt;/w:pPr&gt;
+  &lt;w:r&gt;&lt;w:rPr&gt;&lt;w:rFonts w:ascii="Calibri"/&gt;
+    &lt;w:b/&gt;&lt;w:sz w:val="24"/&gt;&lt;/w:rPr&gt;
+    &lt;w:t&gt;xin chào&lt;/w:t&gt;
+  &lt;/w:r&gt;
+&lt;/w:p&gt;</pre>
+          </div>
+          <div class="code-container" style="margin: 0;">
+            <div class="code-header"><span>Trong file .md</span></div>
+            <pre class="code-pre">**xin chào**</pre>
+          </div>
+        </div>
+        <p class="card-note" style="margin: 12px 0 0;">Bạn nhìn hai bên đều thấy chữ "xin chào". Nhưng với file Word, AI phải lội qua cả đống thẻ định dạng mới tới được hai chữ đó, sửa xong lại phải đóng gói lại cả file. Một bài dài thì tốn hạn mức (token) gấp nhiều lần.</p>
+
         <div class="card-panel" style="margin-top: 20px;">
           <div class="card-title">Vì sao làm việc với AI nên dùng file .md?</div>
           <div class="grid-2 tile-grid" style="margin-bottom: 0;">
             <div class="tile">
-              <div class="tile-name">AI đọc, viết chính xác nhất</div>
-              <div class="tile-desc">Chỉ là chữ thuần, AI sửa đúng chỗ, không làm vỡ định dạng như khi sửa thẳng file Word.</div>
+              <div class="tile-name">Tiết kiệm hạn mức</div>
+              <div class="tile-desc">AI chỉ đọc đúng phần chữ, bỏ qua các thẻ định dạng dư thừa, nên đỡ tốn token hơn hẳn file Word.</div>
             </div>
             <div class="tile">
-              <div class="tile-name">Nhẹ, mở bằng gì cũng được</div>
-              <div class="tile-desc">Notepad, Antigravity, VS Code đều mở được. Không cần phần mềm trả phí.</div>
+              <div class="tile-name">AI sửa đúng chỗ</div>
+              <div class="tile-desc">Chỉ là chữ thuần, AI sửa đúng chỗ, không làm vỡ định dạng như khi sửa thẳng file Word. Notepad cũng mở được.</div>
             </div>
             <div class="tile tile-focus">
               <div class="tile-name">Một bản gốc, ra nhiều dạng</div>
@@ -2243,7 +2597,12 @@ Thành lập năm **2017**, hoạt động:
 
         <div class="alert-box alert-success">
           <span class="alert-icon">💡</span>
-          <div><strong>Xem file .md cho đẹp:</strong> trong Antigravity, mở file rồi bấm <code>Ctrl + Shift + V</code> (hoặc chuột phải chọn Open Preview) để xem bản hiển thị. Không có công cụ nào thì mở bằng Notepad vẫn đọc được.</div>
+          <div><strong>Xem file .md trong Antigravity:</strong> mở file ở khung Files. Tab <code>Review</code> là bản hiển thị đẹp, nên xem tab này. Tab <code>Raw</code> là bản thô còn nguyên ký hiệu <code>#</code>, <code>**</code> để AI đọc. Muốn tự gõ sửa, chuột phải vào file chọn mở bằng Notepad.</div>
+        </div>
+
+        <div class="alert-box alert-info" style="margin-bottom: 0;">
+          <span class="alert-icon">📌</span>
+          <div><strong>Thói quen mới:</strong> văn bản nào còn phải sửa đi sửa lại thì để dạng <code>.md</code>, chốt nội dung xong mới xuất Word. Cùng ý tưởng với artifact mentor giới thiệu cuối Buổi 1: sửa trên bản nháp nhẹ, đỡ tốn hạn mức hơn làm lại cả file.</div>
         </div>
       </section>
 
@@ -2265,8 +2624,56 @@ Thành lập năm **2017**, hoạt động:
 - Chèn các ảnh phù hợp từ thư mục hinh-anh/, mỗi ảnh có chú thích bên dưới
 - Cuối bài ghi nguồn tham khảo</pre>
         </div>
+        <p class="card-note" style="margin: -6px 0 14px;">Không cần gõ đủ đường dẫn thư mục: chỉ cần ghi đúng tên file như <code>gioi-thieu.md</code>, AI tự tìm. Cùng một prompt, mỗi lần AI viết câu chữ một khác nhưng ý chính vẫn giữ.</p>
 
-        <div class="card-title" style="margin-top: 20px;">Prompt 6: Nhờ AI chỉnh sửa</div>
+        <div class="alert-box alert-warning">
+          <span class="alert-icon">⚠️</span>
+          <div><strong>Đừng bấm vào dòng "file changed" có dấu cộng trừ xanh đỏ</strong> dưới câu trả lời: đó là bảng so sánh thay đổi dành cho dân kỹ thuật, rất khó xem. Muốn xem bài, mở biểu tượng <strong>Files</strong> rồi bấm vào tên file.</div>
+        </div>
+
+        <div class="card-panel" id="b2-van-phong">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+            AI viết chưa đúng giọng văn của mình? Đưa bài mẫu cho AI học
+          </div>
+          <p class="card-intro">Bài AI vừa viết thường dùng lối văn chung chung, chưa giống cách viết tin bài của chùa. Cách dễ nhất: <strong>đưa vài đoạn văn mẫu</strong> để AI học cách hành văn, rồi bảo AI viết lại.</p>
+          <div class="step-card-grid" style="margin-bottom: 0;">
+            <div class="step-card">
+              <span class="step-num">1</span>
+              <div class="step-title">Lấy văn mẫu</div>
+              <div class="step-desc">Vào <a href="https://thientonphatquang.com" target="_blank" rel="noopener">thientonphatquang.com</a>, mở một hai bài tin (ví dụ bài về khóa thiền), sao chép một đoạn tiêu biểu mỗi bài.</div>
+            </div>
+            <div class="step-card">
+              <span class="step-num">2</span>
+              <div class="step-title">Dán vào khung chat</div>
+              <div class="step-desc">Mỗi đoạn mẫu ngăn cách bằng một dòng gạch ngang <code>-----</code>. Xuống dòng bằng <code>Shift + Enter</code>, vì bấm Enter là gửi luôn.</div>
+            </div>
+            <div class="step-card" style="border-color: var(--accent-emerald);">
+              <span class="step-num" style="background: var(--accent-emerald);">3</span>
+              <div class="step-title">Gõ yêu cầu ở cuối</div>
+              <div class="step-desc">Nói rõ bạn muốn AI viết lại file nào, theo giọng văn nào, như Prompt 6 bên dưới.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-title">Prompt 6: Học văn phong từ bài mẫu rồi viết lại</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat (thay phần trong ngoặc vuông bằng đoạn văn mẫu)</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">[Dán đoạn văn mẫu thứ nhất]
+----------
+[Dán đoạn văn mẫu thứ hai]
+----------
+Style viết trong bai-viet.md của bạn chưa hợp lắm. Học theo cách hành văn và style viết của hai đoạn trên, viết lại bài bai-viet.md cho tôi.</pre>
+        </div>
+        <div class="alert-box alert-info">
+          <span class="alert-icon">💡</span>
+          <div><strong>Đừng tiết kiệm chữ khi giao việc:</strong> AI giờ rất thông minh, nhưng nói thiếu thì AI dễ hiểu sai. Trên lớp có bạn chỉ dán văn mẫu kèm một câu ngắn, AI liền đi sửa chính đoạn văn mẫu thay vì sửa bài. Nói rõ "viết lại bài <code>bai-viet.md</code>" là AI làm đúng.</div>
+        </div>
+
+        <div class="card-title" style="margin-top: 20px;">Prompt 7: Nhờ AI chỉnh sửa</div>
         <div class="code-container">
           <div class="code-header">
             <span>Gõ vào khung chat</span>
@@ -2276,7 +2683,20 @@ Thành lập năm **2017**, hoạt động:
 và thêm một mục ngắn về Khóa học đạo đức mùa hè.</pre>
         </div>
 
-        <div class="card-title" style="margin-top: 20px;">Prompt 7: Bạn tự sửa, AI soát lại</div>
+        <div class="card-panel" id="b2-comment">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="10" y1="10" x2="14" y2="10"/></svg>
+            Sửa từng đoạn bằng comment ngay trên file (Antigravity)
+          </div>
+          <p class="card-intro">Không muốn gõ dài mô tả "đoạn nào, chỗ nào", hãy ghi chú thẳng lên bài như khi góp ý trên giấy:</p>
+          <ul class="concept-list">
+            <li>Mở <code>bai-viet.md</code> ở tab <code>Review</code>, rê chuột vào một đoạn: dấu <code>+</code> hiện bên cạnh. Bấm vào để comment cho cả đoạn.</li>
+            <li>Chỉ muốn sửa vài chữ: bôi đen đúng chỗ đó rồi bấm comment, ví dụ "chỗ này viết chưa hay, viết lại cho tôi".</li>
+            <li>Comment hết các chỗ cần sửa, các comment gom lại dưới khung chat, bấm gửi <strong>một lần</strong> là AI sửa tất cả.</li>
+          </ul>
+        </div>
+
+        <div class="card-title" style="margin-top: 20px;">Prompt 8: Bạn tự sửa, AI soát lại</div>
         <p class="card-intro" style="margin-bottom: 0;">Mở <code>bai-viet.md</code>, tự gõ sửa đoạn thứ 2 theo ý bạn rồi lưu file. Sau đó gửi:</p>
         <div class="code-container">
           <div class="code-header">
@@ -2303,7 +2723,7 @@ và thêm một mục ngắn về Khóa học đạo đức mùa hè.</pre>
           <div class="step-card">
             <span class="step-num">2</span>
             <div class="step-title">Kéo thả logo vào khung chat</div>
-            <div class="step-desc">Gửi kèm logo cùng Prompt 8 bên dưới để AI biết "logo này" là logo nào.</div>
+            <div class="step-desc">Mở File Explorer cạnh Antigravity, kéo file logo thả vào khung chat (hoặc bấm <code>+</code> chọn media), gửi kèm Prompt 9 bên dưới.</div>
           </div>
           <div class="step-card" style="border-color: var(--accent-emerald);">
             <span class="step-num" style="background: var(--accent-emerald);">3</span>
@@ -2312,7 +2732,7 @@ và thêm một mục ngắn về Khóa học đạo đức mùa hè.</pre>
           </div>
         </div>
 
-        <div class="card-title">Prompt 8: Tạo file Word đúng tone màu logo</div>
+        <div class="card-title">Prompt 9: Tạo file Word đúng tone màu logo</div>
         <div class="code-container">
           <div class="code-header">
             <span>Gõ vào khung chat (kèm file logo)</span>
@@ -2325,6 +2745,17 @@ Yêu cầu định dạng: phân tích dải màu chủ đạo từ logo này v�
         <div class="alert-box alert-info">
           <span class="alert-icon">✅</span>
           <div><strong>Mở file Word kiểm tra 3 điểm:</strong> chữ tiếng Việt đủ dấu, không lỗi ô vuông; màu tiêu đề hợp với logo; ảnh và chú thích ảnh đúng chỗ. Chỗ nào chưa ưng thì nói tiếp với AI để sửa, giống khi sửa bài .md.</div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom: 0;">
+          <div class="alert-box alert-warning" style="margin: 0;">
+            <span class="alert-icon">📂</span>
+            <div><strong>Antigravity không xem được file .docx:</strong> bấm vào sẽ báo lỗi, không phải do bạn làm sai. Bấm dấu ba chấm cạnh file, chọn <code>Show in File Explorer</code> (hoặc tự mở thư mục project) rồi mở file bằng Word.</div>
+          </div>
+          <div class="alert-box alert-success" style="margin: 0;">
+            <span class="alert-icon">📸</span>
+            <div><strong>Gặp lỗi trình bày</strong> (khung không đầy trang, chữ lệch): chụp màn hình chỗ lỗi, dán vào khung chat rồi nói "chỗ này lỗi, chỉnh lại cho tôi". AI nhìn ảnh và sửa đúng chỗ.</div>
+          </div>
         </div>
       </section>
 
@@ -2340,7 +2771,8 @@ Yêu cầu định dạng: phân tích dải màu chủ đạo từ logo này v�
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
             Skill là gì?
           </div>
-          <p class="card-intro"><strong>Skill là một quy trình đã đóng gói sẵn</strong>, giống cuốn sổ "công thức nấu ăn" của nhân viên AI: lần đầu bạn và AI mất công làm ra file Word đẹp, giờ ghi lại cách làm thành Skill. Lần sau chỉ cần nói một câu, AI mở đúng công thức ra làm, không phải dặn lại màu, font, bố cục.</p>
+          <p class="card-intro"><strong>Vấn đề:</strong> muốn file Word lần sau cũng đẹp như vậy, không lẽ lần nào cũng gửi lại logo, dán lại prompt dài, dán lại đoạn văn mẫu? Mà gửi lại chưa chắc lần nào cũng ra giống nhau.</p>
+          <p class="card-intro"><strong>Skill là cuốn sổ tay hướng dẫn cho AI</strong>, ghi lại cách làm và các bước làm một việc: lần đầu bạn và AI mất công làm ra file Word đẹp, giờ ghi lại cách làm thành Skill. Lần sau chỉ cần nói một câu, AI mở đúng sổ tay ra làm, không phải dặn lại màu, font, bố cục. Làm 10 file thì 10 file như một.</p>
           <div class="grid-3 tile-grid" style="margin-bottom: 0;">
             <div class="tile">
               <div class="tile-name">Skill gồm gì?</div>
@@ -2390,7 +2822,7 @@ Yêu cầu định dạng: phân tích dải màu chủ đạo từ logo này v�
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
             Bản đồ đường dẫn: quy tắc và skill nằm ở đâu
           </div>
-          <p class="card-intro"><code>&lt;tên máy&gt;</code> là tên thư mục người dùng trên Windows. <code>&lt;thư mục dự án&gt;</code> là thư mục bạn đang mở để làm việc, ví dụ <code>viet-bai-phat-quang</code>.</p>
+          <p class="card-intro"><code>&lt;tên máy&gt;</code> là tên thư mục người dùng trên Windows. <code>&lt;thư mục dự án&gt;</code> là thư mục bạn đang mở để làm việc, ví dụ <code>buoi-2</code>.</p>
           <div class="table-container" style="margin-bottom: 0; box-shadow: none;">
             <table>
               <thead><tr><th style="width: 20%;"></th><th>Antigravity</th><th>Claude Desktop</th></tr></thead>
@@ -2415,7 +2847,7 @@ Yêu cầu định dạng: phân tích dải màu chủ đạo từ logo này v�
           </div>
         </div>
 
-        <div class="card-title">Prompt 9: Đóng gói thành Skill cấp project</div>
+        <div class="card-title">Prompt 10: Đóng gói thành Skill cấp project</div>
         <div class="code-container">
           <div class="code-header">
             <span>Gõ vào khung chat</span>
@@ -2436,6 +2868,17 @@ Yêu cầu định dạng: phân tích dải màu chủ đạo từ logo này v�
           <span class="alert-icon">🎯</span>
           <div><strong>Khoảnh khắc "à":</strong> không phải dặn lại logo, màu hay bố cục, AI tự lấy Skill ra và làm đúng như lần trước. Muốn dùng Skill này ở mọi thư mục, chỉ cần nói AI "chuyển skill này thành skill toàn cục".</div>
         </div>
+
+        <div class="grid-2 tile-grid" style="margin: 20px 0 0;">
+          <div class="tile">
+            <div class="tile-name">Kiểm tra Skill đã có chưa</div>
+            <div class="tile-desc">Trong khung chat gõ dấu <code>/</code> rồi gõ vài chữ đầu tên skill. Tên skill hiện ra trong danh sách là đã tạo đúng.</div>
+          </div>
+          <div class="tile">
+            <div class="tile-name">Chia sẻ Skill cho người khác</div>
+            <div class="tile-desc">Mở thư mục <code>.agents\skills\</code> trong project: mỗi skill là một thư mục, gồm file <code>SKILL.md</code> (hướng dẫn) và thư mục <code>assets</code> (logo). Gửi nguyên thư mục đó, người nhận chỉ cần bảo AI "cài skill này cho tôi".</div>
+          </div>
+        </div>
       </section>
 
       <!-- PHẦN 6 -->
@@ -2444,22 +2887,1059 @@ Yêu cầu định dạng: phân tích dải màu chủ đạo từ logo này v�
           <span class="section-badge">PHẦN 7</span>
           <h2 class="section-title">Tự kiểm Buổi 2</h2>
         </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+            Kiến thức thêm: AI đa phương thức (multimodal)
+          </div>
+          <p class="card-intro">Nhắc lại từ khóa Buổi 1: <strong>multimodal</strong> là AI xử lý được nhiều loại dữ liệu cùng lúc: chữ, hình ảnh, âm thanh, file. Hai công cụ trong khóa mạnh ở hai chỗ khác nhau:</p>
+          <div class="grid-2 tile-grid" style="margin-bottom: 0;">
+            <div class="tile tile-focus">
+              <div class="tile-name">Antigravity (Gemini)</div>
+              <div class="tile-desc">Tạo được ảnh và <strong>nghe được file ghi âm</strong>, kể cả tên riêng, từ Phật pháp đều ghi đúng. Ứng dụng: ghi âm cuộc họp bằng điện thoại, đưa file vào nhờ AI làm bản ghi lời (transcript) rồi viết biên bản.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Claude</div>
+              <div class="tile-desc">Rất mạnh về tư duy logic, chữ và số liệu. Đọc được ảnh nhưng không tự tạo ảnh và không tự nghe file ghi âm: khi được đưa file ghi âm, Claude phải chạy thêm công cụ chuyển giọng nói, dễ sai tên riêng và nặng máy.</div>
+            </div>
+          </div>
+          <p class="card-note" style="margin-top: 12px;">Muốn biết công cụ làm được gì, cứ hỏi thẳng nó, ví dụ "bạn có tạo được ảnh không?". AI bây giờ được nạp sẵn thông tin về khả năng của chính nó.</p>
+        </div>
+
         <div class="card-panel">
           <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Đánh dấu vào các mục bạn đã tự tay làm được:</p>
           <div class="checklist-wrapper" id="checklist-buoi-2">
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã tạo project mới với thư mục riêng <strong>buoi-2</strong>, chọn đúng quyền và model.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã tắt chia sẻ dữ liệu trong Settings và biết xem hạn mức ở <strong>View usage</strong>.</span></label>
             <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã thêm quy tắc làm việc vào file quy tắc toàn cục và kiểm tra bằng cuộc trò chuyện mới.</span></label>
-            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã mở được thư mục làm việc trong Antigravity hoặc Claude Desktop.</span></label>
             <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">AI đã lưu được nội dung web vào <strong>tu-lieu/gioi-thieu.md</strong> và tải 10 ảnh vào <strong>hinh-anh/</strong>.</span></label>
-            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Hiểu file .md là gì và đọc được các ký hiệu cơ bản.</span></label>
-            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã viết, nhờ AI sửa và tự sửa bài <strong>bai-viet.md</strong>.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Hiểu file .md là gì, vì sao đỡ tốn hạn mức hơn file Word.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã viết bài <strong>bai-viet.md</strong>, cho AI học văn phong từ bài mẫu, sửa bằng prompt và bằng comment.</span></label>
             <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã xuất file Word đúng tone màu logo, tiếng Việt không lỗi dấu.</span></label>
-            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã tạo Skill cấp project và gọi lại được bằng một câu.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã tạo Skill cấp project, gõ <code>/</code> thấy tên skill và gọi lại được bằng một câu.</span></label>
           </div>
         </div>
       </section>
 
       </div>
       <!-- ================= HẾT BUỔI 2 ================= -->
+
+      <!-- ================= BUỔI 3 ================= -->
+      <div class="session-pane" id="session-3" data-session="3">
+
+      <section class="session-banner" id="session3-banner">
+        <div class="banner-eyebrow">
+          <span class="dot"></span>
+          BUỔI 3 - CHO AI TỰ NGHIÊN CỨU VÀ LÀM SẢN PHẨM
+        </div>
+        <h1 class="banner-title">Nghiên cứu ra báo cáo, cài Skill cộng đồng và làm video dọc</h1>
+        <p class="banner-desc">Cho AI tự tìm kiếm và viết báo cáo, thao tác trên trang web bằng built-in browser, đóng gói báo cáo thành file Word theo logo, cài Skill làm slide từ GitHub một cách an toàn, rồi biến video bài giảng khung ngang thành video dọc 9:16 để đăng mạng xã hội.</p>
+        <a class="banner-link" href="https://youtu.be/1OAxqH9EwIo" target="_blank" rel="noopener">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          Xem lại record Buổi 3 (01/11)
+        </a>
+      </section>
+
+      <!-- PHẦN 0 -->
+      <section class="content-section" id="b3-phan-0">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 0</span>
+          <h2 class="section-title">Chuẩn bị: một project mới cho buổi này</h2>
+        </div>
+
+        <p class="card-intro">Buổi này làm chính trên <strong>Antigravity</strong>. Dùng Claude Desktop vẫn làm theo được, chỗ nào khác sẽ có ghi chú riêng. Các bước dưới đây đã học ở <a href="#b2-tao-project">Buổi 2</a>, giờ làm nhanh:</p>
+        <div class="step-card-grid">
+          <div class="step-card">
+            <span class="step-num">1</span>
+            <div class="step-title">Tạo project mới</div>
+            <div class="step-desc"><code>New project</code>, <code>New folder</code>, đặt tên <code>demo-research</code>. Ô thư mục phải hiện <code>demo-research</code>, không phải <code>Desktop</code>.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">2</span>
+            <div class="step-title">Chọn model</div>
+            <div class="step-desc"><code>Gemini 3.8 Flash</code>, mức suy nghĩ <code>High</code>.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">3</span>
+            <div class="step-title">Bật Turbo</div>
+            <div class="step-desc">Đã quen giao diện thì chuyển quyền sang <code>Turbo</code> cho AI khỏi hỏi lại từng bước.</div>
+          </div>
+          <div class="step-card" style="border-color: var(--accent-emerald);">
+            <span class="step-num" style="background: var(--accent-emerald);">4</span>
+            <div class="step-title">Kiểm tra gói</div>
+            <div class="step-desc">Settings, bấm tên tài khoản: Plan phải là <code>Google AI Pro</code>. Tài khoản thường sẽ hết hạn mức giữa buổi.</div>
+          </div>
+        </div>
+
+        <div class="alert-box alert-success" style="margin-bottom: 0;">
+          <span class="alert-icon">🎙️</span>
+          <div><strong>Mẹo lười gõ: bấm biểu tượng micro trong khung chat rồi nói.</strong> Viết prompt bây giờ không cần kỹ thuật cao siêu, chỉ cần <strong>đủ bối cảnh</strong>, mà gõ nửa trang A4 thì rất lâu. Cứ nói những gì trong đầu: AI nghe được tiếng Việt chen tiếng Anh, tự bỏ những chỗ nói vấp. Phòng ồn hay mic bị vang thì chữ nhận dễ sai, nên nói gần mic.</div>
+        </div>
+      </section>
+
+      <!-- PHẦN 1 -->
+      <section class="content-section" id="b3-phan-1">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 1</span>
+          <h2 class="section-title">AI tự nghiên cứu, viết báo cáo ra file .md</h2>
+        </div>
+
+        <p class="card-intro">Trước đây muốn AI tìm kiếm trên mạng rồi tổng hợp, người ta hay dùng Perplexity. Bây giờ AI nào cũng có sẵn công cụ <strong>tự tìm kiếm, đọc trang web và trích nguồn</strong>, nên dùng luôn Antigravity hoặc Claude là đủ.</p>
+
+        <div class="card-title">Prompt 1: Nghiên cứu nhanh, xuất báo cáo .md</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Tìm kiếm nhanh và cho tôi báo cáo ngắn gọn (khoảng 2 trang giấy A4) về 3 xu hướng ứng dụng AI và tự động hóa trong quản trị doanh nghiệp năm 2026. Xuất thành file md cho tôi nhé. đọc khoảng 3-5 nguồn thôi</pre>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">Prompt trên lớp được rút gọn cho nhanh. Khi làm thật, sửa lại như sau:</div>
+          <div class="table-container" style="margin-bottom: 0; box-shadow: none;">
+            <table>
+              <thead><tr><th style="width: 32%;">Trong prompt trên lớp</th><th style="width: 30%;">Khi làm thật</th><th>Vì sao</th></tr></thead>
+              <tbody>
+                <tr><td><code>Tìm kiếm nhanh</code></td><td>Đổi thành <code>Research</code></td><td>Trên lớp cần nhanh, làm thật cần tìm sâu.</td></tr>
+                <tr><td><code>đọc khoảng 3-5 nguồn thôi</code></td><td>Bỏ đi</td><td>Để AI đọc đủ số nguồn cần thiết.</td></tr>
+                <tr><td><code>khoảng 2 trang giấy A4</code></td><td>Bỏ đi</td><td>AI nghiên cứu được bao nhiêu thì trả bấy nhiêu.</td></tr>
+                <tr><td>(chưa có)</td><td>Thêm <code>có trích dẫn nguồn, kèm link</code></td><td>Antigravity cần dặn mới ghi nguồn. Claude thường tự trích nguồn.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-2 tile-grid">
+          <div class="tile tile-focus">
+            <div class="tile-name">Vì sao bắt AI xuất ra file .md?</div>
+            <div class="tile-desc">Báo cáo vài trang hiện trong khung chat thì rất khó sửa. Lưu thành file <code>.md</code> để sửa nhiều vòng, dùng lại ở cuộc trò chuyện khác, chốt nội dung xong mới xuất Word.</div>
+          </div>
+          <div class="tile">
+            <div class="tile-name">AI nghiên cứu như thế nào?</div>
+            <div class="tile-desc">AI mở một trình duyệt ẩn, gõ từ khóa tìm kiếm y như bạn, chọn vài link để đọc rồi tổng hợp lại. Bấm dòng <code>Thought for ...</code> để xem nó đã tìm từ khóa gì, đọc link nào.</div>
+          </div>
+        </div>
+        <p class="card-note">Mở báo cáo bằng biểu tượng <strong>Files</strong> góc trên bên phải, không bấm vào dòng file changed. Sửa bằng prompt hoặc bằng comment như <a href="#b2-comment">Buổi 2</a>.</p>
+
+        <div class="alert-box alert-info" style="margin-bottom: 0;">
+          <span class="alert-icon">💬</span>
+          <div>
+            <strong>Dùng Claude (web hoặc tab Chat)? Lưu báo cáo thành artifact.</strong>
+            <p>Artifact là sản phẩm AI tạo ra trong lúc trò chuyện mà bạn <strong>chỉnh sửa trực tiếp</strong> được ngay trên đó. Sửa trên artifact đỡ tốn hạn mức hơn bắt AI tạo lại cả file. Gõ:</p>
+            <div class="code-container" style="margin: 10px 0 0;">
+              <div class="code-header">
+                <span>Gõ vào khung chat Claude</span>
+                <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+              </div>
+              <pre class="code-pre">lưu file trên thành artifact cho tôi để tôi có thể chỉnh sửa trực tiếp được nhé</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PHẦN 2 -->
+      <section class="content-section" id="b3-phan-2">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 2</span>
+          <h2 class="section-title">Built-in browser: trình duyệt AI nhìn thấy và bấm được</h2>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Built-in browser là gì?
+          </div>
+          <p class="card-intro"><strong>Built-in</strong> là tích hợp sẵn, <strong>browser</strong> là trình duyệt. Đây là trình duyệt nằm ngay trong công cụ AI: bạn mở trang nào trên đó thì AI thấy trang đó, <strong>đọc được và bấm nút được</strong>. Antigravity, Claude, ChatGPT trên máy đều có.</p>
+          <ul class="concept-list">
+            <li><strong>Mở ở đâu:</strong> góc trên cùng bên phải, bấm biểu tượng cuối cùng là hiện <code>Browser</code>.</li>
+            <li><strong>Không thấy biểu tượng:</strong> đóng các tab file đang mở ở khung bên phải; cập nhật bản mới nếu có chữ <code>Update available</code>; mở lại một cuộc trò chuyện cũ; hoặc đăng xuất rồi đăng nhập lại.</li>
+            <li><strong>AI bấm nút thế nào:</strong> AI chụp màn hình, xác định tọa độ từng nút, từng ô chữ rồi bấm vào, gõ chữ, y như bạn tự thao tác.</li>
+          </ul>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">Khi nào cần built-in browser?</div>
+          <p class="card-intro">Nhiều trang như Facebook, nhóm kín <strong>chặn AI tự vào lấy thông tin</strong>, nên bảo AI tự research sẽ không lấy được. Cách giải: bạn tự đăng nhập trên built-in browser, mở sẵn đúng trang, rồi mới giao việc.</p>
+          <div class="grid-2 tile-grid" style="margin-bottom: 0;">
+            <div class="tile">
+              <div class="tile-name">Nhóm Facebook</div>
+              <div class="tile-desc">Đọc bài trong nhóm, tổng hợp thông tin, học cách người ta viết bài. Đặt lịch đăng bài: AI vào đúng chức năng hẹn giờ của chính Facebook và bấm giùm bạn.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Google Sheets</div>
+              <div class="tile-desc">Mở sẵn file trên built-in browser, AI tự đọc và điền dữ liệu cho bạn.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Trang tạo video AI</div>
+              <div class="tile-desc">Ví dụ Flow, Veo của Google: bạn có kịch bản, AI tự mở trang, bấm tạo video rồi tải về.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Phần mềm web chưa quen</div>
+              <div class="tile-desc">Phần mềm kế toán, trang web mới của công ty: AI tự tìm nút, tải báo cáo, tải dữ liệu giùm.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-title">Prompt mẫu: đọc nhóm Facebook đã mở sẵn</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Mở và đăng nhập nhóm trên built-in browser trước, rồi gõ</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Tôi đã mở sẵn nhóm Facebook trong built-in browser. Hãy đọc 10 bài đăng gần nhất trong nhóm, tổng hợp cho tôi cách họ viết bài (mở bài, độ dài, cách kêu gọi) và lưu vào file cach-viet-bai.md.</pre>
+        </div>
+
+        <div class="alert-box alert-warning" style="margin-bottom: 0;">
+          <span class="alert-icon">⚠️</span>
+          <div>
+            <strong>Đăng nhập tài khoản thật trên built-in browser thì AI thao tác được trên tài khoản đó:</strong>
+            <ul class="concept-list" style="color: inherit;">
+              <li>AI chỉ làm khi bạn mở máy và giao việc. Mọi bước AI bấm đều hiện ra trên màn hình để bạn theo dõi.</li>
+              <li>Tự tay đăng nhập, không đưa mật khẩu cho AI. Không giao việc liên quan tiền bạc, chuyển khoản.</li>
+              <li>Với bước quan trọng như bấm Đăng, bấm Gửi: dặn AI dừng lại cho bạn xem trước.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- PHẦN 3 -->
+      <section class="content-section" id="b3-phan-3">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 3</span>
+          <h2 class="section-title">Đóng gói báo cáo thành Word theo logo, rồi thành Skill</h2>
+        </div>
+
+        <p class="card-intro">Lặp lại quy trình Buổi 2 trên một nội dung khác để thấy rõ: Skill làm một lần, dùng được cho mọi nội dung sau này.</p>
+        <div class="step-card-grid">
+          <div class="step-card">
+            <span class="step-num">1</span>
+            <div class="step-title">Lấy logo đơn vị bạn</div>
+            <div class="step-desc">Logo trường, công ty hoặc ban của bạn, lưu về máy. Logo nhiều màu thì file ra càng đẹp.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">2</span>
+            <div class="step-title">Kéo thả logo vào khung chat</div>
+            <div class="step-desc">Mở File Explorer cạnh Antigravity, kéo logo thả vào khung chat, không cần bấm dấu cộng.</div>
+          </div>
+          <div class="step-card" style="border-color: var(--accent-emerald);">
+            <span class="step-num" style="background: var(--accent-emerald);">3</span>
+            <div class="step-title">Gửi Prompt 2</div>
+            <div class="step-desc">Mở file Word bằng File Explorer. Chỗ nào lỗi thì chụp màn hình, dán vào khung chat nhờ AI chỉnh.</div>
+          </div>
+        </div>
+
+        <div class="card-title">Prompt 2: Xuất báo cáo ra Word theo tone màu logo</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat (kèm file logo)</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Nội dung ổn rồi. Bây giờ hãy tổng hợp và tạo cho tôi 1 file Word (.docx) cho tôi nhé.
+Yêu cầu định dạng: phân tích dải màu chủ đạo từ logo này và áp dụng tone màu này vào tài liệu sao cho đẹp, hiện đại. Lưu ý file docx phải chuẩn tiếng Việt và không bị lỗi dấu.</pre>
+        </div>
+
+        <div class="card-title" style="margin-top: 20px;">Prompt 3: Đóng gói thành Skill cấp project</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat (thay tên đơn vị của bạn)</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Tôi thấy file này đẹp rồi, bây giờ hãy tạo cho tôi skill đóng gói tài liệu đẹp và đúng tone màu như vậy, sau này khi tôi nói tạo tài liệu theo chuẩn &lt;tên công ty của tôi&gt; thì hãy áp dụng skill này cho tôi. Skill lưu tại folder skill cấp project này cho tôi nhé</pre>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Skill cũng có hai cấp, giống chỉ dẫn (instruction)
+          </div>
+          <p class="card-intro">Ở Buổi 1, chỉ dẫn có hai chỗ: một chỗ trong Settings áp dụng cho cả tài khoản, một chỗ trong từng Project. Skill cũng vậy:</p>
+          <div class="grid-2 tile-grid" style="margin-bottom: 0;">
+            <div class="tile">
+              <div class="tile-name">Cấp toàn cục (global)</div>
+              <div class="tile-desc">Nằm ở kho chung của máy, gọi được ở <strong>mọi project</strong>.</div>
+            </div>
+            <div class="tile tile-focus">
+              <div class="tile-name">Cấp project</div>
+              <div class="tile-desc">Nằm trong thư mục project, chỉ dùng được <strong>trong đúng thư mục đó</strong>.</div>
+            </div>
+          </div>
+          <p class="card-note" style="margin-top: 12px;">Không cần nhớ đường dẫn: hỏi AI, hoặc nói "chuyển skill này lên cấp toàn cục". Xem bản đồ đường dẫn ở <a href="#b2-phan-6">Buổi 2, Phần 6</a>.</p>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">Tìm thư mục skill vừa tạo</div>
+          <ul class="concept-list">
+            <li>Bấm biểu tượng <strong>Files</strong> (thứ hai từ phải sang), bấm nút refresh cho cây thư mục cập nhật.</li>
+            <li>Mở <code>.agents</code>, vào <code>skills</code>, sẽ thấy thư mục skill mới: bên trong có <code>SKILL.md</code> (sổ tay hướng dẫn) và <code>assets</code> (chứa logo).</li>
+            <li>Đôi khi AI tạo cả <code>.agent</code> lẫn <code>.agents</code>: thư mục <code>.agents</code> (có chữ s) là chuẩn.</li>
+            <li>Dùng macOS: thư mục bắt đầu bằng dấu chấm bị ẩn. Chụp màn hình gửi AI, hỏi "tôi dùng macOS, hướng dẫn tôi cách hiện thư mục ẩn .agents".</li>
+          </ul>
+        </div>
+
+        <div class="grid-2 tile-grid">
+          <div class="tile">
+            <div class="tile-name">Cách dùng 1: gọi đúng tên</div>
+            <div class="tile-desc">Gõ <code>/</code>, gõ vài chữ đầu tên skill, dùng mũi tên lên xuống để chọn, bấm <code>Tab</code>, rồi viết yêu cầu, ví dụ "tạo file Word cho báo cáo này".</div>
+          </div>
+          <div class="tile tile-focus">
+            <div class="tile-name">Cách dùng 2: chỉ cần mô tả</div>
+            <div class="tile-desc">"Đóng gói báo cáo này theo chuẩn &lt;tên đơn vị&gt;". Câu có từ khóa khớp mô tả của skill là AI tự gọi skill. Sau này nhiều skill quá, không nhớ tên thì dùng cách này.</div>
+          </div>
+        </div>
+
+        <div class="alert-box alert-warning">
+          <span class="alert-icon">⚠️</span>
+          <div><strong>Đừng tự đổi tên thư mục skill bằng tay.</strong> AI đặt tên theo chuẩn: chữ thường, không dấu, nối bằng gạch ngang. Tự đổi sang tên tiếng Việt có dấu, có khoảng trắng thì skill lúc chạy lúc không. Muốn đổi tên, gõ: "đổi tên skill này thành ...".</div>
+        </div>
+
+        <div class="alert-box alert-success" style="margin-bottom: 0;">
+          <span class="alert-icon">🎯</span>
+          <div><strong>Skill tốt sinh ra từ quá trình làm việc.</strong> Muốn có skill viết thư mời, đừng dán 5 thư mời mẫu rồi bảo "tạo skill viết thư mời". Hãy đưa 5, 6 thư mẫu, nhờ AI viết một thư theo chủ đề mới, sửa nhiều vòng (ví dụ đổi cách xưng hô "anh chị" thành "huynh đệ"), thấy ổn rồi mới bảo đóng gói. Skill ghi lại cả những lần bạn sửa nên mới chuẩn.</div>
+        </div>
+      </section>
+
+      <!-- PHẦN 4 -->
+      <section class="content-section" id="b3-phan-4">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 4</span>
+          <h2 class="section-title">Cài Skill của cộng đồng từ GitHub một cách an toàn</h2>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub là gì? Repo là gì?
+          </div>
+          <p class="card-intro"><a href="https://github.com" target="_blank" rel="noopener">GitHub</a> giống <strong>Google Drive nhưng chuyên chứa code</strong>: lưu file, xem lịch sử chỉnh sửa, quay lại bản cũ. AI làm file Word, Excel thực chất cũng bằng code, nên cộng đồng chia sẻ skill (làm tài liệu, marketing, viết văn giống người...) trên GitHub chứ không phải trên Drive.</p>
+          <p class="card-intro" style="margin-bottom: 0;">Mỗi "thư mục dự án" trên GitHub gọi là <strong>repo</strong> (viết tắt của repository, nghĩa là cái kho). Khi nói với AI, cứ gọi là "repo này", AI hiểu ngay.</p>
+        </div>
+
+        <div class="step-card-grid">
+          <div class="step-card">
+            <span class="step-num">1</span>
+            <div class="step-title">Tìm skill</div>
+            <div class="step-desc">Gõ vào ô tìm kiếm của GitHub: nghề của bạn kèm chữ skill, ví dụ <code>marketing skill</code>.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">2</span>
+            <div class="step-title">Xem số sao</div>
+            <div class="step-desc">Sao là số người bấm lưu, không phải số người dùng. Nên chọn repo khoảng 1.000 sao trở lên.</div>
+          </div>
+          <div class="step-card" style="border-color: var(--accent-emerald);">
+            <span class="step-num" style="background: var(--accent-emerald);">3</span>
+            <div class="step-title">Nhờ AI kiểm tra trước</div>
+            <div class="step-desc">Repo ít người biết có thể bị cài mã độc. Luôn nhờ AI soát kỹ rồi mới cài.</div>
+          </div>
+        </div>
+
+        <div class="card-title">Prompt 4: Kiểm tra repo có mã độc không, chưa cài vội</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat (cuộc trò chuyện mới, vẫn trong project cũ)</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">https://github.com/vuhai2002/slide-morph
+repo này là gì? nó có chứa mã độc gì hay không? kiểm tra kỹ cho tôi nhé để tôi chuẩn bị cài
+Chưa cài gì cho đến khi tôi yêu cầu.</pre>
+        </div>
+        <p class="card-note" style="margin: -6px 0 14px;">Claude đủ tinh ý để chưa tự cài, nên có thể bỏ câu cuối. Antigravity thì nên dặn thêm câu cuối cho chắc. Repo slide-morph do mentor làm lại, nhưng repo của người lạ thì luôn phải kiểm tra kỹ.</p>
+
+        <div class="card-title">Prompt 5: Cài skill vào project</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat sau khi AI báo an toàn</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">cài cho tôi skill này, đặt tại folder skill cấp project này cho tôi</pre>
+        </div>
+        <p class="card-note" style="margin: -6px 0 14px;">Skill mới chưa biết dùng thế nào thì hỏi thêm: "Hướng dẫn tôi cách sử dụng skill này". Một repo thường chứa nhiều skill và nhiều lệnh, AI sẽ liệt kê cho bạn.</p>
+
+        <div class="grid-2 tile-grid">
+          <div class="tile tile-focus">
+            <div class="tile-name">Slash command là gì?</div>
+            <div class="tile-desc">Gõ dấu <code>/</code> (đọc là slash) trong khung chat, danh sách skill hiện ra để chọn: cách gọi đó tên chuẩn là <strong>slash command</strong>. Gặp chữ này trên mạng là bạn biết ngay.</div>
+          </div>
+          <div class="tile">
+            <div class="tile-name">Kiểm tra đã cài đúng chỗ</div>
+            <div class="tile-desc">Skill phải nằm trong <code>.agents\skills\slide-morph\</code>. Thấy một thư mục giống hệt repo nằm ngoài, ngay gốc project, là AI mới tải repo về chứ chưa cài xong skill.</div>
+          </div>
+        </div>
+
+        <div class="card-panel" style="margin-bottom: 0;">
+          <div class="card-title">Giới thiệu thêm hai bộ skill nổi tiếng (về nhà thử)</div>
+          <div class="grid-2 tile-grid">
+            <div class="tile">
+              <div class="tile-name">marketingskills</div>
+              <div class="tile-desc">Hơn 50 skill marketing: viết nội dung bán hàng, SEO, email, quảng cáo, ra mắt sản phẩm. Có một skill nền tạo file bối cảnh (khách hàng, đối thủ, giọng thương hiệu) cho các skill khác đọc trước khi làm. Viết bằng tiếng Anh, thiên về sản phẩm phần mềm, nên chỉ chọn vài skill thật cần.</div>
+              <div class="tile-meta"><a href="https://github.com/coreyhaines31/marketingskills" target="_blank" rel="noopener">coreyhaines31/marketingskills</a></div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">humanizer</div>
+              <div class="tile-desc">Giúp AI viết bớt "giọng AI", nghe giống người viết hơn. Hợp khi cần viết báo cáo, bài dài. Skill dựa trên văn phong tiếng Anh, nên khi cài nhờ AI chỉnh lại cho hợp tiếng Việt.</div>
+              <div class="tile-meta"><a href="https://github.com/blader/humanizer" target="_blank" rel="noopener">blader/humanizer</a></div>
+            </div>
+          </div>
+          <div class="code-container">
+            <div class="code-header">
+              <span>Prompt mẫu: đánh giá bộ marketingskills trước khi cài</span>
+              <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+            </div>
+            <pre class="code-pre">https://github.com/coreyhaines31/marketingskills
+tìm hiểu cho tôi bộ skill này là gì, có phù hợp với project của tôi hay không? Và nếu có phù hợp thì hãy liệt kê ra các skill cần thiết có thể đưa vào project này, và mình cũng sẽ chỉnh lại theo thông tin của project này.</pre>
+          </div>
+          <div class="code-container" style="margin-bottom: 0;">
+            <div class="code-header">
+              <span>Prompt mẫu: kiểm tra và cài humanizer cho tiếng Việt</span>
+              <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+            </div>
+            <pre class="code-pre">https://github.com/blader/humanizer
+Kiểm tra kỹ skill này giúp tôi xem có mã độc không. Nếu an toàn thì cài cho tôi vào folder skill cấp project này, nhưng chỉnh lại cho thuần tiếng Việt vì skill này viết cho tiếng Anh.</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- PHẦN 5 -->
+      <section class="content-section" id="b3-phan-5">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 5</span>
+          <h2 class="section-title">Làm slide HTML bằng skill /slide-morph</h2>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Vì sao làm slide bằng file HTML?
+          </div>
+          <div class="grid-3 tile-grid" style="margin-bottom: 0;">
+            <div class="tile">
+              <div class="tile-name">PowerPoint do AI làm thường xấu</div>
+              <div class="tile-desc">AI tạo file .pptx hay lệch bố cục và không có hiệu ứng chuyển cảnh. Slide HTML đẹp hơn, có hiệu ứng mượt.</div>
+            </div>
+            <div class="tile tile-focus">
+              <div class="tile-name">Mở bằng trình duyệt máy tính</div>
+              <div class="tile-desc">File <code>.html</code> là file giao diện web: mở bằng Chrome hoặc Edge là trình chiếu. Cần xem trên điện thoại, gửi người khác thì nhờ AI xuất thêm file PDF.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Dùng được cho nhiều việc</div>
+              <div class="tile-desc">Có file Excel nhiều sheet cần trình bày số liệu? Nhờ AI dựng một trang dashboard bằng HTML, nhìn rõ và đẹp hơn hẳn.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card-grid">
+          <div class="step-card">
+            <span class="step-num">1</span>
+            <div class="step-title">Chọn style</div>
+            <div class="step-desc">Mở <a href="https://vuhai2002.github.io/slide-morph" target="_blank" rel="noopener">thư viện 85 style của slide-morph</a>, xem và chọn một style ưng ý.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">2</span>
+            <div class="step-title">Chép lệnh hoặc chép tên</div>
+            <div class="step-desc">Nút <code>Chép lệnh</code> cho lệnh mẫu để thử khi chưa có nội dung. Đã có nội dung thì chỉ chép <strong>tên style</strong>.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">3</span>
+            <div class="step-title">Đưa nội dung vào</div>
+            <div class="step-desc">Làm trong project <code>demo-research</code> để dùng luôn báo cáo. Project khác thì kéo file báo cáo vào khung chat. Dùng file <code>.md</code>, đừng dùng <code>.docx</code> cho đỡ tốn hạn mức.</div>
+          </div>
+          <div class="step-card" style="border-color: var(--accent-emerald);">
+            <span class="step-num" style="background: var(--accent-emerald);">4</span>
+            <div class="step-title">Cài xong mới gửi</div>
+            <div class="step-desc">AI báo cài xong và bạn thấy <code>.agents\skills\slide-morph</code> rồi mới gửi Prompt 6.</div>
+          </div>
+        </div>
+
+        <div class="card-title">Prompt 6: Tạo slide theo style đã chọn</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat (kèm file báo cáo .md, thay tên style bạn chọn)</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">sử dụng skill /slide-morph tạo cho tôi 1 slide theo style midcentury-toon</pre>
+        </div>
+
+        <div class="card-title" style="margin-top: 20px;">Hoặc: xem 5 slide mẫu trước khi làm cả bộ</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat (kèm file báo cáo .md)</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">sử dụng skill /slide-morph để tạo cho tôi slide cho nội dung này. Trước khi tạo thì cho tôi mẫu 5 slide phù hợp với nội dung trên</pre>
+        </div>
+
+        <div class="alert-box alert-info">
+          <span class="alert-icon">🖥️</span>
+          <div><strong>Mở slide:</strong> mở file <code>.html</code> trong Antigravity chỉ thấy code. Ra thư mục project, chuột phải vào file <code>.html</code>, chọn <code>Open with</code>, chọn Chrome. Bấm phím mũi tên hoặc Space để chuyển slide, phím F để toàn màn hình.</div>
+        </div>
+
+        <div class="card-title">Prompt 7: Bắt AI tự mở slide ra soát lỗi</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat (kèm ảnh chụp một slide bị lỗi)</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">slide này đang bị lỗi nè. Và có rất nhiều slide bị lỗi tương tự. Hình như bạn chưa mở xem trực tiếp thì phải. Bạn hãy mở slide trong built-in browser để tự xem và check lại từng slide rồi chỉnh sao cho chính xác, ko còn lỗi nhé</pre>
+        </div>
+        <div class="alert-box alert-success" style="margin-bottom: 0;">
+          <span class="alert-icon">💡</span>
+          <div><strong>Vì sao cần prompt này?</strong> AI viết slide bằng code nên không tự nhìn thấy giao diện. Bảo AI tự mở ra xem từng slide là nó tự phát hiện và sửa lỗi. Có khi AI không mở built-in browser mà dùng công cụ chụp ảnh riêng của nó: vẫn đúng ý, mở phần suy nghĩ ra là thấy nó đang soát từng slide.</div>
+        </div>
+      </section>
+
+      <!-- PHẦN 6 -->
+      <section class="content-section" id="b3-phan-6">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 6</span>
+          <h2 class="section-title">Dự án thực tế: biến video bài giảng ngang thành video dọc 9:16</h2>
+        </div>
+
+        <p class="card-intro">Trang <a href="https://thientonphatquang.com/bai-giang/video?category=baigiangngan" target="_blank" rel="noopener">Bài giảng ngắn</a> có rất nhiều đoạn trích khoảng 1 phút, khung ngang 16:9. Mục tiêu: AI tự làm thành <strong>video khung dọc 9:16</strong> có ảnh nền, tiêu đề, sẵn sàng đăng TikTok, Facebook, YouTube Shorts.</p>
+
+        <div class="step-card-grid">
+          <div class="step-card">
+            <span class="step-num">1</span>
+            <div class="step-title">Project mới</div>
+            <div class="step-desc">Tạo thư mục riêng cho dự án video, model Gemini 3.8 Flash High, bật <code>Turbo</code>. Không bật Turbo là ngồi bấm chấp nhận mỏi tay.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">2</span>
+            <div class="step-title">Đưa ảnh mẫu</div>
+            <div class="step-desc">Chụp 2, 3 video dọc bạn thích (khung, chữ tiêu đề, vị trí video), kéo thả vào khung chat. Muốn kiểu nào thì đưa ảnh kiểu đó, nhanh hơn tả bằng lời.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">3</span>
+            <div class="step-title">Gửi Prompt 8</div>
+            <div class="step-desc">AI tự mở trang bài giảng, lấy video đầu tiên, tạo ảnh nền và ghép thành video dọc.</div>
+          </div>
+          <div class="step-card" style="border-color: var(--accent-emerald);">
+            <span class="step-num" style="background: var(--accent-emerald);">4</span>
+            <div class="step-title">Sửa rồi mới làm hàng loạt</div>
+            <div class="step-desc">Xem video đầu tiên, góp ý đến khi ưng mới bảo AI làm tiếp các video khác.</div>
+          </div>
+        </div>
+
+        <div class="card-title">Prompt 8: Làm video dọc từ video bài giảng ngang</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat (kèm 2, 3 ảnh mẫu video dọc)</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">- Ý tưởng của tôi là tôi đã có các video mà đoạn cắt ngắn rồi á, nhưng mà là khung ngang 16:9, tôi muốn làm theo kiểu khung dọc như vầy để đăng tiktok hoặc Facebook gì đó và đăng lên nhiều cái nền tảng, cả YouTube cũng vậy. Nhưng mà tôi không có nhiều thời gian làm video và tôi muốn kiểu như tôi sẽ tự đưa cho bạn cái source ngang như vậy và bạn sẽ đưa ra cho tôi cái mẫu hoàn chỉnh như thế này luôn. Hãy trình bày cho tôi làm như thế nào cho hợp lý và hãy research kỹ cho tôi là cái mẫu như thế nào thì sẽ tốt cho TikTok và các nền tảng phân phối nội dung của tôi.
+- Các video ở trên trang "https://thientonphatquang.com/bai-giang/video?category=baigiangngan", có nhiều trang phía sau nữa, đầu tiên thì làm trước video đầu tiên của trang 1, khi chỉnh sửa ok và ổn rồi thì mình sẽ làm hàng loạt sau nhé. Bạn sẽ tự mở và xem link trên trong built-in browser nhé
+- Bạn sẽ tự dùng khả năng tạo ảnh của chính bạn (khả năng multimodal) để tạo ảnh background nền phía sau (tỉ lệ 9:16) luôn nhé. ảnh nền làm sao hiện đại, đẹp, thu hút.
+Có gì chưa rõ thì hỏi kỹ lại tôi cho chắc nhé</pre>
+        </div>
+
+        <div class="grid-2 tile-grid">
+          <div class="tile tile-focus">
+            <div class="tile-name">Prompt này có gì?</div>
+            <div class="tile-desc">Nói như đang kể cho người khác nghe: ý tưởng và mục tiêu, nguồn video ở đâu, làm thử một video trước, cho AI tự xem link bằng built-in browser, dùng khả năng tạo ảnh (multimodal) làm nền 9:16, và dặn hỏi lại khi chưa rõ.</div>
+          </div>
+          <div class="tile">
+            <div class="tile-name">Sửa tiếp sau video đầu tiên</div>
+            <div class="tile-desc">Chữ bị chìm vào nền: chụp lại, bảo thêm đổ bóng cho chữ. Muốn video to hơn, gần khung vuông: nói rõ. Ổn rồi thì bảo làm hàng loạt cả trang 1, rồi dùng built-in browser đặt lịch đăng dần.</div>
+          </div>
+        </div>
+
+        <div class="alert-box alert-warning" style="margin-bottom: 0;">
+          <span class="alert-icon">⚠️</span>
+          <div>
+            <strong>Trước khi đăng:</strong>
+            <ul class="concept-list" style="color: inherit;">
+              <li>Claude thường hỏi lại vài câu cho rõ, Antigravity hay tự làm luôn: xem kỹ kết quả đầu tiên trước khi cho làm hàng loạt.</li>
+              <li>Đây là lời giảng: đọc lại tiêu đề, phụ đề AI ghi xem có đúng lời giảng không trước khi đăng.</li>
+              <li>Việc làm video khá nặng. Tài khoản thường (không có gói Pro) dễ hết hạn mức giữa chừng.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- PHẦN 7 -->
+      <section class="content-section" id="b3-phan-7">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 7</span>
+          <h2 class="section-title">Tự kiểm Buổi 3</h2>
+        </div>
+        <div class="card-panel">
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Đánh dấu vào các mục bạn đã tự tay làm được:</p>
+          <div class="checklist-wrapper" id="checklist-buoi-3">
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã tạo project <strong>demo-research</strong> đúng thư mục, model Gemini 3.8 Flash High, bật Turbo.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">AI đã nghiên cứu và xuất báo cáo ra file .md; biết sửa prompt khi làm thật (Research, bỏ giới hạn, thêm nguồn).</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Mở được <strong>built-in browser</strong> và biết khi nào cần dùng.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã xuất báo cáo ra Word theo logo đơn vị mình và đóng gói thành Skill; gọi được skill bằng <code>/</code> và bằng mô tả.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã nhờ AI kiểm tra mã độc rồi cài skill <strong>slide-morph</strong> đúng vào <code>.agents\skills\</code>.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã tạo slide HTML theo style chọn, mở bằng Chrome và nhờ AI tự soát lỗi.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã làm được video dọc 9:16 đầu tiên từ một bài giảng ngắn.</span></label>
+          </div>
+        </div>
+
+        <div class="card-panel" style="border-left: 4px solid var(--brand-primary); margin-bottom: 0;">
+          <div class="card-title">Buổi 4 sẽ học gì?</div>
+          <p class="card-intro" style="margin-bottom: 0;">Tự làm web portfolio cá nhân và đưa lên mạng bằng Vercel; cài bộ skill làm phim bằng code để làm video dọc có giọng đọc AI Studio, nhạc nền, hiệu ứng âm thanh. Xem chi tiết ở <a href="#buoi-4">tab Buổi 4</a>.</p>
+        </div>
+      </section>
+
+      </div>
+      <!-- ================= HẾT BUỔI 3 ================= -->
+
+      <!-- ================= BUỔI 4 ================= -->
+      <div class="session-pane" id="session-4" data-session="4">
+
+      <section class="session-banner" id="session4-banner">
+        <div class="banner-eyebrow">
+          <span class="dot"></span>
+          BUỔI 4 - LÀM WEBSITE VÀ VIDEO BẰNG CODE
+        </div>
+        <h1 class="banner-title">Web portfolio của bạn lên mạng, video dọc có giọng đọc</h1>
+        <p class="banner-desc">Cho AI research mẫu thiết kế, hỏi lại cho đúng ý rồi dựng web portfolio của chính bạn và đưa lên Vercel có link chia sẻ được. Sau đó cài bộ skill làm phim bằng code, viết kịch bản có hook, làm video dọc có giọng đọc, nhạc nền và hiệu ứng âm thanh.</p>
+      </section>
+
+      <!-- PHẦN 0 -->
+      <section class="content-section" id="b4-phan-0">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 0</span>
+          <h2 class="section-title">Chuẩn bị trước buổi học</h2>
+        </div>
+
+        <div class="step-card-grid">
+          <div class="step-card">
+            <span class="step-num">1</span>
+            <div class="step-title">Project mới</div>
+            <div class="step-desc">Tạo thư mục riêng, ví dụ <code>portfolio</code>. Model <code>Gemini 3.8 Flash</code> mức <code>High</code>, bật <code>Turbo</code>.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">2</span>
+            <div class="step-title">Tài khoản Vercel</div>
+            <div class="step-desc">Tạo sẵn tài khoản miễn phí tại <a href="https://vercel.com/" target="_blank" rel="noopener">vercel.com</a>, đăng nhập bằng GitHub hoặc Google.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">3</span>
+            <div class="step-title">Tư liệu của bạn</div>
+            <div class="step-desc">Ảnh chân dung, CV hoặc danh sách dự án đã làm, và một ảnh chụp mẫu web bạn ưng.</div>
+          </div>
+          <div class="step-card" style="border-color: var(--accent-emerald);">
+            <span class="step-num" style="background: var(--accent-emerald);">4</span>
+            <div class="step-title">Nội dung làm video</div>
+            <div class="step-desc">Một bài viết ngắn bạn muốn làm thành video. Máy cắm sạc vì làm video khá lâu.</div>
+          </div>
+        </div>
+
+        <div class="alert-box alert-warning" style="margin-bottom: 0;">
+          <span class="alert-icon">⚠️</span>
+          <div><strong>Phần video:</strong> tác giả bộ skill Lemo-Opuscar ghi rõ các style được tinh chỉnh cho <strong>Claude Opus 5.5</strong>, model khác có thể làm không đẹp bằng. Antigravity vẫn làm được, chỉ là kết quả có thể kém hơn. Ai có Claude Pro thì nên làm phần video trên Claude Desktop (tab Code).</div>
+        </div>
+      </section>
+
+      <!-- PHẦN 1 -->
+      <section class="content-section" id="b4-phan-1">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 1</span>
+          <h2 class="section-title">Làm web portfolio cá nhân</h2>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Portfolio là gì, gồm những phần nào?
+          </div>
+          <p class="card-intro">Portfolio là <strong>trang web giới thiệu bản thân và những gì bạn đã làm được</strong>, giống một bộ hồ sơ năng lực online: gửi một link là người xem biết bạn là ai, làm được gì, liên hệ ở đâu. Một portfolio tốt thường có:</p>
+          <div class="grid-3 tile-grid" style="margin-bottom: 0;">
+            <div class="tile tile-focus">
+              <div class="tile-name">Phần đầu trang (hero)</div>
+              <div class="tile-desc">Tên, nghề, một câu giới thiệu ấn tượng, nút liên hệ nổi bật.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Dự án tiêu biểu</div>
+              <div class="tile-desc">Mỗi dự án có ảnh, bạn làm gì trong đó, kết quả ra sao.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Giới thiệu và kỹ năng</div>
+              <div class="tile-desc">Câu chuyện của bạn, kinh nghiệm, kỹ năng, công cụ thường dùng.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Bằng chứng tin cậy</div>
+              <div class="tile-desc">Cảm nhận của khách hàng, đồng nghiệp, con số nổi bật (nếu có).</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Liên hệ</div>
+              <div class="tile-desc">Email, điện thoại, mạng xã hội. Ngắn gọn, dễ bấm trên điện thoại.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Ảnh thật của bạn</div>
+              <div class="tile-desc">Ảnh chân dung và ảnh dự án thật làm trang đáng tin hơn ảnh minh họa.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Research thiết kế trên các trang design lớn
+          </div>
+          <div class="step-card-grid">
+            <div class="step-card">
+              <span class="step-num">1</span>
+              <div class="step-title">Dribbble</div>
+              <div class="step-desc">Nơi các nhà thiết kế đăng mẫu giao diện. Vào <a href="https://dribbble.com/search/portfolio" target="_blank" rel="noopener">dribbble.com</a>, tìm "portfolio" kèm nghề của bạn.</div>
+            </div>
+            <div class="step-card">
+              <span class="step-num">2</span>
+              <div class="step-title">Pinterest</div>
+              <div class="step-desc">Gom ảnh tham khảo thành bảng ý tưởng (moodboard) về màu, bố cục, phong cách tại <a href="https://www.pinterest.com/" target="_blank" rel="noopener">pinterest.com</a>.</div>
+            </div>
+            <div class="step-card" style="border-color: var(--accent-emerald);">
+              <span class="step-num" style="background: var(--accent-emerald);">3</span>
+              <div class="step-title">Chụp một mẫu ưng ý</div>
+              <div class="step-desc">Gửi kèm prompt: AI nhìn ảnh bắt đúng phong cách nhanh hơn nhiều so với tả bằng lời.</div>
+            </div>
+          </div>
+
+          <div class="table-container" style="box-shadow: none; margin-bottom: 0;">
+            <table>
+              <thead><tr><th style="width: 30%;">Ngành</th><th style="width: 34%;">Tone màu thường gặp</th><th>Cảm giác mang lại</th></tr></thead>
+              <tbody>
+                <tr><td>Tài chính, kế toán, luật</td><td>Xanh navy, xám, trắng</td><td>Tin cậy, chắc chắn</td></tr>
+                <tr><td>Y tế, giáo dục</td><td>Xanh dương nhạt, xanh lá, trắng</td><td>Sạch sẽ, an tâm</td></tr>
+                <tr><td>Ăn uống, bán lẻ</td><td>Cam, đỏ, vàng</td><td>Kích thích, năng động</td></tr>
+                <tr><td>Cao cấp, bất động sản</td><td>Đen, vàng đồng, kem</td><td>Sang trọng, đẳng cấp</td></tr>
+                <tr><td>Công nghệ</td><td>Xanh tím, gradient, nền tối</td><td>Hiện đại, sáng tạo</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="alert-box alert-warning">
+          <span class="alert-icon">⚠️</span>
+          <div><strong>Tham khảo, không sao chép.</strong> Mẫu trên Dribbble, Pinterest là tác phẩm của người khác: chỉ lấy cảm hứng về bố cục, màu, phong cách. Nội dung, hình ảnh, tên tuổi trên trang phải là của bạn.</div>
+        </div>
+
+        <div class="card-title">Prompt 1: Research mẫu và dựng web portfolio</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat (kèm ảnh mẫu web bạn ưng)</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">Hiện tại tôi cần làm 1 web portfolio cho cá nhân tôi. Tôi cần bạn research thêm các mẫu trong cùng ngành xem style và tone màu nên sử dụng như thế nào. Hãy hỏi lại tôi để chắc chắn bạn làm đúng ý tôi. Có thể research các mẫu hiện đại, sang trọng trên các trang web lớn như dribbble, pinterest,...
+Đây là cái mẫu tôi thấy khá ổn và cũng ưng ý á, tự bạn hãy dùng browser để mở các web trên kia xem thử nhé.
+Phần ảnh bạn có thể lấy trên các nguồn ảnh miễn phí, nếu ko có hoặc ko phù hợp thì bạn có thể dùng browser để dùng "flow.google.com" để tự tạo ảnh nếu cần. Cần gì thì hỏi lại tôi grill-me</pre>
+        </div>
+
+        <div class="grid-2 tile-grid">
+          <div class="tile tile-focus">
+            <div class="tile-name">"grill-me" là gì?</div>
+            <div class="tile-desc">Là cách bảo AI <strong>hỏi dồn từng câu một</strong>, mỗi câu kèm gợi ý, tới khi hiểu rõ ý bạn rồi mới bắt tay làm. Có sẵn skill <code>grill-me</code> trong bộ <a href="https://github.com/mattpocock/skills" target="_blank" rel="noopener">mattpocock/skills</a> nếu muốn cài. Chưa cài thì câu "hãy hỏi lại tôi" vẫn có tác dụng.</div>
+          </div>
+          <div class="tile">
+            <div class="tile-name">Ảnh lấy ở đâu?</div>
+            <div class="tile-desc">Ảnh miễn phí trên <a href="https://unsplash.com/" target="_blank" rel="noopener">Unsplash</a>, <a href="https://www.pexels.com/" target="_blank" rel="noopener">Pexels</a> (đọc giấy phép trước khi dùng). Không có ảnh hợp thì AI tự mở <a href="https://flow.google.com" target="_blank" rel="noopener">Flow</a> của Google trong built-in browser để tạo ảnh. Ảnh chân dung thì dùng ảnh thật của bạn.</div>
+          </div>
+        </div>
+
+        <div class="step-card-grid" style="margin-bottom: 0;">
+          <div class="step-card">
+            <span class="step-num">1</span>
+            <div class="step-title">AI research và hỏi lại</div>
+            <div class="step-desc">AI tự mở Dribbble, Pinterest xem mẫu, rồi hỏi: bạn làm nghề gì, ai sẽ xem trang, màu yêu thích, dự án nào cần đưa lên.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">2</span>
+            <div class="step-title">Trả lời thật cụ thể</div>
+            <div class="step-desc">Trả lời càng cụ thể, trang càng đúng ý. Gửi kèm CV, ảnh dự án nếu có.</div>
+          </div>
+          <div class="step-card" style="border-color: var(--accent-emerald);">
+            <span class="step-num" style="background: var(--accent-emerald);">3</span>
+            <div class="step-title">Góp ý tới khi tạm ổn</div>
+            <div class="step-desc">AI dựng trang và mở cho bạn xem. Chỗ nào chưa ưng thì chụp màn hình gửi AI sửa, như góp ý với nhà thiết kế.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PHẦN 2 -->
+      <section class="content-section" id="b4-phan-2">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 2</span>
+          <h2 class="section-title">Đưa web lên mạng bằng Vercel</h2>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Vercel là gì?
+          </div>
+          <p class="card-intro">Web AI vừa làm mới chỉ nằm trên máy bạn, người khác chưa mở được. <a href="https://vercel.com/" target="_blank" rel="noopener">Vercel</a> là dịch vụ <strong>đưa website lên mạng</strong>: website được phân phối qua mạng máy chủ khắp thế giới nên mở ở đâu cũng nhanh.</p>
+          <div class="grid-3 tile-grid" style="margin-bottom: 0;">
+            <div class="tile">
+              <div class="tile-name">Deploy</div>
+              <div class="tile-desc">Là một lần đưa web lên. Mỗi lần deploy có một link riêng để xem thử.</div>
+            </div>
+            <div class="tile tile-focus">
+              <div class="tile-name">Link chính (production)</div>
+              <div class="tile-desc">Luôn trỏ tới bản mới nhất. Đây là link bạn gửi cho mọi người.</div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">Tên miền riêng</div>
+              <div class="tile-desc">Dùng tên miền miễn phí của Vercel, hoặc mua tên miền riêng rồi gắn vào.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">Bước 1: Kết nối Vercel trước khi đẩy web</div>
+          <p class="card-intro">AI cần quyền vào tài khoản Vercel của bạn. Có hai cách, AI tự chọn và tự cài: <strong>công cụ dòng lệnh Vercel CLI</strong>, hoặc <strong>kết nối qua MCP</strong> của Vercel. Lần đầu, trình duyệt sẽ mở trang đăng nhập Vercel: <strong>bạn tự đăng nhập</strong> và bấm cho phép, không đưa mật khẩu cho AI.</p>
+          <div class="code-container" style="margin-bottom: 0;">
+            <div class="code-header">
+              <span>Prompt mẫu: nhờ AI kết nối Vercel</span>
+              <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+            </div>
+            <pre class="code-pre">Kết nối tài khoản Vercel cho tôi. Bạn hãy tự cài đặt công cụ cần thiết, cần tôi đăng nhập hay bấm cho phép ở đâu thì dừng lại hướng dẫn tôi.</pre>
+          </div>
+        </div>
+
+        <div class="card-title">Prompt 2: Kiểm tra kết nối rồi đẩy web lên Vercel</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat khi web đã tạm ổn</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">tôi thấy tạm ổn, bây giờ hãy đẩy lên vercel cho tôi, tôi đã kết nối với vercel rồi đó, kiểm tra kết nối đến vercel trước cho tôi nhé</pre>
+        </div>
+
+        <div class="step-card-grid">
+          <div class="step-card">
+            <span class="step-num">1</span>
+            <div class="step-title">AI kiểm tra kết nối</div>
+            <div class="step-desc">Chưa kết nối được thì AI báo lại và hướng dẫn bạn đăng nhập.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">2</span>
+            <div class="step-title">AI đẩy web lên</div>
+            <div class="step-desc">Xong việc, AI gửi lại link chính của trang.</div>
+          </div>
+          <div class="step-card" style="border-color: var(--accent-emerald);">
+            <span class="step-num" style="background: var(--accent-emerald);">3</span>
+            <div class="step-title">Mở trên điện thoại</div>
+            <div class="step-desc">Kiểm tra giao diện trên điện thoại, vì người xem phần lớn mở bằng điện thoại.</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom: 0;">
+          <div class="alert-box alert-info" style="margin: 0;">
+            <span class="alert-icon">💡</span>
+            <div><strong>Gói miễn phí (Hobby) của Vercel chỉ cho mục đích cá nhân, phi thương mại.</strong> Portfolio cá nhân dùng gói miễn phí là đúng. Web bán hàng, web chính thức của công ty thì cần nâng lên gói Pro.</div>
+          </div>
+          <div class="alert-box alert-success" style="margin: 0;">
+            <span class="alert-icon">🔁</span>
+            <div><strong>Sửa web sau này:</strong> nói AI sửa trên máy, xem lại cho ưng, rồi bảo "đẩy bản mới lên Vercel". Link chính tự cập nhật, không phải gửi lại link.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PHẦN 3 -->
+      <section class="content-section" id="b4-phan-3">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 3</span>
+          <h2 class="section-title">Làm phim bằng code: cài 3 bộ skill làm video</h2>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+            Video giống cuốn sách lật
+          </div>
+          <p class="card-intro">Mỗi trang sách lật là một bức vẽ hơi khác trang trước, lật nhanh thì hình chuyển động. <strong>Làm phim bằng code</strong> là nhờ AI "vẽ" đúng từng trang bằng code, rồi đóng lại thành cuốn. AI có hai cách làm video:</p>
+          <div class="table-container" style="margin-bottom: 0; box-shadow: none;">
+            <table>
+              <thead><tr><th style="width: 18%;"></th><th>Mô hình sinh video</th><th style="background: var(--brand-primary-glow); color: var(--brand-primary);">Làm phim bằng code (bài hôm nay)</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Cách làm</strong></td><td>Gõ mô tả, AI tự "vẽ" cả đoạn video (Veo, Flow...).</td><td>AI viết một trang web hoạt hình, rồi chụp từng khung hình thành video.</td></tr>
+                <tr><td><strong>Mạnh</strong></td><td>Cảnh giống thật: người, phong cảnh.</td><td>Chữ, logo, số liệu, màu sắc chính xác; sửa chỗ nào đúng chỗ đó.</td></tr>
+                <tr><td><strong>Yếu</strong></td><td>Khó kiểm soát chữ; sửa một chi tiết thường phải tạo lại cả đoạn.</td><td>Không quay được cảnh người thật.</td></tr>
+                <tr><td><strong>Hợp cho</strong></td><td>Cảnh minh họa đời thực.</td><td>Video giới thiệu, video bài giảng, video chữ và số liệu.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">Từ kịch bản đến file MP4: máy làm những bước nào?</div>
+          <div class="step-card-grid" style="margin-bottom: 0;">
+            <div class="step-card">
+              <span class="step-num">1</span>
+              <div class="step-title">Kịch bản, dòng thời gian</div>
+              <div class="step-desc">Viết lời đọc, chia cảnh, chốt giây nào hiện gì.</div>
+            </div>
+            <div class="step-card">
+              <span class="step-num">2</span>
+              <div class="step-title">Trang web hoạt hình</div>
+              <div class="step-desc">Mỗi thời điểm vẽ ra đúng một khung hình.</div>
+            </div>
+            <div class="step-card">
+              <span class="step-num">3</span>
+              <div class="step-title">Chrome chạy ngầm</div>
+              <div class="step-desc">Trình duyệt không hiện cửa sổ, chụp lần lượt từng khung hình.</div>
+            </div>
+            <div class="step-card">
+              <span class="step-num">4</span>
+              <div class="step-title">FFmpeg ghép phim</div>
+              <div class="step-desc">Nối hàng nghìn ảnh thành MP4, trộn giọng đọc, nhạc, hiệu ứng.</div>
+            </div>
+            <div class="step-card" style="border-color: var(--accent-emerald);">
+              <span class="step-num" style="background: var(--accent-emerald);">5</span>
+              <div class="step-title">Xem, sửa, render lại</div>
+              <div class="step-desc">Soát phụ đề, nghe lại âm thanh, sửa rồi xuất lại.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title">Ba bộ skill dùng trong buổi</div>
+          <div class="grid-3 tile-grid" style="margin-bottom: 0;">
+            <div class="tile tile-focus">
+              <div class="tile-name">Lemo-Opuscar</div>
+              <div class="tile-desc">Hơn 60 phong cách phim làm hoàn toàn bằng code, không dùng mô hình sinh video, kèm giọng đọc, nhạc, hiệu ứng. Gọi bằng <code>/lemo-opuscar</code>. Xem phim mẫu ở <a href="https://lemomo-ai.github.io/lemo-opuscar/" target="_blank" rel="noopener">trang gallery</a>.</div>
+              <div class="tile-meta"><a href="https://github.com/lemomo-ai/lemo-opuscar" target="_blank" rel="noopener">lemomo-ai/lemo-opuscar</a></div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">motion-design</div>
+              <div class="tile-desc">Nguyên tắc chuyển động cho AI: nhịp, độ nhanh chậm, thứ tự xuất hiện, các nguyên tắc hoạt hình kinh điển. Giúp chuyển động mượt và có hồn hơn.</div>
+              <div class="tile-meta"><a href="https://github.com/LottieFiles/motion-design-skill" target="_blank" rel="noopener">LottieFiles/motion-design-skill</a></div>
+            </div>
+            <div class="tile">
+              <div class="tile-name">HyperFrames</div>
+              <div class="tile-desc">Viết HTML rồi render thành video, làm riêng cho AI agent. Có nhiều skill con như làm slideshow, lấy mẫu phong cách.</div>
+              <div class="tile-meta"><a href="https://github.com/heygen-com/hyperframes" target="_blank" rel="noopener">heygen-com/hyperframes</a></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-title">Prompt 3: Kiểm tra và cài cả 3 bộ skill</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">lemo-opuscar: https://github.com/lemomo-ai/lemo-opuscar
+motion-design-skill: https://github.com/LottieFiles/motion-design-skill
+HyperFrames: https://github.com/heygen-com/hyperframes
+===
+kiểm tra và cài các bộ skill này cho tôi nhé. Đặt tại thư mục skill cấp project</pre>
+        </div>
+
+        <div class="step-card-grid">
+          <div class="step-card">
+            <span class="step-num">1</span>
+            <div class="step-title">AI soát từng repo</div>
+            <div class="step-desc">Có mã độc không, giấy phép gì, cài vào sẽ chạy những gì. Thói quen đã học ở Buổi 3.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">2</span>
+            <div class="step-title">Cài công cụ đi kèm</div>
+            <div class="step-desc">Node.js, FFmpeg, Python, Chrome chạy ngầm. AI xin phép chạy lệnh thì đọc qua rồi cho phép.</div>
+          </div>
+          <div class="step-card" style="border-color: var(--accent-emerald);">
+            <span class="step-num" style="background: var(--accent-emerald);">3</span>
+            <div class="step-title">Kiểm tra bằng /</div>
+            <div class="step-desc">Gõ <code>/</code> thấy <code>lemo-opuscar</code>, <code>motion-design</code>, <code>hyperframes</code> là đã cài đúng.</div>
+          </div>
+        </div>
+
+        <div class="alert-box alert-warning" style="margin-bottom: 0;">
+          <span class="alert-icon">🖥️</span>
+          <div><strong>Cần biết trước:</strong> theo tác giả Lemo-Opuscar, cần Node.js 20 trở lên, FFmpeg 7 trở lên, Python 3.11 trở lên, bộ công cụ tải về vài trăm MB. Các style 3D cần máy có card đồ họa. Một video mất khoảng 30-60 phút và khá nhiều hạn mức.</div>
+        </div>
+      </section>
+
+      <!-- PHẦN 4 -->
+      <section class="content-section" id="b4-phan-4">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 4</span>
+          <h2 class="section-title">Làm video dọc có giọng đọc, nhạc nền, hiệu ứng</h2>
+        </div>
+
+        <div class="grid-2 tile-grid">
+          <div class="tile tile-focus">
+            <div class="tile-name">Hook là gì?</div>
+            <div class="tile-desc">Là <strong>vài giây đầu giữ chân người xem</strong>, quyết định họ lướt qua hay xem tiếp. Mở bằng một câu hỏi, một con số, hoặc một vấn đề ai cũng gặp. Chỉ phần mở đầu được viết lại cho cuốn hút, nội dung chính vẫn bám sát bài gốc.</div>
+          </div>
+          <div class="tile">
+            <div class="tile-name">Giọng đọc bằng Google AI Studio</div>
+            <div class="tile-desc">AI Studio có trang tạo giọng nói (Gemini TTS: chuyển văn bản thành giọng nói). Chọn giọng có sẵn, <strong>mô tả cách đọc bằng lời</strong> như "nhanh nhẹn, hào hứng", rồi tải file âm thanh. AI tự làm trên built-in browser, chỉ dừng lại khi cần bạn đăng nhập.</div>
+          </div>
+          <div class="tile">
+            <div class="tile-name">Nhạc nền và hiệu ứng âm thanh</div>
+            <div class="tile-desc">Bộ skill tự soạn nhạc từ thư viện nhạc cụ mẫu và tự tạo hiệu ứng (tiếng vút, tiếng chạm...). Mỗi hiệu ứng gắn đúng khung hình: chữ hiện ra là tiếng "tách" vang lên đúng lúc.</div>
+          </div>
+          <div class="tile">
+            <div class="tile-name">Trộn âm và phụ đề</div>
+            <div class="tile-desc">Giọng đọc luôn nổi hơn nhạc, nhạc tự hạ xuống khi có lời. Có phụ đề để người xem không bật tiếng vẫn hiểu.</div>
+          </div>
+        </div>
+
+        <div class="card-title">Prompt 4: Viết kịch bản, cho xem 5 style rồi mới làm full</div>
+        <div class="code-container">
+          <div class="code-header">
+            <span>Gõ vào khung chat (thay dòng đầu bằng nội dung bài viết)</span>
+            <button class="btn-copy" onclick="copyCode(this)">Sao chép</button>
+          </div>
+          <pre class="code-pre">[Dán nội dung bài viết vào đây]
+===
+đọc và dựa vào nội dung này, viết kịch bản và dùng skill /lemo-opuscar để làm video cho nội dung trên, có thể viết lại để phần đầu để có hook, hợp với style video, nhưng nội dung thì bám sát nội dung ở trên. Có giọng đọc, sound effect, nhạc nền,... sao cho thu hút, video khung dọc. Cho tôi 5 style phù hợp, sáng tạo, thu hút trước để tôi chọn trước khi làm full nhé
+Phần voice thì bạn sẽ dùng AI Studio để tạo voice cho tôi. Bạn hãy dùng /browser để tự mở trình duyệt để tự thao tác tạo voice cho tôi. Dùng giọng đọc nam, sao cho phù hợp, nhanh nhẹn, thu hút.</pre>
+        </div>
+        <p class="card-note" style="margin: -6px 0 14px;"><code>/browser</code> là cách gọi built-in browser. Công cụ của bạn không có lệnh này thì ghi "dùng built-in browser" là được.</p>
+
+        <div class="step-card-grid">
+          <div class="step-card">
+            <span class="step-num">1</span>
+            <div class="step-title">Chọn 1 trong 5 style</div>
+            <div class="step-desc">AI viết kịch bản và đưa 5 style kèm mẫu ngắn. Xem thêm trang gallery để chọn cho ưng.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">2</span>
+            <div class="step-title">Đăng nhập AI Studio</div>
+            <div class="step-desc">AI mở AI Studio trên built-in browser. Chưa đăng nhập Google thì bạn tự đăng nhập, rồi bảo AI làm tiếp.</div>
+          </div>
+          <div class="step-card">
+            <span class="step-num">3</span>
+            <div class="step-title">AI làm full</div>
+            <div class="step-desc">Tạo giọng nam, soạn nhạc, hiệu ứng, render từng khung hình và ghép thành MP4.</div>
+          </div>
+          <div class="step-card" style="border-color: var(--accent-emerald);">
+            <span class="step-num" style="background: var(--accent-emerald);">4</span>
+            <div class="step-title">Góp ý như với người dựng phim</div>
+            <div class="step-desc">Nói cụ thể: "cảnh mở đầu kéo dài thêm 2 giây", "nhạc nhỏ lại một chút".</div>
+          </div>
+        </div>
+
+        <div class="alert-box alert-info" style="margin-bottom: 0;">
+          <span class="alert-icon">📜</span>
+          <div><strong>Nội dung và bản quyền:</strong> nội dung đưa vào video phải là của bạn hoặc được phép dùng. Nội dung là lời giảng thì đọc lại kịch bản, giữ đúng ý trước khi đăng. Mã nguồn bộ skill theo giấy phép mở, video bạn làm ra thuộc về bạn.</div>
+        </div>
+      </section>
+
+      <!-- PHẦN 5 -->
+      <section class="content-section" id="b4-phan-5">
+        <div class="section-header">
+          <span class="section-badge">PHẦN 5</span>
+          <h2 class="section-title">Tự kiểm Buổi 4</h2>
+        </div>
+        <div class="card-panel" style="margin-bottom: 0;">
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Đánh dấu vào các mục bạn đã tự tay làm được:</p>
+          <div class="checklist-wrapper" id="checklist-buoi-4">
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Nắm được các phần của một portfolio và cách chọn tone màu theo ngành.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã để AI research mẫu, trả lời các câu AI hỏi lại và dựng xong web portfolio của mình.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã kết nối Vercel, đưa web lên mạng và mở được link trên điện thoại.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Phân biệt được mô hình sinh video và làm phim bằng code.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã kiểm tra và cài 3 bộ skill <strong>lemo-opuscar</strong>, <strong>motion-design</strong>, <strong>HyperFrames</strong> ở cấp project.</span></label>
+            <label class="checklist-item"><input type="checkbox" onchange="toggleCheck(this)"><span class="checklist-text">Đã chọn style và làm được video dọc có hook, giọng đọc AI Studio, nhạc nền, hiệu ứng âm thanh.</span></label>
+          </div>
+        </div>
+      </section>
+
+      </div>
+      <!-- ================= HẾT BUỔI 4 ================= -->
 
     </main>
   </div>
